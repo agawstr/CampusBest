@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { ScheduleView } from "@/components/schedule/schedule-view";
 
 export const metadata: Metadata = { title: "Schedule" };
 
 export default function Page() {
-  return <PlaceholderPage navKey="schedule" />;
+  return <ScheduleView />;
 }

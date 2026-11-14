@@ -6,13 +6,14 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatCard } from "@/components/ui/stat-card";
 import { useStorage } from "@/hooks/use-storage";
+import { isTaskDone } from "@/lib/domain";
 
 export default function DashboardPage() {
   const tasks = useStorage("tasks").data;
   const subjects = useStorage("subjects").data;
   const notes = useStorage("notes").data;
   const sessions = useStorage("focusSessions").data;
-  const openTasks = tasks.filter((t) => t.status !== "done").length;
+  const openTasks = tasks.filter((t) => !isTaskDone(t)).length;
 
   return (
     <>

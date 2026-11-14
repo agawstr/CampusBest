@@ -31,7 +31,7 @@ export function Modal({ open, onOpenChange, title, description, children, footer
             <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-4">
               <Dialog.Content asChild>
                 <motion.div
-                  className="glass pointer-events-auto w-full max-w-md rounded-sheet bg-card p-6 shadow-float"
+                  className="glass pointer-events-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-sheet bg-card p-6 shadow-float"
                   initial={{ opacity: 0, scale: 0.96, y: 8 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.97, y: 4 }}

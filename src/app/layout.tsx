@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/brand";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { AppProviders } from "@/providers/app-providers";
 import "./globals.css";
@@ -9,8 +10,8 @@ import "./globals.css";
 const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "CampusMate", template: "%s · CampusMate" },
-  description: "Your Academic Life, Organized.",
+  title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
+  description: APP_DESCRIPTION,
 };
 
 export const viewport: Viewport = {

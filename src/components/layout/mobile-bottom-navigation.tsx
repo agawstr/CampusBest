@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Ellipsis } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { APP_NAME } from "@/lib/brand";
 import { PRIMARY_NAV, SECONDARY_NAV, isActivePath } from "@/lib/navigation";
 import { spring } from "@/lib/tokens";
 import { cn } from "@/lib/utils";
@@ -47,7 +48,7 @@ export function MobileBottomNavigation() {
         </div>
       </nav>
 
-      <BottomSheet open={moreOpen} onOpenChange={setMoreOpen} title="More" description="Halaman lainnya di CampusMate.">
+      <BottomSheet open={moreOpen} onOpenChange={setMoreOpen} title="More" description={`Halaman lainnya di ${APP_NAME}.`}>
         <div className="grid grid-cols-3 gap-3">
           {SECONDARY_NAV.map(({ key, href, label, icon: Icon }) => {
             const active = isActivePath(pathname, href);

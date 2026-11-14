@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useStorage } from "@/hooks/use-storage";
+import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
 import { NAV_ITEMS, isActivePath } from "@/lib/navigation";
 import { spring } from "@/lib/tokens";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ import { Logo } from "./logo";
 
 /**
  * md–lg (tablet): compact icon rail. lg+: full sidebar, collapsible by the user.
- * Collapsed state is stored in campusmate_settings.
+ * Collapsed state is stored in campusbest_settings.
  */
 export function Sidebar() {
   const pathname = usePathname();
@@ -26,7 +27,7 @@ export function Sidebar() {
         collapsed ? "w-[84px]" : "w-[84px] lg:w-[272px]",
       )}
     >
-      <Link href="/dashboard" className={cn("mb-8 rounded-control px-1.5", collapsed ? "mx-auto" : "lg:px-2")} aria-label="CampusMate">
+      <Link href="/dashboard" className={cn("mb-8 rounded-control px-1.5", collapsed ? "mx-auto" : "lg:px-2")} aria-label={APP_NAME}>
         <Logo showText={false} className={cn(!collapsed && "lg:hidden")} />
         {!collapsed && <Logo className="hidden lg:flex" />}
       </Link>
@@ -63,7 +64,7 @@ export function Sidebar() {
 
       <div className="mt-4 space-y-3">
         {!collapsed && (
-          <p className="hidden px-2 text-xs leading-relaxed text-muted lg:block">Your Academic Life, Organized.</p>
+          <p className="hidden px-2 text-xs leading-relaxed text-muted lg:block">{APP_TAGLINE}</p>
         )}
         <button
           onClick={() => update((s) => ({ ...s, sidebarCollapsed: !s.sidebarCollapsed }))}
