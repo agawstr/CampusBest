@@ -62,6 +62,8 @@ export function normalizeTask(raw: Rec, index = 0): Task {
     priority: oneOf(raw.priority, TASK_PRIORITIES, "medium"),
     status: oneOf(raw.status, TASK_STATUSES, "todo"),
     completedAt: optStr(raw.completedAt),
+    url: optStr(raw.url),
+    importSource: optStr(raw.importSource),
   };
 }
 

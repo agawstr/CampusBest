@@ -1,6 +1,6 @@
 import {
   BarChart3, BookOpen, CalendarClock, CalendarDays, ClipboardCheck,
-  LayoutDashboard, ListChecks, NotebookPen, Settings, Timer, type LucideIcon,
+  ClipboardPaste, LayoutDashboard, ListChecks, NotebookPen, Settings, Timer, type LucideIcon,
 } from "lucide-react";
 
 export interface NavItem {
@@ -39,6 +39,8 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "focus", href: "/focus", label: "Focus", icon: Timer, primary: false,
     description: "Timer fokus untuk sesi belajar.",
     placeholder: { title: "Timer fokus belum aktif", description: "Sesi belajar dan riwayat fokusmu akan tampil di sini." } },
+  { key: "import", href: "/import", label: "Import", icon: ClipboardPaste, primary: false,
+    description: "Impor tugas dari Google Classroom dan BRONE." },
   { key: "statistics", href: "/statistics", label: "Statistics", icon: BarChart3, primary: false,
     description: "Grafik progres belajar dan produktivitas.",
     placeholder: { title: "Belum ada statistik", description: "Statistik muncul setelah kamu mulai mencatat aktivitas." } },
