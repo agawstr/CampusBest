@@ -26,12 +26,12 @@ export const MAX_IMPORT_ITEMS = 500;
 const empty = (reason: string): ParseResult => ({ drafts: [], issues: [{ line: 0, text: "", reason }], ignored: 0 });
 
 /** Runs a parser with the guard rails: empty text, huge text, parser failure, nothing found. Never throws. */
-export function runParser(source: ImportSourceDef, text: string): ParseResult {
+export function runParser(source: ImportSourceDef, text: string, today?: string): ParseResult {
   if (typeof text !== "string" || text.trim() === "") return empty("Teksnya masih kosong. Tempel dulu teks dari sumbernya.");
   if (text.length > MAX_IMPORT_CHARS) return empty("Teksnya terlalu panjang. Pecah jadi beberapa bagian, lalu impor satu per satu.");
   let result: ParseResult;
   try {
-    result = source.parse(text);
+    result = source.parse(text, today);
   } catch {
     return empty("Teksnya tidak bisa dibaca. Cek lagi apakah sumber yang dipilih sudah benar.");
   }

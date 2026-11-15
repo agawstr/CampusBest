@@ -69,8 +69,8 @@ export interface ImportSourceDef {
   summary: string;
   /** How to copy the text from the source site. */
   howTo: string;
-  /** Pure function: same text in, same result out. Never throws. */
-  parse: (text: string) => ParseResult;
+  /** Pure function: same text (and same `today`) in, same result out. Never throws. `today` is "YYYY-MM-DD", only used to pick the year of dates written without one. */
+  parse: (text: string, today?: string) => ParseResult;
 }
 
 /** One class session as read from a SIAM row, before the user has looked at it. Nothing here is invented. */

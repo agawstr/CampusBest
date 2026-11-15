@@ -24,11 +24,12 @@ export function readWeekday(text: string): number | null {
   return key in DAYS ? DAYS[key] : null;
 }
 
-const TIME_RANGE = /^(\d{1,2})[:.](\d{2})\s*(?:-|–|—|»|s\/d|sd|sampai|to)\s*(\d{1,2})[:.](\d{2})(?:\s*WIB)?$/i;
+// Optional seconds (":00") because the real SIAM page writes "07:00:00 - 08:40:00".
+const TIME_RANGE = /^(\d{1,2})[:.](\d{2})(?:[:.]\d{2})?\s*(?:-|–|—|»|s\/d|sd|sampai|to)\s*(\d{1,2})[:.](\d{2})(?:[:.]\d{2})?(?:\s*WIB)?$/i;
 
 export type RangeRead = { start: string; end: string } | { error: string } | null;
 
-/** "07.00 - 08.40", "07:00-08:40", "7.00 s/d 8.40 WIB". null = not a time range at all. */
+/** "07.00 - 08.40", "07:00-08:40", "07:00:00 - 08:40:00", "7.00 s/d 8.40 WIB". null = not a time range at all. */
 export function readTimeRange(text: string): RangeRead {
   const m = TIME_RANGE.exec(text.trim());
   if (!m) return null;
@@ -88,12 +89,15 @@ function formatOf(cells: string[], cols: Map<Column, number>): SiamFormat {
 }
 
 const CODE_FIRST = /^([A-Za-z]{2,6}\s?\d{3,6})\s*[-–:]\s*(.+)$/;
+const CODE_PAREN_FIRST = /^\(\s*([A-Za-z]{2,6}\s?\d{3,6})\s*\)\s*(.+)$/; // "(CIF65318) Jaringan Saraf Tiruan" (real SIAM)
 const CODE_LAST = /^(.+?)\s*\(\s*([A-Za-z]{2,6}\s?\d{3,6})\s*\)$/;
 
 /** Splits a code off only when the cell literally contains one; the name is never altered otherwise. */
 function splitSubject(text: string): { name: string; code: string } {
   const a = CODE_FIRST.exec(text);
   if (a) return { name: a[2].trim(), code: a[1].replace(/\s+/g, "").toUpperCase() };
+  const pf = CODE_PAREN_FIRST.exec(text);
+  if (pf) return { name: pf[2].trim(), code: pf[1].replace(/\s+/g, "").toUpperCase() };
   const b = CODE_LAST.exec(text);
   if (b) return { name: b[1].trim(), code: b[2].replace(/\s+/g, "").toUpperCase() };
   return { name: text, code: "" };

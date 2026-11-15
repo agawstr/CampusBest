@@ -9,6 +9,12 @@ import { lineUrl, readLink, splitLines, type Line } from "./text";
  *   Pemrosesan Bahasa Alami                                                               <- subject
  *   Turned in                                                                             <- source status (optional)
  *
+ * Real copied text from the Classroom page can also be a block of link-only lines that share ONE URL
+ * (one block per assignment), e.g.
+ *   [assignment](URL)  [Modul 9 - DataStore Room](URL)  [Praktikum PAPB - TIF F 2026](URL)  [Turned in](URL)
+ * The first line is a type label ("assignment") and is skipped, then comes the title, then the class
+ * (used as the subject), optionally a due date such as [Monday, Nov 9](URL), and the status.
+ *
  * The source has no deadline in this format, so none is made up. A status such as "Turned in" is shown
  * to the user as information; it never decides the status of the Task.
  */
@@ -19,6 +25,58 @@ const STATUSES = [
   "diserahkan", "ditugaskan", "terlambat", "selesai", "dinilai", "dikembalikan", "belum diserahkan",
 ];
 const STATUS_SET = new Set(STATUSES);
+// English labels as seen in the pasted text. If nothing else follows, the label itself is kept as the title (never lost).
+const TYPE_LABELS = new Set(["assignment", "material", "question"]);
+const isTypeLabel = (t: string) => TYPE_LABELS.has(t.trim().toLowerCase());
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const WEEKDAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const DATE_LINE = /^(?:([A-Za-z]{3,9}),?\s+)?([A-Za-z]{3,9})\s+(\d{1,2})$/;
+
+/** Day number since 1970-01-01 for a civil date (pure arithmetic: no Date object, so no time zone or clock involved). */
+function dayNumber(y: number, m: number, d: number): number {
+  const yy = m <= 2 ? y - 1 : y;
+  const era = Math.floor(yy / 400);
+  const yoe = yy - era * 400;
+  const doy = Math.floor((153 * (m + (m > 2 ? -3 : 9)) + 2) / 5) + d - 1;
+  const doe = yoe * 365 + Math.floor(yoe / 4) - Math.floor(yoe / 100) + doy;
+  return era * 146097 + doe - 719468;
+}
+const weekdayOf = (n: number) => (((n + 4) % 7) + 7) % 7; // 1970-01-01 was a Thursday (4); 0 = Sunday
+const daysInMonth = (y: number, m: number) => dayNumber(m === 12 ? y + 1 : y, m === 12 ? 1 : m + 1, 1) - dayNumber(y, m, 1);
+
+/**
+ * "Monday, Nov 9" -> { isDate: true, key: "2026-11-09" }. Classroom omits the year, so it is taken from the
+ * weekday: the year (previous, this or next, relative to `today`) in which that day really falls on that
+ * weekday and is closest to today. Without a weekday, or without `today`, the year cannot be known, so no
+ * date is invented ({ isDate: true, key: "" }).
+ */
+export function readClassroomDate(text: string, today?: string): { isDate: boolean; key: string } {
+  const m = DATE_LINE.exec(text.trim());
+  if (!m) return { isDate: false, key: "" };
+  const mon = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()) + 1;
+  const day = Number(m[3]);
+  if (mon < 1 || day < 1 || day > 31) return { isDate: false, key: "" };
+  const wd = m[1] ? WEEKDAYS.indexOf(m[1].slice(0, 3).toLowerCase()) : -1;
+  if (m[1] && wd < 0) return { isDate: false, key: "" };
+  const t = today ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(today) : null;
+  if (wd < 0 || !t) return { isDate: true, key: "" };
+  const [ty, tm, td] = [Number(t[1]), Number(t[2]), Number(t[3])];
+  const todayN = dayNumber(ty, tm, td);
+  let best: { y: number; dist: number } | null = null;
+  for (const y of [ty - 1, ty, ty + 1]) {
+    if (day > daysInMonth(y, mon)) continue;
+    const n = dayNumber(y, mon, day);
+    if (weekdayOf(n) !== wd) continue;
+    const dist = Math.abs(n - todayN);
+    if (!best || dist < best.dist) best = { y, dist };
+  }
+  if (!best) return { isDate: true, key: "" };
+  return { isDate: true, key: `${best.y}-${String(mon).padStart(2, "0")}-${String(day).padStart(2, "0")}` };
+}
+
+/** A line that is exactly one Markdown link, nothing else (no number prefix). */
+const LINK_ONLY = /^\[([^\]]+)\]\((\S+?)\)$/;
 
 export function isClassroomStatus(text: string): boolean {
   return STATUS_SET.has(text.trim().toLowerCase().replace(/\s+/g, " ").replace(/[.:]$/, ""));
@@ -40,9 +98,9 @@ function readMarker(text: string): Marker | null {
   return null;
 }
 
-interface Pending { line: number; title: string; url: string; subject: string; warnings: string[] }
+interface Pending { line: number; title: string; label: string; url: string; subject: string; deadline: string; warnings: string[] }
 
-export function parseClassroom(text: string): ParseResult {
+export function parseClassroom(text: string, today?: string): ParseResult {
   const lines = splitLines(text);
   const drafts: TaskDraft[] = [];
   const issues: ParseIssue[] = [];
@@ -57,10 +115,11 @@ export function parseClassroom(text: string): ParseResult {
   const flush = (status = "") => {
     const cur = st.cur;
     if (!cur) return;
+    if (!cur.title) cur.title = cur.label; // only a type label was seen: keep it as the title rather than lose the entry
     const warnings = [...cur.warnings];
     if (!cur.subject) warnings.push("Nama mata kuliah tidak ada di teks.");
     drafts.push({
-      line: cur.line, title: cur.title, subjectName: cur.subject, deadline: "", deadlineTime: "",
+      line: cur.line, title: cur.title, subjectName: cur.subject, deadline: cur.deadline, deadlineTime: "",
       url: cur.url, sourceStatus: status, warnings,
     });
     st.cur = null;
@@ -69,7 +128,9 @@ export function parseClassroom(text: string): ParseResult {
   const start = (l: Line, rawTitle: string) => {
     const link = readLink(rawTitle);
     if (!link.title) { issue(l, "Judul tugasnya kosong."); return; }
-    st.cur = { line: l.n, title: link.title, url: link.url, subject: "", warnings: link.warnings };
+    // "[assignment](URL)" is a type label; the real title is on a following line with the same URL.
+    const isLabel = link.linked && isTypeLabel(link.title);
+    st.cur = { line: l.n, title: isLabel ? "" : link.title, label: isLabel ? link.title : "", url: link.url, subject: "", deadline: "", warnings: link.warnings };
   };
 
   for (const l of lines) {
@@ -79,6 +140,25 @@ export function parseClassroom(text: string): ParseResult {
       if (st.cur) flush(t);
       else issue(l, "Status ini tidak punya tugas di atasnya.");
       st.awaitingTitle = false;
+      continue;
+    }
+
+    // Link-only line with the SAME URL as the task being built = another field of that assignment.
+    const only = LINK_ONLY.exec(t);
+    if (only && st.cur && st.cur.url && readLink(t).url === st.cur.url) {
+      const piece = readLink(t).title;
+      const cur = st.cur;
+      if (isClassroomStatus(piece)) { flush(piece); st.awaitingTitle = false; continue; }
+      if (isTypeLabel(piece)) continue;
+      const date = readClassroomDate(piece, today);
+      if (date.isDate) {
+        if (date.key && !cur.deadline) cur.deadline = date.key;
+        else if (!date.key) cur.warnings.push(`Tanggal "${piece}" tanpa nama hari, jadi tidak diisi.`);
+        continue;
+      }
+      if (!cur.title) cur.title = piece;
+      else if (!cur.subject) cur.subject = piece;
+      else issue(l, "Baris tambahan di tugas ini, tidak dikenali.");
       continue;
     }
 
@@ -123,5 +203,5 @@ export const classroomSource: ImportSourceDef = {
   target: "tasks",
   summary: "Judul tugas, link, mata kuliah, dan status dari halaman tugas Classroom.",
   howTo: "Buka halaman tugas di Google Classroom, blok daftar tugasnya, salin, lalu tempel di sini.",
-  parse: parseClassroom,
+  parse: (text, today) => parseClassroom(text, today),
 };
