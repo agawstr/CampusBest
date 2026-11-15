@@ -1,6 +1,6 @@
 # CampusBest — Progres Pengembangan
 
-Terakhir diperbarui: setelah Phase 3 Batch 2 (Focus Timer, versi 0.8.0). Phase 2 selesai dikodekan; Phase 3 baru Notes dan Focus Timer yang dikodekan.
+Terakhir diperbarui: setelah Phase 3 Batch 3 / Bulk Import 2 (versi 0.10.0). Phase 2 selesai dikodekan; Phase 3 baru Notes dan Focus Timer yang dikodekan.
 
 ## 1. Teknologi dan struktur
 - Next.js 15 (App Router), React 19, TypeScript strict, Tailwind 3.4 (CSS variable RGB), Radix Dialog, class-variance-authority, clsx + tailwind-merge, Lucide, Framer Motion, font Plus Jakarta Sans.
@@ -217,6 +217,46 @@ Aturan pencatatan:
 Perilaku halaman: cincin progres + angka besar (`role="timer"`), penanda fase, titik siklus, tombol Mulai/Jeda/Lanjut/Reset/Lewati, pilihan mata kuliah dan tugas (opsional, terkunci saat sesi berjalan; tugas selesai tidak ditawarkan; memilih tugas mengisi mata kuliahnya bila kosong), ringkasan Hari ini (waktu fokus, sesi selesai), pengaturan durasi (preset 25/5, 50/10, atau Kustom dengan validasi 1-180 / 1-60 / 1-120 menit), riwayat 20 sesi terbaru (Selesai/Dihentikan; mata kuliah atau tugas yang sudah dihapus tampil tanpa label, sesinya tetap). Durasi baru berlaku mulai fase berikutnya; fase yang sedang berjalan tidak berubah.
 Dashboard: kartu "Fokus hari ini" (total menit fokus dan jumlah sesi selesai pada tanggal lokal hari ini; sesi dihitung ke hari ia dimulai; menit sesi yang dihentikan ikut dihitung karena itu waktu fokus yang sungguh dijalani).
 
+## 3h. Perubahan Phase 3 Batch 3 / Bulk Import 1 (Google Classroom + BRONE, versi 0.9.0)
+Baru:
+- `lib/import/`: `types.ts`, `text.ts` (pemecah baris, `readLink`, `safeUrl`, `nameKey`, `readTime`), `classroom.ts`, `brone.ts` (parser), `sources.ts` (daftar sumber `IMPORT_SOURCES`, `detectSource`, `runParser`), `subjects.ts` (pencocokan mata kuliah), `duplicates.ts`, `preview.ts` (item preview, validasi, `evaluate`, `itemToTask`), `commit.ts` (satu-satunya yang menulis).
+- `app/import/page.tsx` (server component + metadata), `components/import/{import-view,import-item-card}.tsx`, item navigasi "Import" (`lib/navigation.ts`).
+- `scripts/batch8-logic-check.ts` (+ didaftarkan di `run-logic-checks.sh`).
+Diubah: `types/models.ts` (aditif: `Task.url?`, `Task.importSource?`), `lib/normalize.ts` (membaca dua field itu), `components/tasks/task-item.tsx` (link "Buka tautan" bila ada URL http/https), `package.json` (0.9.0).
+Tidak diubah: API storage, key storage (tetap 7), `schemaVersion`, dependency, form Task manual.
+
+Perilaku (sesuai spesifikasi pemilik):
+- Classroom: judul (boleh Markdown link/bernomor), URL, nama mata kuliah, status sumber. Tidak ada deadline yang dikarang. "Turned in" hanya ditampilkan, tidak mengubah status Task.
+- BRONE: tanggal berlaku sampai tanggal berikutnya, `00:00` valid, baris `Activity event` diabaikan, nama mata kuliah dari "Assignment is due · ...", dua tugas dengan tanggal+jam sama tetap terpisah, URL hanya bila ada di teks, tanpa konversi zona waktu (waktu apa adanya, Asia/Jakarta).
+- Preview: pilih semua/sebagian, edit judul/mata kuliah/tanggal/jam/URL/status, hapus item, daftar baris gagal beserta alasan, deteksi duplikat (lewati atau tetap impor), pencocokan ke Subjects yang ada, atau hubungkan ke mata kuliah lain, atau buat baru (tanpa duplikat otomatis).
+- Commit: mata kuliah baru dulu, lalu semua Task dalam satu tulis. Tidak pernah mengubah/menghapus record lama. Cek `isAvailable()` sebelum menulis.
+- Arsitektur modular: sumber baru = satu `ImportSourceDef` (`key`, `target`, `parse`). SIAM Format 1 dan 2 (target Schedule) BELUM diimplementasikan (Bulk Import 2).
+
+Perbaikan saat serah terima sesi: `splitLines` meratakan tab menjadi spasi sehingga baris "3<TAB>Judul" tidak dikenali sebagai bernomor; sekarang tab dipertahankan.
+
+## 3i. Perubahan Phase 3 Batch 3 / Bulk Import 2 (SIAM Format 1 dan 2 -> Schedule, versi 0.10.0)
+Catatan serah terima: pekerjaan SIAM dari sesi sebelumnya TIDAK ada di ZIP Bulk Import 1 (tidak ada satu pun file SIAM). Bulk Import 2 ditulis dari baseline ZIP berdasarkan spesifikasi pemilik.
+
+Baru:
+- `lib/import/siam.ts`: parser SIAM (`parseSiam`, `readWeekday`, `readTimeRange`, `looksLikeSiam`, `siamSource`). Menerima tabel Markdown (pipa) atau teks dipisah tab. Format dideteksi dari BARIS HEADER (Format 1 bila ada kolom "Mata Kuliah", Format 2 bila "MK"); kolom dicari lewat nama header, bukan posisi; kolom Action diabaikan.
+- `lib/import/schedule-preview.ts`: item preview jadwal, pencocokan mata kuliah, validasi, deteksi duplikat, `evaluateSchedule`, `summarizeSchedule`, `itemToSchedule` (memakai `createSchedule()` yang sama dengan form Schedule), `groupScheduleSubjects`.
+- `lib/import/commit.ts`: ditambah `commitScheduleImport()` (tetap satu-satunya file yang menulis): mata kuliah baru dulu, lalu semua jadwal dalam satu tulis.
+- `lib/import/sources.ts`: ditambah `SCHEDULE_SOURCES` dan `runScheduleParser` (pengaman sama seperti `runParser`, batas `MAX_SCHEDULE_ITEMS` = 300). `IMPORT_SOURCES` (tugas) tidak berubah.
+- `lib/import/types.ts`: `ScheduleDraft`, `ScheduleParseResult`, `ScheduleImportSourceDef`, `SiamFormat`; `ImportTarget` kini `"tasks" | "schedules"`.
+- UI: `components/import/schedule-import-view.tsx`, `schedule-import-item-card.tsx`. `import-view.tsx` kini punya dua tab (Tugas, Jadwal kuliah (SIAM)); kedua tab tetap ter-mount supaya isi tab lain tidak hilang. `/import?sumber=siam` membuka tab jadwal. Halaman Schedule punya tombol "Import SIAM".
+- `scripts/batch9-logic-check.ts` (didaftarkan di `run-logic-checks.sh`).
+Diubah: `import-item-card.tsx` (`SubjectOptions` dapat prop `allowNone`, bawaan true), `scripts/batch8-logic-check.ts` (guard daftar modul, guard "SIAM belum ada" diganti "jalur tugas tidak tahu soal SIAM", versi boleh 0.9.0/0.10.0, daftar UI dan modul murni ditambah), `package.json` (0.10.0).
+Tidak diubah: model `ScheduleItem`, `normalize.ts`, API storage, key storage (tetap 7), dependency, parser Classroom/BRONE, `lib/schedule|calendar|dashboard|tasks|events`.
+
+Perilaku:
+- Setiap baris jadi satu jadwal `recurrence: "weekly"` tanpa `date`. `dayOfWeek` dari nama hari (Minggu = 0). Jam dipakai persis seperti di teks (WIB), tanpa objek Date atau konversi zona waktu. Format jam yang dikenali: `07.00 - 08.40`, `07:00-08:40`, `7.00 s/d 8.40 WIB`.
+- Tidak ada data dikarang: tanda "-" berarti kosong; Format 2 tidak punya dosen/kelas (dibiarkan kosong); kode mata kuliah hanya diambil bila tertulis di sel (`TIF1234 - Nama` atau `Nama (TIF1234)`); mode default offline, jadi Online hanya bila ruang berisi online/daring/zoom/meet/teams (dengan peringatan, bisa diubah).
+- Kelas dan Dosen: `ScheduleItem` tidak punya field kelas/dosen. Kelas hanya ditampilkan di preview. Dosen dipakai HANYA sebagai dosen mata kuliah yang dibuat baru; mata kuliah yang sudah ada tidak pernah diubah.
+- Mata kuliah: cocok persis (nama, kode, atau "kode nama") otomatis terhubung; mirip/ambigu harus dipilih pengguna; tidak cocok = "buat baru" (dibuat saat impor, satu per nama). Jadwal wajib punya mata kuliah, jadi tidak ada opsi "tanpa mata kuliah".
+- Duplikat: mata kuliah sama + hari sama + jam mulai dan selesai sama (ruang tidak dihitung). Dibandingkan dengan jadwal mingguan yang sudah ada (jadwal sekali-saja dan dua-mingguan tidak dianggap sama) dan dengan item lain di batch. Pilihan Lewati (bawaan) atau Tetap impor.
+- Baris yang gagal (hari tak dikenal, jam tak terbaca/terbalik, nama kosong) dilaporkan dengan nomor baris dan tidak diimpor; baris lain tetap jalan. Sel Hari kosong TIDAK diisi dari baris sebelumnya (tidak menebak sel yang digabung).
+- Jadwal lama tidak pernah diubah (diuji byte-per-byte, termasuk field tak dikenal). Jadwal baru otomatis tampil di Schedule, Kalender, dan Dashboard lewat `occursOn()`/`scheduleOnDate()` tanpa perubahan pada ketiganya.
+
 ## 4. File penting
 Baru: `lib/brand.ts`, `lib/storage-keys.ts`, `lib/domain.ts`, `lib/normalize.ts`, `lib/id.ts`, `lib/date.ts`.
 Diubah: `lib/storage.ts` (ditulis ulang), `lib/theme-script.ts`, `types/models.ts`, `app/layout.tsx`, `app/dashboard/page.tsx`, `app/settings/page.tsx`, `components/layout/{logo,sidebar,mobile-bottom-navigation}.tsx`, `package.json`, `README.md`.
@@ -321,3 +361,12 @@ Spesifikasi tiap batch dikirim pemilik proyek satu per satu. Jangan mulai batch 
 Catatan: Statistics tetap placeholder sampai ada instruksi. Jangan mulai batch Phase 3 berikutnya sebelum Phase 3 Batch 2 disetujui dan spesifikasinya dikirim. Prioritas pertama sebelum Phase 3: jalankan `npm install && npm run typecheck && npm run build` dan uji di browser (daftar "belum terverifikasi" di bagian 6), karena build penuh belum pernah dijalankan oleh saya.
 
 Catatan (sudah dilaksanakan di Batch 5): Dashboard memakai `sortEvents`/`filterEvents` (`lib/events.ts`), `isTaskDone`/`getTaskDeadline`, `scheduleOnDate` (`lib/schedule.ts`) dan `entriesForDate` (`lib/calendar.ts`) untuk "agenda hari ini" dan "mendatang", tanpa menulis ulang aturan. Jangan membuat penyimpanan baru untuk dashboard.
+
+## 9. Status Bulk Import 1
+Terverifikasi: `scripts/batch2..batch8` lolos di 5 zona waktu (batch8: 170 pemeriksaan, Asia/Jakarta); `tsc` strict atas `lib/import/*`, `lib/dashboard.ts` dan turunannya lolos.
+BELUM terverifikasi: `npm install`/`npm run typecheck`/`npm run build` (jaringan tidak tersedia di sesi ini, npm install gagal), dan seluruh UI `/import` di browser. Ikon Lucide baru (`ClipboardPaste`, `ExternalLink`, dll.) belum dicek terhadap lucide-react 0.460. Bulk Import 2 (SIAM) belum dimulai; tunggu instruksi.
+
+## 10. Status Bulk Import 2
+Terverifikasi (sesi tanpa jaringan, tanpa `node_modules`): `bash scripts/run-logic-checks.sh` lolos di 5 zona waktu untuk batch2 (83), batch3 (132), batch4 (108), batch5 (69), batch6 (109), batch7 (183), batch8 (170), batch9 (119). `tsc` strict atas `src/lib/**` dan `src/types/**` bersih; satu-satunya error adalah modul pihak ketiga yang tidak terpasang (`lucide-react`, `clsx`, `tailwind-merge`) di `navigation.ts` dan `utils.ts`, yang sudah ada sebelumnya.
+BELUM terverifikasi: `npm install`, `npm run typecheck`, `npm run build` (jaringan tidak tersedia, jadi file TSX baru tidak dicek tipenya), seluruh UI tab "Jadwal kuliah (SIAM)" di browser, dan parser terhadap salinan SIAM asli. Format SIAM dibuat dari spesifikasi kolom dan contoh yang dikirim pemilik; asumsi paling berisiko: (1) tampilan hasil salin dari halaman SIAM sungguhan (pipa atau tab), (2) bentuk sel Mata Kuliah (ada kode atau tidak), (3) sel Hari yang digabung/kosong. Kirim contoh nyata (data pribadi boleh disamarkan) bila ada baris yang gagal terbaca.
+Phase 3 Batch 4 BELUM dimulai; tunggu instruksi pemilik.

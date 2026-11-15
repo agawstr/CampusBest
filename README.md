@@ -48,3 +48,11 @@ Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
 - Dashboard (`/dashboard`): tidak punya penyimpanan. Semuanya dihitung dari `tasks`, `subjects`, `schedules`, dan `events` lewat `src/lib/dashboard.ts`, yang memakai aturan fitur masing-masing (`sortTasks`/`deadlineInfo`, `scheduleOnDate`, `filterEvents`/`sortEvents`). Tombol "Tambah ..." (tugas, jadwal, event, catatan) membuka form yang sudah ada di halaman tujuan lewat `?tambah=1` (`src/lib/quick-actions.ts`).
 - Notes (`notes`): catatan teks biasa (tanpa Markdown/tag/arsip) dengan judul, isi, mata kuliah opsional, dan `pinned`. Logika di `src/lib/notes.ts` (filter, urut, form <-> record, `togglePinned`). Catatan yang disematkan selalu tampil di atas. Note tidak punya field enum, jadi tidak perlu pola `getCoercedRaw`; setiap edit dan sematan tetap menaikkan `updatedAt`. Hapus mata kuliah tidak menyentuh `notes`.
 - Focus Timer (`/focus`): Pomodoro (bawaan 25/5/15 menit, istirahat panjang setiap 4 sesi fokus selesai; preset 25/5, 50/10, atau kustom). Aturannya murni di `src/lib/focus.ts` (waktu selalu dihitung dari timestamp), persistensinya di `src/lib/focus-store.ts`, dan state-nya dipegang `FocusTimerProvider` di `AppProviders`, jadi timer tetap jalan saat pindah halaman dan pulih setelah refresh. Tidak ada key storage baru: durasi di `settings.focus`, timer aktif di `settings.focusTimer` (ditulis hanya saat transisi, tidak per detik), riwayat di `focus_sessions` (id sesi = `runId`, idempoten). Hanya sesi Focus yang dicatat; Reset/Lewati setelah >= 1 menit dicatat sebagai tidak selesai. Edit `focusTimer` hanya lewat `focus-store.ts`.
+
+## Bulk Import
+
+`/import` punya dua tab:
+- **Tugas**: tempel teks dari Google Classroom atau BRONE, lihat preview, edit, lalu impor sebagai Tasks. Uji: `TZ=Asia/Jakarta npx tsx scripts/batch8-logic-check.ts`.
+- **Jadwal kuliah (SIAM)**: tempel tabel jadwal dari SIAM (Markdown atau hasil salin biasa). Format 1 (Hari, Jam, Mata Kuliah, Kelas, Dosen, Ruang, Action) dan Format 2 (Hari, MK, Jam, Ruang) dikenali otomatis dari judul kolom. Hasilnya masuk ke Schedule sebagai jadwal mingguan (tampil juga di Kalender dan Dashboard). Jadwal lama tidak diubah. Uji: `TZ=Asia/Jakarta npx tsx scripts/batch9-logic-check.ts`.
+
+Logika di `src/lib/import/`. Semua uji sekaligus: `bash scripts/run-logic-checks.sh`.

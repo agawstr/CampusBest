@@ -53,3 +53,9 @@ Tema dark default + light, glassmorphism (`.glass`), accent biru, radius control
   - Phase 3 Batch 2 menunggu persetujuan. Batch Phase 3 berikutnya belum dimulai; tunggu spesifikasinya.
 
 Mulai dengan: ekstrak ZIP, baca `docs/PROGRESS.md`, jalankan install/typecheck/build (kalau jaringan ada), laporkan hasilnya, lalu tunggu spesifikasi batch berikutnya. Kalau build gagal, perbaiki dulu error dari Batch 1-2 sebelum batch baru.
+
+## Update: Phase 3 Batch 3 / Bulk Import 1 (0.9.0)
+Selesai dikodekan: halaman `/import` (Google Classroom + BRONE → Tasks), logika di `lib/import/` (modular per sumber lewat `ImportSourceDef`, hanya `commit.ts` yang menulis). Task punya field opsional `url` dan `importSource`. Uji: `scripts/batch8-logic-check.ts`. Belum diverifikasi: npm install/typecheck/build dan tampilan browser. SIAM Format 1 dan 2 (ke Schedule) = Bulk Import 2, BELUM dimulai; tunggu instruksi pemilik.
+
+## Update: Phase 3 Batch 3 / Bulk Import 2 (0.10.0)
+Selesai dikodekan: tab "Jadwal kuliah (SIAM)" di `/import` (SIAM Format 1 dan 2 -> Schedule). Parser `lib/import/siam.ts` (format dideteksi dari header tabel, kolom dicari lewat nama), preview/validasi/duplikat di `lib/import/schedule-preview.ts`, penulisan di `commitScheduleImport()` dalam `lib/import/commit.ts` (tetap satu-satunya yang menulis). Jalur tugas (Classroom, BRONE) tidak diubah; registry jadwal terpisah (`SCHEDULE_SOURCES`, `runScheduleParser`). Hasilnya jadwal `weekly` baru (tanpa `date`); `ScheduleItem` tidak punya field kelas/dosen, jadi Kelas hanya tampil di preview dan Dosen hanya dipakai untuk mata kuliah BARU. Jadwal lama tidak disentuh. Uji: `scripts/batch9-logic-check.ts` (119 pemeriksaan); semua uji: `bash scripts/run-logic-checks.sh`. Belum diverifikasi: npm install/typecheck/build, tampilan browser, dan parser terhadap salinan SIAM asli (lihat PROGRESS bagian 10). Phase 3 Batch 4 BELUM dimulai; tunggu instruksi pemilik.

@@ -436,7 +436,7 @@ async function main() {
   ok("the model change is additive and optional (endedAt?, focus?, focusTimer?)", /endedAt\?: string/.test(view("src/types/models.ts")) && /focus\?: FocusSettings/.test(view("src/types/models.ts")) && /focusTimer\?: FocusTimerState/.test(view("src/types/models.ts")));
   eq("no new storage key (still the same 7)", Object.values(STORAGE_KEYS).sort(), ["campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
-  eq("version 0.8.0", pkg.version, "0.8.0");
+  ok("version is 0.8.0 or later (0.x)", /^0\.([89]|[1-9]\d)\.\d+$/.test(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
   eq("only Statistics is left as a placeholder", ["/focus", "/statistics", "/notes"].filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))), ["/statistics"]);
 
