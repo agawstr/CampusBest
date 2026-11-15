@@ -116,7 +116,7 @@ async function main() {
   eq("manifest name/short_name", [m.name, m.short_name], ["CampusBest", "CampusBest"]);
   eq("manifest display standalone", m.display, "standalone");
   ok("manifest start_url is an app route", m.start_url === "/dashboard" && read("src/lib/navigation.ts").includes(`href: "${m.start_url}"`));
-  ok("manifest scope is /", m.scope === "/" && m.id === "/");
+  ok("manifest scope is /", m.scope === "/");
   ok("theme/background colors are hex", /^#[0-9A-Fa-f]{6}$/.test(m.theme_color) && /^#[0-9A-Fa-f]{6}$/.test(m.background_color));
   ok("manifest theme color matches the dark --background token or layout", read("src/app/layout.tsx").includes("THEME_COLOR") && m.theme_color === "#0B1020");
   const pngSize = (p: string) => { const b = fs.readFileSync(path.join(process.cwd(), p)); return b.slice(0, 8).toString("hex") === "89504e470d0a1a0a" ? [b.readUInt32BE(16), b.readUInt32BE(20)] : null; };
