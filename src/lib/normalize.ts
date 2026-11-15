@@ -2,6 +2,7 @@ import type {
   AppSettings, CampusEvent, FocusSession, Note, ScheduleItem, StorageName, Subject, Task,
 } from "@/types";
 import { isValidTime } from "./date";
+import { normalizeFocusSettings, normalizeTimerState } from "./focus";
 import {
   EVENT_CATEGORIES, EVENT_TYPES, SCHEDULE_MODES, SCHEDULE_RECURRENCES, TASK_PRIORITIES, TASK_STATUSES,
   eventTypeFromCategory, inferEventCategory,
@@ -137,6 +138,7 @@ export function normalizeFocusSession(raw: Rec, index = 0): FocusSession {
     subjectId: optStr(raw.subjectId),
     taskId: optStr(raw.taskId),
     startedAt: optStr(raw.startedAt) ?? b.createdAt,
+    endedAt: optStr(raw.endedAt),
     durationMinutes: optNum(raw.durationMinutes) ?? 0,
     completed: typeof raw.completed === "boolean" ? raw.completed : false,
   };
@@ -145,7 +147,7 @@ export function normalizeFocusSession(raw: Rec, index = 0): FocusSession {
 export function normalizeSettings(value: unknown): AppSettings {
   const raw: Rec = isRec(value) ? value : {};
   const version = optNum(raw.schemaVersion);
-  return {
+  const out: AppSettings = {
     ...DEFAULT_SETTINGS,
     ...raw,
     theme: raw.theme === "light" ? "light" : "dark",
@@ -154,6 +156,12 @@ export function normalizeSettings(value: unknown): AppSettings {
     // Never downgrade a version written by a newer build.
     schemaVersion: Math.max(version ?? 0, SCHEMA_VERSION),
   };
+  // Phase 3 Batch 2 (optional, additive). Absent or unusable values leave the key out entirely.
+  const focus = normalizeFocusSettings(raw.focus);
+  const focusTimer = normalizeTimerState(raw.focusTimer);
+  if (focus) out.focus = focus; else delete out.focus;
+  if (focusTimer) out.focusTimer = focusTimer; else delete out.focusTimer;
+  return out;
 }
 
 type CollectionName = Exclude<StorageName, "settings">;

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { NotesView } from "@/components/notes/notes-view";
 
 export const metadata: Metadata = { title: "Notes" };
 
 export default function Page() {
-  return <PlaceholderPage navKey="notes" />;
+  return <NotesView />;
 }

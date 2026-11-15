@@ -8,6 +8,7 @@ import { useStorage } from "@/hooks/use-storage";
 import { buildDashboard } from "@/lib/dashboard";
 import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
 import { formatDateID } from "@/lib/date";
+import { FocusTodayCard } from "./focus-today-card";
 import { QuickActions } from "./quick-actions";
 import { TaskProgressCard } from "./task-progress-card";
 import { TodayScheduleCard } from "./today-schedule-card";
@@ -30,18 +31,20 @@ export function DashboardView() {
   const subjectsStore = useStorage("subjects");
   const schedulesStore = useStorage("schedules");
   const eventsStore = useStorage("events");
+  const focusStore = useStorage("focusSessions");
   const now = useNow();
 
   const tasks = tasksStore.data;
   const subjects = subjectsStore.data;
   const schedules = schedulesStore.data;
   const events = eventsStore.data;
-  const ready = [tasksStore, subjectsStore, schedulesStore, eventsStore].every((s) => s.isReady) && now !== null;
+  const focusSessions = focusStore.data;
+  const ready = [tasksStore, subjectsStore, schedulesStore, eventsStore, focusStore].every((s) => s.isReady) && now !== null;
 
   const subjectsById = useMemo(() => new Map(subjects.map((s) => [s.id, s])), [subjects]);
   const model = useMemo(
-    () => (ready && now ? buildDashboard({ tasks, subjects, schedules, events }, now) : null),
-    [ready, now, tasks, subjects, schedules, events],
+    () => (ready && now ? buildDashboard({ tasks, subjects, schedules, events, focusSessions }, now) : null),
+    [ready, now, tasks, subjects, schedules, events, focusSessions],
   );
 
   return (
@@ -82,6 +85,7 @@ export function DashboardView() {
               </div>
               <div className="space-y-4">
                 <TaskProgressCard progress={model.progress} />
+                <FocusTodayCard focus={model.focus} />
                 <UpcomingEventsCard events={model.events} subjectsById={subjectsById} now={now} />
               </div>
             </div>

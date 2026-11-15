@@ -84,7 +84,7 @@ export default function SettingsPage() {
 
         <Card delay={0.15}>
           <h2 className="text-base font-semibold">Hapus semua data</h2>
-          <p className="mt-1 text-sm text-muted">Menghapus mata kuliah, tugas, jadwal, catatan, dan pengaturan dari perangkat ini, termasuk data lama dari versi CampusMate.</p>
+          <p className="mt-1 text-sm text-muted">Menghapus mata kuliah, tugas, jadwal, event, catatan, sesi fokus, dan pengaturan dari perangkat ini, termasuk data lama dari versi CampusMate.</p>
           <Button className="mt-4" variant="danger" onClick={() => setConfirmOpen(true)}>Hapus data</Button>
         </Card>
       </div>

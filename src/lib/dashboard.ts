@@ -1,7 +1,8 @@
-import type { CampusEvent, ScheduleItem, Subject, Task } from "@/types";
+import type { CampusEvent, FocusSession, ScheduleItem, Subject, Task } from "@/types";
 import { isTaskDone } from "./domain";
 import { formatDateID, timeToMinutes, toDateKey } from "./date";
 import { filterEvents, sortEvents } from "./events";
+import { focusToday, type FocusToday } from "./focus";
 import { scheduleOnDate } from "./schedule";
 import { deadlineInfo, sortTasks } from "./tasks";
 
@@ -16,6 +17,8 @@ export interface DashboardData {
   subjects: readonly Subject[];
   schedules: readonly ScheduleItem[];
   events: readonly CampusEvent[];
+  /** Optional (Phase 3 Batch 2). Left out, the focus summary is simply zero. */
+  focusSessions?: readonly FocusSession[];
 }
 
 /* ---------------- greeting ---------------- */
@@ -115,6 +118,8 @@ export interface DashboardModel {
   today: TodayClass[];
   tasks: Limited<Task>;
   events: Limited<CampusEvent>;
+  /** Focus time and finished sessions on today's local date. */
+  focus: FocusToday;
 }
 
 export function buildDashboard(data: DashboardData, now: Date, limit = 5): DashboardModel {
@@ -135,5 +140,6 @@ export function buildDashboard(data: DashboardData, now: Date, limit = 5): Dashb
     today: todayClasses(data.schedules, now),
     tasks: upcomingTasks(data.tasks, limit),
     events,
+    focus: focusToday(data.focusSessions ?? [], now),
   };
 }

@@ -89,8 +89,44 @@ export interface FocusSession extends BaseEntity {
   subjectId?: ID;
   taskId?: ID;
   startedAt: string;
+  /** Minutes actually spent focusing (whole minutes). A stopped session keeps the time it really ran. */
   durationMinutes: number;
+  /** true only when the timer ran down to zero. Reset/skip/stop-early sessions are false. */
   completed: boolean;
+  /** When the session ended (ISO). Optional: sessions saved before Phase 3 Batch 2 don't have it. */
+  endedAt?: string;
+}
+
+/** Pomodoro phases. Only "focus" phases are saved as FocusSession records. */
+export type FocusMode = "focus" | "short_break" | "long_break";
+export type FocusTimerStatus = "idle" | "running" | "paused";
+
+/** Phase lengths in whole minutes. Stored in `AppSettings.focus`. */
+export interface FocusSettings {
+  focusMinutes: number;
+  shortBreakMinutes: number;
+  longBreakMinutes: number;
+}
+
+/**
+ * The timer that survives page changes and reloads. Stored in `AppSettings.focusTimer`, written only
+ * when something changes (start, pause, resume, reset, skip, finish), never every second. All
+ * running time comes from timestamps: `endsAt` (epoch ms) while running, `remainingMs` while paused.
+ */
+export interface FocusTimerState {
+  /** The current phase; when idle, the phase that starts next. */
+  mode: FocusMode;
+  status: FocusTimerStatus;
+  /** Focus sessions finished in the current cycle (0-3). Four finished sessions earn a long break. */
+  cycle: number;
+  subjectId?: ID;
+  taskId?: ID;
+  /** Present while running or paused. Also the id of the FocusSession this phase produces. */
+  runId?: string;
+  startedAt?: string;
+  durationMs?: number;
+  endsAt?: number;
+  remainingMs?: number;
 }
 
 export type ThemeMode = "dark" | "light";
@@ -100,4 +136,8 @@ export interface AppSettings {
   sidebarCollapsed: boolean;
   weekStartsOn: 0 | 1;
   schemaVersion: number; // current: 2 (see lib/normalize.ts)
+  /** Phase 3 Batch 2. Optional and additive: absent means the defaults (25/5/15). */
+  focus?: FocusSettings;
+  /** Phase 3 Batch 2. Optional and additive: absent means an idle timer. */
+  focusTimer?: FocusTimerState;
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { FocusView } from "@/components/focus/focus-view";
 
 export const metadata: Metadata = { title: "Focus" };
 
 export default function Page() {
-  return <PlaceholderPage navKey="focus" />;
+  return <FocusView />;
 }

@@ -1,3 +1,4 @@
+import { FocusMiniTimer } from "./focus-mini-timer";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -6,7 +7,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 pb-2 pt-[calc(0.75rem+env(safe-area-inset-top))] md:px-8 md:pt-4">
       <Logo className="md:invisible" />
-      <ThemeToggle />
+      <div className="flex items-center gap-2">
+        <FocusMiniTimer />
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

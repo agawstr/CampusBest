@@ -1,10 +1,10 @@
 /**
  * Quick actions on the dashboard. "Add" actions open the existing form modal of the target page
- * (Tasks, Schedule, Exams) via `?tambah=1`, so there is no second copy of any form or save logic.
+ * (Tasks, Schedule, Exams, Notes) via `?tambah=1`, so there is no second copy of any form or save logic.
  */
 export const ADD_PARAM = "tambah";
 
-export type QuickActionKey = "task" | "schedule" | "event" | "calendar";
+export type QuickActionKey = "task" | "schedule" | "event" | "note" | "calendar";
 
 export interface QuickAction {
   key: QuickActionKey;
@@ -17,6 +17,7 @@ export const QUICK_ACTIONS: readonly QuickAction[] = [
   { key: "task", label: "Tambah tugas", hint: "Catat tugas baru", href: `/tasks?${ADD_PARAM}=1` },
   { key: "schedule", label: "Tambah jadwal", hint: "Atur jadwal kuliah", href: `/schedule?${ADD_PARAM}=1` },
   { key: "event", label: "Tambah event", hint: "UTS, quiz, seminar", href: `/exams?${ADD_PARAM}=1` },
+  { key: "note", label: "Tambah catatan", hint: "Tulis catatan kuliah", href: `/notes?${ADD_PARAM}=1` },
   { key: "calendar", label: "Lihat kalender", hint: "Semua agenda", href: "/calendar" },
 ];
 
