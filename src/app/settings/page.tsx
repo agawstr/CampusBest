@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Moon, Sun, X } from "lucide-react";
+import { InstallCard } from "@/components/settings/install-card";
 import { PageHeader } from "@/components/layout/page-header";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,8 @@ export default function SettingsPage() {
             </Button>
           </div>
         </Card>
+
+        <InstallCard />
 
         <Card delay={0.15}>
           <h2 className="text-base font-semibold">Hapus semua data</h2>
