@@ -202,14 +202,14 @@ async function main() {
   /* ================= quick actions ================= */
   const navText = fs.readFileSync(path.join(process.cwd(), "src/lib/navigation.ts"), "utf8");
   const navHrefs = [...navText.matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
-  eq("4 quick actions: task, schedule, event, calendar", Q.QUICK_ACTIONS.map((a) => a.key), ["task", "schedule", "event", "calendar"]);
+  eq("5 quick actions: task, schedule, event, note, calendar", Q.QUICK_ACTIONS.map((a) => a.key), ["task", "schedule", "event", "note", "calendar"]);
   ok("every quick action points at an existing route", Q.QUICK_ACTIONS.every((a) => navHrefs.includes(a.href.split("?")[0])));
-  eq("add actions carry the flag, calendar doesn't", Q.QUICK_ACTIONS.map((a) => Q.wantsAdd(new URL(a.href, "http://x").search)), [true, true, true, false]);
-  eq("targets: tasks, schedule, exams, calendar", Q.QUICK_ACTIONS.map((a) => a.href.split("?")[0]), ["/tasks", "/schedule", "/exams", "/calendar"]);
+  eq("add actions carry the flag, calendar doesn't", Q.QUICK_ACTIONS.map((a) => Q.wantsAdd(new URL(a.href, "http://x").search)), [true, true, true, true, false]);
+  eq("targets: tasks, schedule, exams, notes, calendar", Q.QUICK_ACTIONS.map((a) => a.href.split("?")[0]), ["/tasks", "/schedule", "/exams", "/notes", "/calendar"]);
   eq("wantsAdd", ["?tambah=1", "?tambah", "?x=1&tambah=1", "", "?x=1", "?tambahan=1"].map(Q.wantsAdd), [true, true, true, false, false, false]);
   eq("withoutAddParam", ["?tambah=1", "?tambah=1&x=2", "?x=2&tambah=1", "", "?x=2"].map(Q.withoutAddParam), ["", "?x=2", "?x=2", "", "?x=2"]);
   const view = (f: string) => fs.readFileSync(path.join(process.cwd(), f), "utf8");
-  ok("Tasks, Schedule and Exams open their own existing form from the flag (no second form)", ["tasks/tasks-view", "schedule/schedule-view", "events/events-view"].every((f) => /useOpenFromQuery\(openCreate\)/.test(view(`src/components/${f}.tsx`))));
+  ok("Tasks, Schedule, Exams and Notes open their own existing form from the flag (no second form)", ["tasks/tasks-view", "schedule/schedule-view", "events/events-view", "notes/notes-view"].every((f) => /useOpenFromQuery\(openCreate\)/.test(view(`src/components/${f}.tsx`))));
   ok("the dashboard contains no form modal of its own", !/FormModal|createTask|createEvent|createSchedule|storage\.(write|update)|\.update\(|\.set\(/.test(["dashboard-view", "quick-actions", "today-schedule-card", "upcoming-tasks-card", "upcoming-events-card", "task-progress-card"].map((f) => view(`src/components/dashboard/${f}.tsx`)).join("\n")));
 
   /* ================= static guards over the whole codebase ================= */
@@ -223,7 +223,7 @@ async function main() {
   eq("no raw Math.random ids (generateId only)", bad(/Math\.random\(\)\.toString/).filter((f) => !f.endsWith("lib/id.ts")), []);
   eq("every nav route has a page", navHrefs.filter((h) => !fs.existsSync(path.join(process.cwd(), "src/app", h, "page.tsx"))), []);
   const placeholders = navHrefs.filter((h) => /PlaceholderPage/.test(fs.readFileSync(path.join(process.cwd(), "src/app", h, "page.tsx"), "utf8")));
-  eq("only Phase 3 pages are still placeholders", placeholders.sort(), ["/focus", "/notes", "/statistics"]);
+  eq("only Statistics is still a placeholder (Notes since Phase 3 Batch 1, Focus since Phase 3 Batch 2)", placeholders.sort(), ["/statistics"]);
   ok("Phase 2 pages are server components with metadata and a view", ["dashboard", "calendar", "tasks", "schedule", "subjects", "exams"].every((r) => { const t = view(`src/app/${r}/page.tsx`); return /export const metadata/.test(t) && !/"use client"/.test(t); }));
   const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
   eq("no dependency added since Phase 1", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
