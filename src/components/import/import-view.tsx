@@ -15,6 +15,7 @@ import {
   CHOICE_MIXED, buildItems, choiceFromValue, evaluate, groupSubjects, summarize,
   type ImportItem,
 } from "@/lib/import/preview";
+import { todayKey } from "@/lib/date";
 import { IMPORT_SOURCES, detectSource, getImportSource, runParser } from "@/lib/import/sources";
 import { looksLikeSiam } from "@/lib/import/siam";
 import { nameKey } from "@/lib/import/text";
@@ -86,7 +87,7 @@ function TaskImport() {
   const groups = useMemo(() => (session ? groupSubjects(session.items) : []), [session]);
 
   function runParse() {
-    const result = runParser(source, text);
+    const result = runParser(source, text, todayKey());
     setSession({ source: sourceKey, items: buildItems(result.drafts, subjects), issues: result.issues, ignored: result.ignored });
     setDone(null);
   }
