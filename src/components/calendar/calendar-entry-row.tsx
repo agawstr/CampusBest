@@ -39,7 +39,7 @@ export function CalendarEntryRow({ entry }: { entry: CalendarEntry }) {
       <div className="min-w-0 flex-1">
         <p className={cn("break-words font-semibold leading-snug", entry.done && "text-muted line-through")}>{entry.title}</p>
         <p className="mt-0.5 text-xs text-muted">
-          {CALENDAR_KIND_LABELS[entry.kind]} · {timeLabel(entry)}{entry.done ? " · Selesai" : ""}
+          {entry.categoryLabel ?? CALENDAR_KIND_LABELS[entry.kind]} · {timeLabel(entry)}{entry.done ? " · Selesai" : ""}
         </p>
         {entry.detail && <p className="mt-0.5 break-words text-xs text-muted">{entry.detail}</p>}
       </div>

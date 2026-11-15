@@ -15,7 +15,7 @@ Stack: Next.js (App Router), TypeScript, Tailwind CSS, Radix Dialog (komponen be
 
 ## Struktur
 
-`src/lib/` (storage, normalisasi, domain, tanggal, id, brand, tasks, subjects, schedule, calendar), `src/hooks/use-storage.ts`, `src/types/`, `src/components/{ui,layout,shared,tasks,subjects,schedule,calendar}`, `scripts/` (uji logika murni), `src/providers/`.
+`src/lib/` (storage, normalisasi, domain, tanggal, id, brand, tasks, subjects, schedule, calendar, events, dashboard, quick-actions), `src/hooks/use-storage.ts`, `src/types/`, `src/components/{ui,layout,shared,tasks,subjects,schedule,calendar,events,dashboard}`, `scripts/` (uji logika murni), `src/providers/`.
 
 Nama dan tagline aplikasi ada di satu tempat: `src/lib/brand.ts`.
 
@@ -25,8 +25,12 @@ Uji perilaku untuk logika murni (tanpa browser, localStorage tiruan). Tidak butu
 
 ```bash
 TZ=Asia/Jakarta npx tsx scripts/batch2-logic-check.ts
-TZ=Asia/Jakarta npx tsx scripts/batch3-logic-check.ts   # coba juga TZ=America/New_York, TZ=Europe/London
+TZ=Asia/Jakarta npx tsx scripts/batch3-logic-check.ts
+TZ=Asia/Jakarta npx tsx scripts/batch4-logic-check.ts
+TZ=Asia/Jakarta npx tsx scripts/batch5-logic-check.ts   # coba juga TZ=America/New_York, TZ=Europe/London
 ```
+
+Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
 
 ## Penyimpanan
 
@@ -39,3 +43,5 @@ TZ=Asia/Jakarta npx tsx scripts/batch3-logic-check.ts   # coba juga TZ=America/N
 - `generateId()` dari `src/lib/id.ts` untuk ID baru.
 - Mengedit record yang punya nilai enum tak dikenal: bawa ulang nilai aslinya lewat `storage.getCoercedRaw()` untuk field yang tidak disentuh pengguna (contoh: `fieldsToPreserve` di `src/lib/tasks.ts`).
 - Jadwal kuliah (`schedules`): `recurrence` `weekly` mengikuti `dayOfWeek`; `none` (sekali) dan `biweekly` (dua minggu sekali) memakai field `date` (`YYYY-MM-DD`): tanggal pelaksanaan untuk `none`, tanggal sesi pertama (anchor) untuk `biweekly`. Aturan kemunculan hanya ada di `occursOn()` (`src/lib/schedule.ts`). Kalender (`src/lib/calendar.ts`) tidak punya penyimpanan sendiri, hanya membaca `schedules`, `tasks`, dan `events`.
+- Exams & Events (`events`): `category` (uts, uas, quiz, presentasi, praktikum, seminar, lainnya) adalah sumber utama; `type` diturunkan darinya (`eventTypeFromCategory`). Event ditampilkan di Calendar langsung dari koleksi `events` (tanpa salinan), dengan label kategorinya.
+- Dashboard (`/dashboard`): tidak punya penyimpanan. Semuanya dihitung dari `tasks`, `subjects`, `schedules`, dan `events` lewat `src/lib/dashboard.ts`, yang memakai aturan fitur masing-masing (`sortTasks`/`deadlineInfo`, `scheduleOnDate`, `filterEvents`/`sortEvents`). Tombol "Tambah ..." membuka form yang sudah ada di halaman tujuan lewat `?tambah=1` (`src/lib/quick-actions.ts`).

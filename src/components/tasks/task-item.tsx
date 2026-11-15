@@ -8,13 +8,13 @@ import { deadlineInfo, taskStatusKind } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 import type { Subject, Task, TaskPriority } from "@/types";
 
-const PRIORITY_TONE: Record<TaskPriority, string> = {
+export const PRIORITY_TONE: Record<TaskPriority, string> = {
   high: "bg-danger/15 text-danger",
   medium: "bg-accent/15 text-accent",
   low: "bg-fg/10 text-muted",
 };
 
-const DEADLINE_TONE = { overdue: "text-danger", soon: "text-accent", normal: "text-muted" } as const;
+export const DEADLINE_TONE = { overdue: "text-danger", soon: "text-accent", normal: "text-muted" } as const;
 
 interface TaskItemProps {
   task: Task;

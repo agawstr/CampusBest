@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { EventsView } from "@/components/events/events-view";
 
 export const metadata: Metadata = { title: "Exams" };
 
 export default function Page() {
-  return <PlaceholderPage navKey="exams" />;
+  return <EventsView />;
 }

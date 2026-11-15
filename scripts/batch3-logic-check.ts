@@ -314,8 +314,9 @@ async function main() {
   ok("class with deleted subject still shown, neutral name", d18[3].title === "Mata kuliah dihapus" && d18[3].color === undefined);
   ok("task entry: deadline time, subject, not done", d18[4].startTime === "23:00" && d18[4].detail === "Basis Data" && d18[4].done === false);
   ok("legacy dueDate task shows, flagged done", d18[6].title === "Lama (dueDate)" && d18[6].done === true);
-  ok("event: category label, location and subject in detail", d18[0].detail === "UTS · Aula · Basis Data");
-  ok("event with unknown category normalizes to Lainnya", d18[5].detail === "Lainnya");
+  // Batch 4: the category moved out of `detail` into its own `categoryLabel` so the calendar can show it as the entry's label.
+  ok("event: category label, location and subject", d18[0].categoryLabel === "UTS" && d18[0].detail === "Aula · Basis Data");
+  ok("event with unknown category normalizes to Lainnya", d18[5].categoryLabel === "Lainnya" && d18[5].detail === undefined);
   ok("keys unique", new Set(d18.map((e) => e.key)).size === d18.length);
   eq("11 Nov: only the weekly class (biweekly off-week)", C.entriesForDate("2026-11-11", src).map((e) => e.sourceId), ["c2"]);
   eq("20 Nov: only the event", C.entriesForDate("2026-11-20", src).map((e) => `${e.kind}:${e.sourceId}`), ["event:e2"]);

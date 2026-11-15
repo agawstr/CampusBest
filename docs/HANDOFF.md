@@ -25,26 +25,26 @@ Tema dark default + light, glassmorphism (`.glass`), accent biru, radius control
 - Key: `campusbest_{subjects,tasks,schedules,events,notes,focus_sessions,settings}`. Migrasi copy-only otomatis dari `campusmate_*` (flag `campusbest_migration_v1`).
 - Akses data lewat `useStorage(name)` atau `storage.read/write/update`. `update` diserialisasi per koleksi.
 - Semua data dinormalisasi saat dibaca (`lib/normalize.ts`, schemaVersion 2); membaca tidak menulis; field tak dikenal, entri aneh, dan nilai enum tak dikenal dipertahankan saat menyimpan. **Saat mengedit record, selalu set `updatedAt` baru.**
-- **Mengedit record dengan enum tak dikenal:** menaikkan `updatedAt` saja TIDAK cukup untuk menjaga nilai asli (pemulihan storage sengaja mati saat record diedit). Pola yang dipakai Tasks: lacak field yang disentuh pengguna, lalu bawa ulang nilai asli dari `storage.getCoercedRaw(name, id, field)` (panggil di dalam `update()`) untuk field yang tidak disentuh. Lihat `lib/tasks.ts` (`fieldsToPreserve`) dan `components/tasks/tasks-view.tsx`. Pola ini sudah dipakai untuk Schedule (`lib/schedule.ts`: `scheduleFieldsToPreserve`, `components/schedule/schedule-view.tsx`). Pakai pola yang sama untuk Events (Batch 4).
+- **Mengedit record dengan enum tak dikenal:** menaikkan `updatedAt` saja TIDAK cukup untuk menjaga nilai asli (pemulihan storage sengaja mati saat record diedit). Pola yang dipakai Tasks: lacak field yang disentuh pengguna, lalu bawa ulang nilai asli dari `storage.getCoercedRaw(name, id, field)` (panggil di dalam `update()`) untuk field yang tidak disentuh. Lihat `lib/tasks.ts` (`fieldsToPreserve`) dan `components/tasks/tasks-view.tsx`. Pola ini sudah dipakai untuk Schedule (`lib/schedule.ts`: `scheduleFieldsToPreserve`, `components/schedule/schedule-view.tsx`). Dan untuk Events (`lib/events.ts`: `eventFieldsToPreserve`; `type` ikut dianggap disentuh saat `category` disentuh).
 - Model:
   - Task: `status` todo|in_progress|done|completed (pakai `isTaskDone()`), `deadline` "YYYY-MM-DD" + `deadlineTime` "HH:mm" (legacy `dueDate`, baca lewat `getTaskDeadline()`), `priority`, `subjectId`.
   - Subject: name, code, lecturer, credits, `semester`, color.
   - ScheduleItem: subjectId, `dayOfWeek` (0 = Minggu), startTime, endTime, room, `mode` offline|online, `recurrence` none|weekly|biweekly (legacy = weekly), `date?` (YYYY-MM-DD; tanggal untuk `none`, anchor sesi pertama untuk `biweekly`, tidak dipakai `weekly`). Aturan kemunculan hanya di `occursOn()` (`lib/schedule.ts`); jangan menulis ulang di tempat lain.
-  - CampusEvent: title, `type` (event|exam|deadline|other, legacy), `category` (uts|uas|quiz|presentasi|praktikum|seminar|lainnya), `location`, date, startTime, endTime, subjectId.
+  - CampusEvent: title, `type` (event|exam|deadline|other, legacy), `category` (uts|uas|quiz|presentasi|praktikum|seminar|lainnya; sumber utama, `type` diturunkan darinya lewat `eventTypeFromCategory`), `location`, date, startTime, endTime, subjectId.
   - Note, FocusSession, AppSettings (theme, sidebarCollapsed, weekStartsOn, schemaVersion=2).
-- Kalender (`lib/calendar.ts`) tidak punya penyimpanan; ia membaca `schedules`/`tasks`/`events` lewat `entriesForDate()`. Uji logika: `scripts/batch2-logic-check.ts`, `scripts/batch3-logic-check.ts` (`TZ=Asia/Jakarta npx tsx scripts/...`).
+- Kalender (`lib/calendar.ts`) tidak punya penyimpanan; ia membaca `schedules`/`tasks`/`events` lewat `entriesForDate()`. Uji logika: `scripts/batch2-logic-check.ts`, `scripts/batch3-logic-check.ts`, `scripts/batch4-logic-check.ts` (`TZ=Asia/Jakarta npx tsx scripts/...`; semua sekaligus: `bash scripts/run-logic-checks.sh`). Dashboard (`lib/dashboard.ts`) juga tanpa penyimpanan; aksi cepatnya membuka form yang sudah ada lewat `?tambah=1` (`lib/quick-actions.ts`, `hooks/use-open-from-query.ts`), jangan menduplikasi form di sana.
 - Utilitas: `generateId()` (`lib/id.ts`), helper tanggal lokal `lib/date.ts` (jangan `toISOString()` untuk tanggal), konstanta/label `lib/domain.ts`.
 
 ## Status
-- Selesai: Phase 1 (shell, tema, dashboard dasar, settings, storage) + Batch 1 (rebranding, migrasi, model, normalisasi, util, perbaikan enum) + Batch 2 (Tasks + Subjects, bagian 3b) termasuk perbaikan keamanan data lanjutan + Batch 3 (Class Schedule + Calendar, bagian 3c di `docs/PROGRESS.md`).
-- Masih placeholder: Exams, Notes, Focus, Statistics. Dashboard belum terhubung ke fitur baru (Batch 5).
-- Belum terverifikasi: `npm install`/typecheck/build penuh (Batch 1, 2, maupun 3), tampilan di browser (lihat `docs/PROGRESS.md` bagian 6).
+- Selesai: Phase 1 (shell, tema, dashboard dasar, settings, storage) + Batch 1 (rebranding, migrasi, model, normalisasi, util, perbaikan enum) + Batch 2 (Tasks + Subjects, bagian 3b) termasuk perbaikan keamanan data lanjutan + Batch 3 (Class Schedule + Calendar, bagian 3c) + Batch 4 (Exams & Events, bagian 3d) + Batch 5 (Dashboard Integration + pengujian akhir, bagian 3e di `docs/PROGRESS.md`). Phase 2 selesai dikodekan. Pemilik melaporkan Batch 3 sudah berhasil dijalankan di repository-nya; Batch 4 belum diverifikasi build/browser.
+- Masih placeholder: Notes, Focus, Statistics. Dashboard sudah terhubung ke Tasks, Subjects, Schedule, dan Events (kartu Catatan/Sesi fokus Phase 1 dihapus sampai fiturnya ada).
+- Belum terverifikasi: `npm install`/typecheck/build penuh oleh saya (sesi tanpa jaringan), terutama Batch 4, tampilan di browser (lihat `docs/PROGRESS.md` bagian 6).
 - Berikutnya, pembagian batch resmi (spesifikasi saya kirim satu per satu):
   - Batch 2: Tasks + Subjects (selesai)
-  - Batch 3: Class Schedule + Calendar (selesai dikodekan)
-  - Batch 4: Exams & Events
-  - Batch 5: Dashboard Integration + Testing
+  - Batch 3: Class Schedule + Calendar (selesai; dilaporkan berhasil dijalankan di repository)
+  - Batch 4: Exams & Events (selesai dikodekan)
+  - Batch 5: Dashboard Integration + Testing (selesai dikodekan)
   - Phase 3 (daftar terbaru): Notes, Focus Timer, Statistics, Settings, Export/Import, PWA, optimasi. Notes/Focus tetap placeholder sampai ada spesifikasi.
-  - Batch 3 sudah dikodekan dan menunggu persetujuan. Batch 4 belum dimulai; tunggu spesifikasinya.
+  - Batch 5 sudah dikodekan dan menunggu persetujuan. Phase 3 belum dimulai; tunggu spesifikasinya.
 
 Mulai dengan: ekstrak ZIP, baca `docs/PROGRESS.md`, jalankan install/typecheck/build (kalau jaringan ada), laporkan hasilnya, lalu tunggu spesifikasi batch berikutnya. Kalau build gagal, perbaiki dulu error dari Batch 1-2 sebelum batch baru.

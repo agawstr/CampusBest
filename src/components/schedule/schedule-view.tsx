@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useOpenFromQuery } from "@/hooks/use-open-from-query";
 import { useStorage } from "@/hooks/use-storage";
 import { addDays, formatDateID, startOfWeek, todayKey } from "@/lib/date";
 import { storage } from "@/lib/storage";
@@ -59,6 +60,7 @@ export function ScheduleView() {
   ].filter(Boolean).join(" · ");
 
   function openCreate() { setEditing(null); setEditorOpen(true); }
+  useOpenFromQuery(openCreate); // dashboard quick action: /schedule?tambah=1
   function openEdit(item: ScheduleItem) { setEditing(item); setEditorOpen(true); }
   function askDelete(item: ScheduleItem) { setDeleteTarget(item); setDeleteOpen(true); }
   const fail = () => toast({ title: "Gagal menyimpan", description: "Penyimpanan browser penuh atau tidak bisa diakses. Coba lagi ya.", variant: "error" });

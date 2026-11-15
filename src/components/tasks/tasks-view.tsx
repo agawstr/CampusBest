@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ChipGroup, Input, Select } from "@/components/ui/field";
+import { useOpenFromQuery } from "@/hooks/use-open-from-query";
 import { useStorage } from "@/hooks/use-storage";
 import { storage } from "@/lib/storage";
 import { useToast } from "@/providers/toast-provider";
@@ -68,6 +69,7 @@ export function TasksView() {
   const now = new Date();
 
   function openCreate() { setEditing(null); setEditorOpen(true); }
+  useOpenFromQuery(openCreate); // dashboard quick action: /tasks?tambah=1
   function openEdit(task: Task) { setEditing(task); setEditorOpen(true); }
   function askDelete(task: Task) { setDeleteTarget(task); setDeleteOpen(true); }
   function resetFilters() { setQuery(""); setStatus("all"); setPriority("all"); }

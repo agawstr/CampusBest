@@ -21,8 +21,10 @@ export interface CalendarEntry {
   /** Id of the record in its own collection. */
   sourceId: string;
   title: string;
-  /** Subject name, plus a short descriptor such as the category or the room. */
+  /** Subject name, plus a short descriptor such as the room or the location. */
   detail?: string;
+  /** Events only: the category as shown to the user ("UTS", "Quiz", ...), so it is recognizable on the calendar. */
+  categoryLabel?: string;
   startTime?: string;
   endTime?: string;
   /** Subject color, when the source has a subject. */
@@ -95,7 +97,8 @@ export function entriesForDate(dateKey: string, src: CalendarSources): CalendarE
       date: dateKey,
       sourceId: event.id,
       title: event.title,
-      detail: [EVENT_CATEGORY_LABELS[event.category], event.location, subject?.name].filter(Boolean).join(" · ") || undefined,
+      categoryLabel: EVENT_CATEGORY_LABELS[event.category],
+      detail: [event.location, subject?.name].filter(Boolean).join(" · ") || undefined,
       startTime: event.startTime,
       endTime: event.endTime,
       color: subject?.color,
