@@ -9,7 +9,7 @@ import { choiceFromValue, choiceToValue } from "@/lib/import/preview";
 import type { ScheduleDupAction, ScheduleImportItem, ScheduleItemState } from "@/lib/import/schedule-preview";
 import { cn } from "@/lib/utils";
 import type { ScheduleMode, Subject } from "@/types";
-import { SubjectOptions } from "./import-item-card";
+import { SubjectPicker } from "./import-item-card";
 
 const DUP_OPTIONS: { value: ScheduleDupAction; label: string }[] = [
   { value: "skip", label: "Lewati" },
@@ -106,14 +106,16 @@ export function ScheduleImportItemCard({ state, subjects, onChange, onRemove }: 
       {open && (
         <div className="mt-4 grid gap-3 border-t border-fg/10 pt-4 sm:grid-cols-3">
           <Field label="Mata kuliah" htmlFor={`${uid}-s`} error={errors.subject} className="sm:col-span-3">
-            <Select
+            <SubjectPicker
               id={`${uid}-s`}
+              subjects={subjects}
+              sourceName={item.sourceSubject}
               value={choiceToValue(item.subject)}
-              onChange={(e) => onChange({ subject: choiceFromValue(e.target.value) })}
-              aria-invalid={Boolean(errors.subject)}
-            >
-              <SubjectOptions subjects={subjects} sourceName={item.sourceSubject} allowUnresolved={item.subject.kind === "unresolved"} allowNone={false} />
-            </Select>
+              onChange={(v) => onChange({ subject: choiceFromValue(v) })}
+              allowUnresolved={item.subject.kind === "unresolved"}
+              allowNone={false}
+              invalid={Boolean(errors.subject)}
+            />
           </Field>
           <Field label="Hari" htmlFor={`${uid}-d`} error={errors.day}>
             <Select id={`${uid}-d`} value={String(item.dayOfWeek)} onChange={(e) => onChange({ dayOfWeek: Number(e.target.value) })}>

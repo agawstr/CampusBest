@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Field, Select, Textarea } from "@/components/ui/field";
+import { Field, Textarea } from "@/components/ui/field";
 import { useStorage } from "@/hooks/use-storage";
 import { commitScheduleImport, type ScheduleCommitResult } from "@/lib/import/commit";
 import { CHOICE_MIXED, choiceFromValue } from "@/lib/import/preview";
@@ -19,7 +19,7 @@ import { SCHEDULE_SOURCES, detectSource, runScheduleParser } from "@/lib/import/
 import { nameKey } from "@/lib/import/text";
 import type { ParseIssue, SiamFormat } from "@/lib/import/types";
 import { useToast } from "@/providers/toast-provider";
-import { SubjectOptions } from "./import-item-card";
+import { SubjectPicker } from "./import-item-card";
 import { ScheduleImportItemCard } from "./schedule-import-item-card";
 
 interface Session { items: ScheduleImportItem[]; issues: ParseIssue[]; ignored: number; format: SiamFormat | null }
@@ -183,10 +183,16 @@ export function ScheduleImportView() {
                           <p className="break-words text-sm font-medium">{g.name}</p>
                           <p className="text-xs text-muted">{g.count} sesi{g.hint ? ` · ${g.hint}` : ""}</p>
                         </div>
-                        <Select aria-label={`Mata kuliah untuk ${g.name}`} value={g.value} onChange={(e) => setGroupChoice(g.id, e.target.value)}>
-                          {g.value === CHOICE_MIXED && <option value={CHOICE_MIXED} disabled>Beda-beda per sesi</option>}
-                          <SubjectOptions subjects={subjects} sourceName={g.name} allowUnresolved={g.value === ""} allowNone={false} />
-                        </Select>
+                        <SubjectPicker
+                          ariaLabel={`Mata kuliah untuk ${g.name}`}
+                          subjects={subjects}
+                          sourceName={g.name}
+                          value={g.value}
+                          onChange={(v) => setGroupChoice(g.id, v)}
+                          allowUnresolved={g.value === ""}
+                          allowNone={false}
+                          mixedLabel={g.value === CHOICE_MIXED ? "Beda-beda per sesi" : undefined}
+                        />
                       </div>
                     ))}
                   </div>

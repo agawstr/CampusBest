@@ -3,9 +3,10 @@
 import { useId, useState } from "react";
 import { AlertCircle, CalendarClock, ChevronDown, ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Field, Input, SegmentedControl, Select } from "@/components/ui/field";
+import { Field, Input, SegmentedControl } from "@/components/ui/field";
+import { OptionPicker, type PickerOption } from "@/components/ui/option-picker";
 import { formatDateID } from "@/lib/date";
-import { CHOICE_NEW, CHOICE_NONE, choiceFromValue, choiceToValue, type DupAction, type ImportItem, type ItemState } from "@/lib/import/preview";
+import { CHOICE_MIXED, CHOICE_NEW, CHOICE_NONE, choiceFromValue, choiceToValue, type DupAction, type ImportItem, type ItemState } from "@/lib/import/preview";
 import { safeUrl } from "@/lib/import/text";
 import type { TaskFormStatus } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
@@ -21,15 +22,32 @@ const DUP_OPTIONS: { value: DupAction; label: string }[] = [
   { value: "import", label: "Tetap impor" },
 ];
 
-/** Options for a subject dropdown. `sourceName` is the name a "new" subject would get. */
-export function SubjectOptions({ subjects, sourceName, allowUnresolved, allowNone = true }: { subjects: readonly Subject[]; sourceName: string; allowUnresolved: boolean; allowNone?: boolean }) {
+interface SubjectPickerProps {
+  subjects: readonly Subject[];
+  /** The name a "new" subject would get; empty hides the "Buat baru" entry. */
+  sourceName: string;
+  value: string;
+  onChange: (value: string) => void;
+  allowUnresolved: boolean;
+  allowNone?: boolean;
+  /** Set when this row's items currently have different subjects. */
+  mixedLabel?: string;
+  id?: string;
+  ariaLabel?: string;
+  invalid?: boolean;
+}
+
+/** Subject chooser for the import previews: a short searchable sheet instead of the native full-screen list. */
+export function SubjectPicker({ subjects, sourceName, value, onChange, allowUnresolved, allowNone = true, mixedLabel, id, ariaLabel, invalid }: SubjectPickerProps) {
+  const options: PickerOption[] = [];
+  if (mixedLabel) options.push({ value: CHOICE_MIXED, label: mixedLabel, disabled: true });
+  if (allowUnresolved) options.push({ value: "", label: "Pilih mata kuliah…", disabled: true });
+  if (allowNone) options.push({ value: CHOICE_NONE, label: "Tanpa mata kuliah" });
+  if (sourceName) options.push({ value: CHOICE_NEW, label: `Buat baru: ${sourceName}` });
+  for (const s of subjects) options.push({ value: s.id, label: s.code ? `${s.code} · ${s.name}` : s.name });
   return (
-    <>
-      {allowUnresolved && <option value="" disabled>Pilih mata kuliah…</option>}
-      {allowNone && <option value={CHOICE_NONE}>Tanpa mata kuliah</option>}
-      {sourceName && <option value={CHOICE_NEW}>{`Buat baru: ${sourceName}`}</option>}
-      {subjects.map((s) => <option key={s.id} value={s.id}>{s.code ? `${s.code} · ${s.name}` : s.name}</option>)}
-    </>
+    <OptionPicker id={id} ariaLabel={ariaLabel} invalid={invalid} value={value} onChange={onChange} options={options}
+      placeholder="Pilih mata kuliah…" title="Pilih mata kuliah" />
   );
 }
 
@@ -140,14 +158,15 @@ export function ImportItemCard({ state, subjects, onChange, onRemove }: Props) {
             <Input id={`${uid}-t`} value={item.title} onChange={(e) => onChange({ title: e.target.value })} aria-invalid={Boolean(errors.title)} />
           </Field>
           <Field label="Mata kuliah" htmlFor={`${uid}-s`} error={errors.subject} className="sm:col-span-2">
-            <Select
+            <SubjectPicker
               id={`${uid}-s`}
+              subjects={subjects}
+              sourceName={item.sourceSubject}
               value={choiceToValue(item.subject)}
-              onChange={(e) => onChange({ subject: choiceFromValue(e.target.value) })}
-              aria-invalid={Boolean(errors.subject)}
-            >
-              <SubjectOptions subjects={subjects} sourceName={item.sourceSubject} allowUnresolved={item.subject.kind === "unresolved"} />
-            </Select>
+              onChange={(v) => onChange({ subject: choiceFromValue(v) })}
+              allowUnresolved={item.subject.kind === "unresolved"}
+              invalid={Boolean(errors.subject)}
+            />
           </Field>
           <Field label="Tanggal deadline" htmlFor={`${uid}-d`} error={errors.deadline}>
             <Input id={`${uid}-d`} type="date" value={item.deadline} onChange={(e) => onChange({ deadline: e.target.value, deadlineTime: e.target.value ? item.deadlineTime : "" })} aria-invalid={Boolean(errors.deadline)} />

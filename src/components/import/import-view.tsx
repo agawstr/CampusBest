@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ChipGroup, Field, SegmentedControl, Select, Textarea } from "@/components/ui/field";
+import { ChipGroup, Field, SegmentedControl, Textarea } from "@/components/ui/field";
 import { useStorage } from "@/hooks/use-storage";
 import { commitImport, type CommitResult } from "@/lib/import/commit";
 import {
@@ -21,7 +21,7 @@ import { looksLikeSiam } from "@/lib/import/siam";
 import { nameKey } from "@/lib/import/text";
 import type { ImportSourceKey, ParseIssue } from "@/lib/import/types";
 import { useToast } from "@/providers/toast-provider";
-import { ImportItemCard, SubjectOptions } from "./import-item-card";
+import { ImportItemCard, SubjectPicker } from "./import-item-card";
 import { ScheduleImportView } from "./schedule-import-view";
 
 interface Session {
@@ -247,14 +247,15 @@ function TaskImport() {
                           <p className="break-words text-sm font-medium">{g.name}</p>
                           <p className="text-xs text-muted">{g.count} tugas{g.hint ? ` · ${g.hint}` : ""}</p>
                         </div>
-                        <Select
-                          aria-label={`Mata kuliah untuk ${g.name}`}
+                        <SubjectPicker
+                          ariaLabel={`Mata kuliah untuk ${g.name}`}
+                          subjects={subjects}
+                          sourceName={g.name}
                           value={g.value}
-                          onChange={(e) => setGroupChoice(g.id, e.target.value)}
-                        >
-                          {g.value === CHOICE_MIXED && <option value={CHOICE_MIXED} disabled>Beda-beda per tugas</option>}
-                          <SubjectOptions subjects={subjects} sourceName={g.name} allowUnresolved={g.value === ""} />
-                        </Select>
+                          onChange={(v) => setGroupChoice(g.id, v)}
+                          allowUnresolved={g.value === ""}
+                          mixedLabel={g.value === CHOICE_MIXED ? "Beda-beda per tugas" : undefined}
+                        />
                       </div>
                     ))}
                   </div>
