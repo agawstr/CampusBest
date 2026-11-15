@@ -13,12 +13,10 @@ export const START_URL = "/dashboard";
 
 export function buildManifest(): MetadataRoute.Manifest {
   return {
-    id: "/",
     name: APP_NAME,
     short_name: APP_NAME,
     description: APP_DESCRIPTION,
     lang: "id",
-    dir: "ltr",
     start_url: START_URL,
     scope: "/",
     display: "standalone",

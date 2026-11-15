@@ -81,7 +81,8 @@ export function PwaProvider({ children }: { children: ReactNode }) {
       markWaiting(reg.waiting);
       reg.addEventListener("updatefound", () => {
         const installing = reg.installing;
-        installing?.addEventListener("statechange", () => { if (installing.state === "installed") markWaiting(reg.waiting ?? installing); });
+        if (!installing) return;
+        installing.addEventListener("statechange", () => { if (installing.state === "installed") markWaiting(reg.waiting ?? installing); });
       });
     };
 
