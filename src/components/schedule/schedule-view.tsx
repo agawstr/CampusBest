@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarClock, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { CalendarClock, ChevronLeft, ChevronRight, ClipboardPaste, Plus } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -119,7 +119,15 @@ export function ScheduleView() {
       <PageHeader
         title="Schedule"
         description="Jadwal kuliah mingguanmu, lengkap dengan dosen dan ruangan."
-        actions={schedules.length > 0 ? addButton : undefined}
+        actions={
+          <>
+            <Link href="/import?sumber=siam" className="glass inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
+              <ClipboardPaste className="h-4 w-4" aria-hidden />
+              Import SIAM
+            </Link>
+            {schedules.length > 0 && addButton}
+          </>
+        }
       />
 
       {!ready ? (

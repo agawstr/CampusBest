@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ListChecks, Plus, Search, SearchX, X } from "lucide-react";
+import Link from "next/link";
+import { ClipboardPaste, ListChecks, Plus, Search, SearchX, X } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -135,7 +136,15 @@ export function TasksView() {
       <PageHeader
         title="Tasks"
         description="Kelola tugas berdasarkan mata kuliah dan prioritas."
-        actions={tasks.length > 0 ? addButton : undefined}
+        actions={
+          <>
+            <Link href="/import" className="glass inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
+              <ClipboardPaste className="h-4 w-4" aria-hidden />
+              Import
+            </Link>
+            {tasks.length > 0 ? addButton : null}
+          </>
+        }
       />
 
       {!ready ? (

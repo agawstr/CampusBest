@@ -36,6 +36,10 @@ export interface Task extends BaseEntity {
   priority: TaskPriority;
   status: TaskStatus;
   completedAt?: string;
+  /** Bulk Import 1. Original link of the task (e.g. its Google Classroom page). Only http(s) is ever stored. */
+  url?: string;
+  /** Bulk Import 1. Where the task was imported from ("google_classroom" | "brone"). Absent for manual tasks. */
+  importSource?: string;
 }
 
 export type ScheduleMode = "offline" | "online";
@@ -141,3 +145,6 @@ export interface AppSettings {
   /** Phase 3 Batch 2. Optional and additive: absent means an idle timer. */
   focusTimer?: FocusTimerState;
 }
+
+/** Where an imported task came from. Stored as plain text in `Task.importSource`. */
+export type TaskSource = "google_classroom" | "brone";

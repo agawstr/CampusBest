@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, Clock, Pencil, Trash2 } from "lucide-react";
+import { Check, Clock, ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { isTaskDone, TASK_PRIORITY_LABELS, TASK_STATUS_KIND_LABELS } from "@/lib/domain";
+import { safeUrl } from "@/lib/import/text";
 import { deadlineInfo, taskStatusKind } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 import type { Subject, Task, TaskPriority } from "@/types";
@@ -29,6 +30,7 @@ export function TaskItem({ task, subject, now, onToggle, onEdit, onDelete }: Tas
   const done = isTaskDone(task);
   const kind = taskStatusKind(task);
   const deadline = deadlineInfo(task, now);
+  const link = safeUrl(task.url);
 
   return (
     <Card animate={false} className="p-4">
@@ -73,6 +75,12 @@ export function TaskItem({ task, subject, now, onToggle, onEdit, onDelete }: Tas
                 <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
                 {deadline.label}
               </span>
+            )}
+            {link && (
+              <a href={link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline">
+                <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                Buka tautan
+              </a>
             )}
           </div>
         </div>
