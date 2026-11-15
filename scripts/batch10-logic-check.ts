@@ -267,6 +267,33 @@ async function main() {
 
   eq("localStorage untouched by the whole worker lifecycle", JSON.stringify([...mem.entries()]), before);
 
+
+  // ---------- real pasted samples (Classroom link blocks + SIAM with seconds), ids/names anonymized ----------
+  const IMP = await import("../src/lib/import/sources");
+  const U1 = "https://classroom.google.com/c/AAA/a/BBB/details", U2 = "https://classroom.google.com/c/AAA/a/CCC/details", U3 = "https://classroom.google.com/c/AAA/a/DDD/details";
+  const classroomReal = `[assignment](${U1})\n[Susulan UTP - Video Penjelasan Laporan](${U1})\n[Praktikum PAPB - TIF F 2026](${U1})\n[Monday, Nov 9](${U1})\n\n1. [Modul Praktikum 10: Extreme Learning Machine](${U2})\n[Praktikum JST-F 2026](${U2})\n[Turned in](${U2})\n2. [assignment](${U3})\n[Praktikum 89: Backpropagation Part 1 & Part 2](${U3})\n[Praktikum JST-F 2026](${U3})\n[Turned in](${U3})`;
+  const cr = IMP.runParser(IMP.getImportSource("google_classroom"), classroomReal, "2026-11-15");
+  eq("classroom real: 3 tasks, not one per link line", cr.drafts.length, 3);
+  eq("classroom real: titles skip the 'assignment' label", cr.drafts.map((d) => d.title), ["Susulan UTP - Video Penjelasan Laporan", "Modul Praktikum 10: Extreme Learning Machine", "Praktikum 89: Backpropagation Part 1 & Part 2"]);
+  eq("classroom real: class line becomes the subject", cr.drafts.map((d) => d.subjectName), ["Praktikum PAPB - TIF F 2026", "Praktikum JST-F 2026", "Praktikum JST-F 2026"]);
+  eq("classroom real: 'Turned in' is the status, url kept", [cr.drafts[1].sourceStatus, cr.drafts[2].sourceStatus, cr.drafts[1].url], ["Turned in", "Turned in", U2]);
+  eq("classroom real: no stray issues", cr.issues.length, 0);
+  const CL = await import("../src/lib/import/classroom");
+  eq("date 'Monday, Nov 9' near Nov 15 2026 -> 2026-11-09", CL.readClassroomDate("Monday, Nov 9", "2026-11-15"), { isDate: true, key: "2026-11-09" });
+  eq("date: a weekday that does not fit the year is not forced onto it", CL.readClassroomDate("Tuesday, Nov 9", "2026-11-15").key !== "2026-11-09", true);
+  eq("date: year rolls over (Mon Jan 4 seen from Dec 2026 = 2027)", CL.readClassroomDate("Monday, Jan 4", "2026-12-28").key, "2027-01-04");
+  eq("date: no today -> no invented year", CL.readClassroomDate("Monday, Nov 9").key, "");
+  eq("date: Feb 29 only in leap years", [CL.readClassroomDate("Thursday, Feb 29", "2024-03-01").key, CL.readClassroomDate("Wednesday, Feb 29", "2026-03-01").key], ["2024-02-29", ""]);
+  eq("date without weekday is not invented", CL.readClassroomDate("Nov 9", "2026-11-15"), { isDate: true, key: "" });
+  eq("a normal title is not a date", CL.readClassroomDate("Modul 9 - DataStore Room").isDate, false);
+  eq("classroom real: due date line filled the deadline", CL.parseClassroom(classroomReal, "2026-11-15").drafts[0].deadline, "2026-11-09");
+  const siamReal = "Hari\tJam\tMata Kuliah\tKelas\tDosen\tRuang\tAction\nSenin\t07:00:00 - 08:40:00\t(CIF65318) Jaringan Saraf Tiruan\tF\tDosen Satu, S.Kom., M.Kom.\tLab Pembelajaran Gedung G - G1.5\t\nRabu\t16:00:00 - 17:40:00\t(CIF60048) Machine Learning Operations (MLOps)\tA\tDosen Dua, S.T.\tGedung F FILKOM - F3.17\t\nJumat\t12:30:00 - 14:10:00\t(CIF65115) Pengembangan Aplikasi Perangkat Bergerak\tF\tDosen Tiga\tLab Pembelajaran Gedung G - G1.2";
+  const sr = IMP.runScheduleParser(IMP.SCHEDULE_SOURCES[0], siamReal);
+  eq("siam real: 3 rows, no issues, format 1", [sr.drafts.length, sr.issues.length, sr.format], [3, 0, 1]);
+  eq("siam real: times drop the seconds", sr.drafts.map((d) => [d.dayOfWeek, d.startTime, d.endTime]), [[1, "07:00", "08:40"], [3, "16:00", "17:40"], [5, "12:30", "14:10"]]);
+  eq("siam real: '(CODE) Name' splits code and name; '(MLOps)' stays in the name", sr.drafts.map((d) => [d.subjectCode, d.subjectName]), [["CIF65318", "Jaringan Saraf Tiruan"], ["CIF60048", "Machine Learning Operations (MLOps)"], ["CIF65115", "Pengembangan Aplikasi Perangkat Bergerak"]]);
+  eq("siam real: room keeps the full text", sr.drafts[0].room, "Lab Pembelajaran Gedung G - G1.5");
+
   // ---------- nothing in the PWA code can delete user data ----------
   const pwaFiles = ["public/sw.js", "src/lib/pwa.ts", "src/providers/pwa-provider.tsx", "src/components/settings/install-card.tsx", "public/offline.html", "src/app/manifest.ts"];
   for (const f of pwaFiles) {
