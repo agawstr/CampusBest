@@ -294,6 +294,13 @@ async function main() {
   eq("siam real: '(CODE) Name' splits code and name; '(MLOps)' stays in the name", sr.drafts.map((d) => [d.subjectCode, d.subjectName]), [["CIF65318", "Jaringan Saraf Tiruan"], ["CIF60048", "Machine Learning Operations (MLOps)"], ["CIF65115", "Pengembangan Aplikasi Perangkat Bergerak"]]);
   eq("siam real: room keeps the full text", sr.drafts[0].room, "Lab Pembelajaran Gedung G - G1.5");
 
+  // ---------- subject chooser in the import previews is a short sheet, not the native full-screen list ----------
+  const importUiFiles = ["import-item-card", "import-view", "schedule-import-item-card", "schedule-import-view"].map((n) => read(`src/components/import/${n}.tsx`));
+  ok("import previews use SubjectPicker for subjects (no <option> list of subjects left)", importUiFiles.every((t) => !/SubjectOptions/.test(t)) && importUiFiles.filter((t) => /<SubjectPicker/.test(t)).length === 4);
+  const picker = read("src/components/ui/option-picker.tsx");
+  ok("OptionPicker caps the list height, has search for long lists, keeps disabled/mixed entries", /max-h-\[45dvh\]/.test(picker) && /SEARCH_FROM = 8/.test(picker) && /disabled=\{o\.disabled\}/.test(picker));
+  ok("OptionPicker touches no storage", !/localStorage|sessionStorage|indexedDB|storage\./.test(picker));
+
   // ---------- nothing in the PWA code can delete user data ----------
   const pwaFiles = ["public/sw.js", "src/lib/pwa.ts", "src/providers/pwa-provider.tsx", "src/components/settings/install-card.tsx", "public/offline.html", "src/app/manifest.ts"];
   for (const f of pwaFiles) {
