@@ -28,7 +28,7 @@ TZ=Asia/Jakarta npx tsx scripts/batch2-logic-check.ts
 TZ=Asia/Jakarta npx tsx scripts/batch3-logic-check.ts
 TZ=Asia/Jakarta npx tsx scripts/batch4-logic-check.ts
 TZ=Asia/Jakarta npx tsx scripts/batch5-logic-check.ts
-TZ=Asia/Jakarta npx tsx scripts/batch6-logic-check.ts   # coba juga TZ=America/New_York, TZ=Europe/London
+TZ=Asia/Jakarta npx tsx scripts/batch6-logic-check.ts   # (batch7..batch10 juga ada; coba juga TZ=America/New_York, TZ=Europe/London
 ```
 
 Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
@@ -56,3 +56,14 @@ Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
 - **Jadwal kuliah (SIAM)**: tempel tabel jadwal dari SIAM (Markdown atau hasil salin biasa). Format 1 (Hari, Jam, Mata Kuliah, Kelas, Dosen, Ruang, Action) dan Format 2 (Hari, MK, Jam, Ruang) dikenali otomatis dari judul kolom. Hasilnya masuk ke Schedule sebagai jadwal mingguan (tampil juga di Kalender dan Dashboard). Jadwal lama tidak diubah. Uji: `TZ=Asia/Jakarta npx tsx scripts/batch9-logic-check.ts`.
 
 Logika di `src/lib/import/`. Semua uji sekaligus: `bash scripts/run-logic-checks.sh`.
+
+## PWA dan offline (0.11.0)
+
+CampusBest bisa dipasang sebagai aplikasi (manifest, ikon, service worker buatan sendiri, tanpa dependency baru).
+- Manifest: `src/app/manifest.ts` (isi di `src/lib/pwa.ts`). Ikon di `public/icons/`. Service worker: `public/sw.js`. Halaman cadangan offline: `public/offline.html`.
+- Service worker hanya terdaftar di build produksi lewat HTTPS (atau `localhost`); di `npm run dev` tidak aktif. Uji dengan `npm run build && npm run start`.
+- Instalasi: Chrome/Edge/Samsung Internet (Android dan desktop) menampilkan tombol "Pasang CampusBest" di Settings. iPhone/iPad tidak punya tombol otomatis, jadi Settings menampilkan langkah Bagikan > Tambah ke Layar Utama. Browser lain (mis. Firefox desktop) mungkin tidak mendukung; Settings hanya menampilkan petunjuk manual.
+- Offline: halaman yang pernah dibuka saat online bisa dibuka lagi tanpa internet; halaman yang belum pernah dibuka menampilkan halaman cadangan offline. Data Tasks, Subjects, Schedule, Notes, Focus, dll. tetap di LocalStorage perangkat.
+- Pembaruan: versi baru menunggu sampai kamu menekan "Perbarui" (tidak ada pengambilalihan otomatis). Service worker hanya memakai Cache Storage; ia tidak bisa dan tidak pernah menyentuh LocalStorage, jadi update tidak menghapus data. Browser tetap bisa menghapus data situs bila kamu membersihkannya sendiri.
+- Saat menaikkan versi aplikasi: ubah `version` di `package.json`, `APP_VERSION` di `src/lib/pwa.ts`, dan `VERSION` di `public/sw.js` (diperiksa `scripts/batch10-logic-check.ts`).
+- Uji: `TZ=Asia/Jakarta npx tsx scripts/batch10-logic-check.ts`.

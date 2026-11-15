@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Offline · CampusBest</title>
+<style>
+:root{color-scheme:dark light;--bg:#0B1020;--fg:#EAF0FF;--muted:#9AA6C4;--accent:#65B8FF;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12)}
+@media (prefers-color-scheme:light){:root{--bg:#F4F7FD;--fg:#0E1730;--muted:#55627F;--accent:#1F7AE0;--card:#fff;--line:rgba(14,23,48,.12)}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:420px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:32px 24px}
+h1{font-size:1.25rem;margin:0 0 8px}
+p{margin:0 0 20px;color:var(--muted);line-height:1.55;font-size:.95rem}
+a,button{display:inline-block;font:inherit;font-weight:600;border:0;border-radius:14px;padding:12px 20px;margin:4px;cursor:pointer;text-decoration:none}
+button{background:var(--accent);color:#081020}
+a{border:1px solid var(--line);color:var(--fg)}
+</style>
+</head>
+<body>
+<main>
+<h1>Kamu sedang offline</h1>
+<p>Halaman ini belum tersimpan di perangkatmu, jadi belum bisa dibuka tanpa internet. Data kuliahmu tetap aman di perangkat ini. Halaman yang pernah kamu buka sebelumnya masih bisa diakses.</p>
+<button type="button" onclick="location.reload()">Coba lagi</button>
+<a href="/dashboard">Ke Dashboard</a>
+</main>
+</body>
+</html>

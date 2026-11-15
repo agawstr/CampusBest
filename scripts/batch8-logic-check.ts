@@ -424,7 +424,7 @@ async function main() {
   ok("the model change is additive and optional (url?, importSource?)", /url\?: string/.test(view("src/types/models.ts")) && /importSource\?: string/.test(view("src/types/models.ts")));
   eq("no new storage key (still the same 7)", Object.values(STORAGE_KEYS).sort(), ["campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
-  ok("version is 0.9.0 or later (0.10.0 after Bulk Import 2)", ["0.9.0", "0.10.0"].includes(pkg.version), pkg.version);
+  ok("version is 0.9.0 or later (0.10.0 after Bulk Import 2, 0.11.0 after PWA)", ["0.9.0", "0.10.0", "0.11.0"].includes(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
   eq("only Statistics is left as a placeholder", navHrefs.filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))), ["/statistics"]);
   ok("the Dashboard, Calendar and Tasks logic were not touched by the import (no import of lib/import there)", ["lib/dashboard.ts", "lib/calendar.ts", "lib/tasks.ts", "lib/schedule.ts", "lib/events.ts"].every((f) => !/lib\/import|\.\/import\//.test(view(`src/${f}`))));
