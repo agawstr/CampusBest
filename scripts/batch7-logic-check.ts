@@ -428,7 +428,9 @@ async function main() {
   const files = walk(path.join(process.cwd(), "src")).filter((f) => /\.(ts|tsx)$/.test(f));
   const rel = (f: string) => path.relative(process.cwd(), f).replace(/\\/g, "/");
   const badFiles = (re: RegExp) => files.filter((f) => re.test(fs.readFileSync(f, "utf8"))).map(rel);
-  eq("only lib/focus-store.ts writes the timer into settings", badFiles(/focusTimer:\s*(?!undefined)[a-z{]/i).filter((f) => !/normalize\.ts$|focus\.ts$/.test(f)), ["src/lib/focus-store.ts"]);
+  // Phase 3 Batch 5 part C: lib/backup.ts is the one allowed exception. It only drops the timer from a backup file and copies this
+  // device's own timer back unchanged on Replace (batch11 tests both); it never creates or changes a timer.
+  eq("only lib/focus-store.ts writes the timer into settings (plus backup.ts, which only strips/carries it over)", badFiles(/focusTimer:\s*(?!undefined)[a-z{]/i).filter((f) => !/normalize\.ts$|focus\.ts$/.test(f)), ["src/lib/backup.ts", "src/lib/focus-store.ts"]);
   eq("no audio and no Notification API", badFiles(/new Audio\(|Notification\.requestPermission|new Notification\(|\bAudioContext\b/), []);
   eq("no UTC-based date keys in the Focus code", badFiles(/toISOString\(\)\s*\.\s*(slice|split|substring)/), []);
   ok("the mini timer hides on /focus and the header shows it", /pathname === "\/focus"/.test(view("src/components/layout/focus-mini-timer.tsx")) && /<FocusMiniTimer \/>/.test(view("src/components/layout/header.tsx")));
@@ -438,7 +440,7 @@ async function main() {
   const pkg = JSON.parse(view("package.json"));
   ok("version is 0.8.0 or later (0.x)", /^0\.([89]|[1-9]\d)\.\d+$/.test(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
-  eq("only Statistics is left as a placeholder", ["/focus", "/statistics", "/notes"].filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))), ["/statistics"]);
+  eq("no page is a placeholder anymore (Statistics built in Phase 3 Batch 5 part A)", ["/focus", "/statistics", "/notes"].filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))), []);
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

@@ -1,6 +1,6 @@
 # CampusBest — Progres Pengembangan
 
-Terakhir diperbarui: setelah Phase 3 Batch 3 / Bulk Import 2 (versi 0.10.0). Phase 2 selesai dikodekan; Phase 3 baru Notes dan Focus Timer yang dikodekan.
+Terakhir diperbarui: setelah Phase 3 Batch 5 (Statistics + Settings + Export/Import JSON, versi 0.12.0). Phase 2 dan Phase 3 Batch 1-5 selesai dikodekan dan lolos typecheck, semua logic test, dan build produksi (font di-stub, lihat bagian 12). Berikutnya: Batch 6 (Final Testing). Bagian 6, 9, 10, 11 di bawah adalah catatan historis per batch; status terkini ada di bagian 12.
 
 ## 1. Teknologi dan struktur
 - Next.js 15 (App Router), React 19, TypeScript strict, Tailwind 3.4 (CSS variable RGB), Radix Dialog, class-variance-authority, clsx + tailwind-merge, Lucide, Framer Motion, font Plus Jakarta Sans.
@@ -26,7 +26,9 @@ src/
   hooks/          use-storage, use-now, use-open-from-query
   lib/            brand, storage-keys, storage, normalize, domain, date, id, navigation, tokens, theme-script, utils, tasks, subjects, schedule, calendar, events, dashboard, quick-actions, notes
   types/          models.ts, index.ts (StorageSchema)
-scripts/          batch2..batch6-logic-check.ts, run-logic-checks.sh (uji logika murni, jalankan dengan `npx tsx`)
+scripts/          batch2..batch11-logic-check.ts, run-logic-checks.sh (uji logika murni, jalankan dengan `npx tsx`)
+  Batch 5 menambah: lib/{statistics,settings,backup,backup-store,download}.ts, components/statistics/statistics-view.tsx,
+  components/settings/{appearance,about,storage,backup}-card.tsx, app/settings/layout.tsx
 docs/             dokumen ini + HANDOFF.md
 ```
 
@@ -35,7 +37,8 @@ Navigasi: `lib/navigation.ts` (`NAV_ITEMS`) adalah sumber tunggal. Mobile: 4 ite
 ## 2. Fitur yang sudah selesai
 - App shell responsif, tema Dark/Light tanpa flash, transisi halaman, toast, modal, bottom sheet, dialog konfirmasi, empty state.
 - Dashboard (`/dashboard`): lihat Batch 5 di bawah (sapaan, 6 kartu statistik, jadwal hari ini, tugas terdekat, ujian & event mendatang, aksi cepat, progres tugas).
-- Settings: pilih tema, uji penyimpanan, pratinjau komponen, hapus semua data.
+- Settings (`/settings`): tema, awal minggu, durasi Focus Timer (`settings.focus`), uji penyimpanan, pasang aplikasi (PWA), tentang aplikasi (versi), cadangan data (Export/Import JSON), hapus semua data. Detail di bagian 12. (Pratinjau komponen sudah dihapus.)
+- Statistics (`/statistics`): ringkasan tugas, per mata kuliah, ujian dan event, waktu fokus dengan periode 7 hari terakhir / 30 hari terakhir / Semua waktu. Detail di bagian 12.
 - Layer penyimpanan: baca/tulis, sinkron antar tab, normalisasi, migrasi.
 - Tasks (`/tasks`): daftar, tambah/edit/hapus, centang selesai/belum, judul, deskripsi, mata kuliah, tanggal + jam deadline, prioritas, status (Belum mulai/Dikerjakan/Selesai), filter status dan prioritas, pencarian (judul, deskripsi, nama/kode mata kuliah), urut deadline atau prioritas, empty state (belum ada tugas, dan tidak ada hasil filter).
 - Subjects (`/subjects`): daftar kartu, tambah/edit/hapus, nama, kode, dosen, SKS, semester, warna, jumlah tugas terkait (aktif/selesai), empty state. Hapus mata kuliah TIDAK menghapus tugas terkait.
@@ -45,7 +48,7 @@ Navigasi: `lib/navigation.ts` (`NAV_ITEMS`) adalah sumber tunggal. Mobile: 4 ite
 - Event dari Exams otomatis muncul di Calendar (kartu Batch 3 yang sama, label kategori ikut tampil). Kalender hanya membaca koleksi `events`.
 - Dashboard terhubung ke Tasks, Subjects, Schedule, dan Exams & Events (Batch 5), plus aksi cepat "Tambah catatan" (Phase 3 Batch 1).
 - Notes (`/notes`): lihat bagian 3f.
-- Focus Timer (`/focus`): lihat bagian 3g (Pomodoro, tetap jalan lintas halaman dan setelah refresh, riwayat sesi, ringkasan di Dashboard). Hanya Statistics yang masih placeholder.
+- Focus Timer (`/focus`): lihat bagian 3g (Pomodoro, tetap jalan lintas halaman dan setelah refresh, riwayat sesi, ringkasan di Dashboard). Tidak ada lagi halaman placeholder (Statistics selesai di Batch 5).
 
 ## 3. Perubahan Batch 1
 1. Rebranding CampusMate -> CampusBest (nama, tagline "Your Campus Bestie.", deskripsi "Your friendly companion for a more organized campus life."). Sumber tunggal: `lib/brand.ts`.
@@ -353,12 +356,13 @@ Spesifikasi tiap batch dikirim pemilik proyek satu per satu. Jangan mulai batch 
 - **Batch 3: Class Schedule + Calendar** (halaman `/schedule` dan `/calendar`). SELESAI dikodekan; belum diverifikasi build/browser (lihat bagian 6).
 - **Batch 4: Exams & Events** (halaman `/exams`, event kampus, kategori UTS/UAS/Quiz/dll). SELESAI dikodekan; belum diverifikasi build/browser (lihat bagian 6).
 - **Batch 5: Dashboard Integration + Testing** (hubungkan Dashboard ke semua fitur, pengujian menyeluruh). SELESAI dikodekan; belum diverifikasi build/browser (lihat bagian 6). Dengan ini Phase 2 selesai dikodekan.
-- **Phase 3:** menurut daftar terbaru pemilik proyek: Notes, Focus Timer, Statistics, Settings, Export/Import, PWA, optimasi. Di luar Phase 2.
+- **Phase 3:** Notes, Focus Timer, Bulk Import, PWA, Statistics + Settings + Export/Import (semua SELESAI dikodekan, lihat bagian 11-12), lalu Batch 6 Final Testing (BELUM) dan Phase 4 API eksternal opsional (BELUM). Di luar Phase 2.
   - **Phase 3 Batch 1: Notes** (halaman `/notes` + aksi cepat "Tambah catatan"). SELESAI dikodekan; belum diverifikasi build/browser (lihat bagian 6).
   - **Phase 3 Batch 2: Focus Timer** (halaman `/focus`, provider timer lintas halaman, ringkasan di Dashboard). SELESAI dikodekan; belum diverifikasi build/browser (lihat bagian 6).
-  - Berikutnya (tunggu spesifikasi): Statistics, Settings, Export/Import, PWA, optimasi. Statistics tetap placeholder.
+  - Phase 3 Batch 3 (Bulk Import 1 dan 2, 0.9.0/0.10.0), Batch 4 (PWA, 0.11.0), Batch 5 (Statistics + Settings + Export/Import, 0.12.0): SELESAI.
+  - Berikutnya: **Batch 6 Final Testing** (BELUM dimulai; tunggu instruksi pemilik), lalu Phase 4 opsional.
 
-Catatan: Statistics tetap placeholder sampai ada instruksi. Jangan mulai batch Phase 3 berikutnya sebelum Phase 3 Batch 2 disetujui dan spesifikasinya dikirim. Prioritas pertama sebelum Phase 3: jalankan `npm install && npm run typecheck && npm run build` dan uji di browser (daftar "belum terverifikasi" di bagian 6), karena build penuh belum pernah dijalankan oleh saya.
+Catatan: jangan mulai Batch 6 sebelum pemilik memberi instruksi. (Catatan lama "build penuh belum pernah dijalankan" sudah usang: sejak Batch 5, `npm install`, `tsc --noEmit`, dan `next build` dijalankan; lihat bagian 12.)
 
 Catatan (sudah dilaksanakan di Batch 5): Dashboard memakai `sortEvents`/`filterEvents` (`lib/events.ts`), `isTaskDone`/`getTaskDeadline`, `scheduleOnDate` (`lib/schedule.ts`) dan `entriesForDate` (`lib/calendar.ts`) untuk "agenda hari ini" dan "mendatang", tanpa menulis ulang aturan. Jangan membuat penyimpanan baru untuk dashboard.
 
@@ -390,3 +394,36 @@ Diuji dengan salinan asli Classroom dan SIAM dari pemilik. Dua ketidakcocokan di
 
 ### Pemilih mata kuliah di preview Import (0.11.0)
 Dropdown mata kuliah di preview impor (tugas dan jadwal) memakai `<select>` bawaan yang di Android memenuhi layar. Diganti `SubjectPicker` (`components/import/import-item-card.tsx`) yang memakai `OptionPicker` (`components/ui/option-picker.tsx`): bottom sheet setinggi sekitar setengah layar, daftar bisa di-scroll, ada kotak cari bila opsi lebih dari 8. Logika pilihan (`choiceToValue`/`choiceFromValue`, `CHOICE_*`) tidak berubah. `Select` bawaan masih dipakai untuk pilihan Hari. Mengedit atau menghapus mata kuliah tetap lewat halaman Subjects (tidak ditambahkan ke pemilih ini). Belum diverifikasi di browser/HP; TSX baru belum dicek tipenya oleh saya.
+
+## 12. Status Phase 3 Batch 5 (Statistics + Settings + Export/Import, 0.12.0)
+Dikerjakan bertahap dan dilaporkan per bagian: A Statistics, B Settings, C Export/Import, D finalisasi (versi 0.12.0). Aturan yang dipatuhi: tanpa dependency baru, tanpa key storage baru, `storage.ts`/`storage-keys.ts`/`normalize.ts` tidak diubah, PWA tidak diubah (hanya `VERSION` di sw.js dinaikkan), semua fitur lama dipertahankan. Spesifikasi lengkap, aturan, dan keterbatasan ada di `docs/HANDOFF.md` bagian "Update: Phase 3 Batch 5".
+
+### Ringkasan fitur
+- **Statistics**: `lib/statistics.ts` (murni, `now` dikirim masuk) + `components/statistics/statistics-view.tsx`. Hanya membaca, tanpa data dummy. Periode "7 hari terakhir" / "30 hari terakhir" / "Semua waktu". Tugas masuk periode menurut deadline (atau tanggal dibuat bila tanpa deadline), event menurut tanggal, sesi fokus menurut hari lokal mulai; periode = masa lalu sampai hari ini; item tanpa tanggal valid hanya di "Semua waktu".
+- **Settings**: kartu Tampilan (tema, awal minggu), Timer fokus (komponen `FocusSettingsCard` yang sama dengan halaman Focus, memakai `settings.focus`), Penyimpanan lokal, Pasang aplikasi (InstallCard, tidak diubah), Tentang aplikasi (versi dari `APP_VERSION`), Cadangan data, Hapus semua data (dengan rincian jumlah data).
+- **Export/Import JSON**: ekspor nilai mentah storage; validasi menyeluruh sebelum menulis; preview jumlah data; Merge (per `id`, `updatedAt` lebih baru menang, seri/tak ada = data perangkat tetap, settings tidak diubah) dan Replace (persis isi file, timer berjalan milik perangkat tidak disentuh, timer dari file diabaikan). Replace: backup data saat ini dibuat, diverifikasi identik, dan diunduh SEBELUM penulisan; bila gagal, tidak ada penulisan sama sekali. Penulisan diverifikasi dengan baca ulang dan di-rollback penuh bila gagal; preview basi ditolak; aplikasi dimuat ulang setelah sukses.
+
+### Hasil pengujian (benar-benar dijalankan di Batch 5)
+- `npm install`: berhasil. `npx tsc --noEmit`: 0 error.
+- `bash scripts/run-logic-checks.sh` (5 zona: Asia/Jakarta, America/New_York, Europe/London, Pacific/Auckland, America/Sao_Paulo): ALL PASSED, 0 gagal. Jumlah pemeriksaan: batch2 83, batch3 132, batch4 108, batch5 69, batch6 109, batch7 183, batch8 170, batch9 119, batch10 116, batch11 248.
+- batch11: Part A Statistics 73; Part B Settings +35; Part C Export/Import dan UI wiring +140. Test Part C memakai storage layer asli dengan localStorage tiruan dan adapter yang bisa disuruh gagal (rollback di 3 titik gagal untuk Merge dan Replace, penulisan diam-diam hilang, rollback ikut gagal, backup gagal diunduh, preview basi, storage terblokir). Mutation check manual (rollback dimatikan, gerbang backup diabaikan, cek preview basi dimatikan) membuat test gagal, lalu dikembalikan.
+- `next build` produksi lulus (16 halaman static) di SALINAN SEMENTARA dengan `next/font/google` di-stub, karena sandbox tidak punya internet (`fonts.googleapis.com` tidak terjangkau). `layout.tsx` dan konfigurasi font asli TIDAK diubah. Build dengan font asli belum dijalankan.
+- Render server-side `BackupCard` berhasil (smoke test); komponen lain hanya dicek lewat typecheck, build, dan uji sumber.
+
+### Perubahan pada test lama
+- batch5-8: satu assertion tiap file diubah dari "hanya Statistics placeholder" menjadi "tidak ada placeholder".
+- batch7: guard "hanya `lib/focus-store.ts` menulis `focusTimer` ke settings" kini mengizinkan `src/lib/backup.ts` sebagai pengecualian eksplisit dan terdokumentasi (file itu hanya membuang timer dari backup dan menyalin kembali timer perangkat tanpa mengubahnya; diuji di batch11). Regex tidak diakali.
+- batch8/9/10: versi 0.12.0 diterima/dicek (batch10 juga nama cache SW `campusbest-shell-v0.12.0`). batch11 mencocokkan `VERSION` sw.js dengan `package.json`.
+
+### BELUM terverifikasi / risiko yang diketahui
+- Tampilan dan alur klik di browser: ganti tema/awal minggu/preset fokus, file picker, modal Impor di layar sempit, unduhan sungguhan, reload setelah impor, bar chart 30 hari di layar sempit, kartu baru di mode terang/gelap.
+- Import dengan file ekspor dari data asli pemilik; batas kuota LocalStorage (~5 MB) pada data sangat besar.
+- PWA di perangkat nyata (Lighthouse, prompt instalasi, offline sungguhan, alur update dua versi, iOS); ikon masih sementara.
+- Build dengan font Google asli.
+- LocalStorage tidak punya transaksi: rollback adalah upaya terbaik yang diverifikasi, bukan jaminan mutlak; ada celah milidetik bila tab lain atau timer menulis tepat di tengah proses (preview basi hanya dicek sebelum penulisan dimulai). Browser tidak memberi tahu apakah file unduhan benar-benar disimpan pengguna (yang dijamin: backup berhasil dibuat, identik, dan unduhan dimulai).
+- Merge tidak membuat backup otomatis (hanya Replace, keputusan pemilik); Merge tidak mengubah settings.
+- `hapus semua data` tidak membersihkan Cache Storage service worker (data pengguna aman; halaman lama masih bisa tampil dari cache).
+- Pemeriksaan UI/UX, responsive, dan regresi manual penuh adalah isi Batch 6.
+
+### Instruksi melanjutkan
+Batch 6 (Final Testing) BELUM dimulai. Lihat "Instruksi melanjutkan ke Phase 3 Batch 6" di `docs/HANDOFF.md`.

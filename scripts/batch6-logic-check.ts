@@ -284,7 +284,7 @@ async function main() {
   ok("the dashboard gained no notes card, stat or form", !/notes/i.test(["lib/dashboard.ts", "components/dashboard/dashboard-view.tsx", "components/dashboard/task-progress-card.tsx", "components/dashboard/upcoming-tasks-card.tsx", "components/dashboard/upcoming-events-card.tsx", "components/dashboard/today-schedule-card.tsx"].map((f) => view(`src/${f}`)).join("\n")));
   const pkg = JSON.parse(view("package.json"));
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
-  eq("only Statistics is left as a placeholder (Focus is built since Phase 3 Batch 2)", navHrefs.filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))).sort(), ["/statistics"]);
+  eq("no page is a placeholder anymore (Statistics built in Phase 3 Batch 5 part A)", navHrefs.filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))).sort(), []);
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

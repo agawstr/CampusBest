@@ -25,9 +25,11 @@ interface Props {
   settings: FocusSettings;
   /** Resolves true when saved. */
   onSave: (next: FocusSettings) => Promise<boolean>;
+  /** Heading of the card. Default "Durasi" (Focus page); Settings passes "Timer fokus". */
+  title?: string;
 }
 
-export function FocusSettingsCard({ settings, onSave }: Props) {
+export function FocusSettingsCard({ settings, onSave, title = "Durasi" }: Props) {
   const [customOpen, setCustomOpen] = useState(false);
   const [values, setValues] = useState<FocusSettingsInput>(() => toInput(settings));
   const [errors, setErrors] = useState<FocusSettingsErrors>({});
@@ -62,7 +64,7 @@ export function FocusSettingsCard({ settings, onSave }: Props) {
 
   return (
     <Card animate={false}>
-      <h2 className="font-semibold">Durasi</h2>
+      <h2 className="font-semibold">{title}</h2>
       <p className="mt-0.5 text-xs text-muted">
         Tersimpan di perangkat ini. Sesi yang sedang berjalan tidak berubah; durasi baru dipakai mulai sesi berikutnya.
       </p>

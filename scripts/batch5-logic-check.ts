@@ -223,7 +223,7 @@ async function main() {
   eq("no raw Math.random ids (generateId only)", bad(/Math\.random\(\)\.toString/).filter((f) => !f.endsWith("lib/id.ts")), []);
   eq("every nav route has a page", navHrefs.filter((h) => !fs.existsSync(path.join(process.cwd(), "src/app", h, "page.tsx"))), []);
   const placeholders = navHrefs.filter((h) => /PlaceholderPage/.test(fs.readFileSync(path.join(process.cwd(), "src/app", h, "page.tsx"), "utf8")));
-  eq("only Statistics is still a placeholder (Notes since Phase 3 Batch 1, Focus since Phase 3 Batch 2)", placeholders.sort(), ["/statistics"]);
+  eq("no page is a placeholder anymore (Notes B1, Focus B2, Statistics B5 part A)", placeholders.sort(), []);
   ok("Phase 2 pages are server components with metadata and a view", ["dashboard", "calendar", "tasks", "schedule", "subjects", "exams"].every((r) => { const t = view(`src/app/${r}/page.tsx`); return /export const metadata/.test(t) && !/"use client"/.test(t); }));
   const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
   eq("no dependency added since Phase 1", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);

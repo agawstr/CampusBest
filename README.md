@@ -57,6 +57,12 @@ Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
 
 Logika di `src/lib/import/`. Semua uji sekaligus: `bash scripts/run-logic-checks.sh`.
 
+## Statistics, Settings, Cadangan data (0.12.0)
+
+- **Statistics** (`/statistics`): ringkasan tugas, per mata kuliah, ujian dan event, waktu fokus; periode 7 hari terakhir, 30 hari terakhir, atau semua waktu. Logika: `src/lib/statistics.ts`.
+- **Settings** (`/settings`): tema, awal minggu, durasi Focus Timer, pasang aplikasi, info versi, cadangan data, hapus semua data. Logika: `src/lib/settings.ts`.
+- **Cadangan data**: Ekspor semua data ke satu file JSON, atau Impor dari file dengan pilihan Gabung (per `id`, `updatedAt` lebih baru dipakai) atau Ganti semuanya (backup data saat ini diunduh otomatis lebih dulu, dan data dikembalikan bila penulisan gagal). Timer fokus yang sedang berjalan tidak ikut. Logika: `src/lib/backup.ts` dan `src/lib/backup-store.ts`. Uji: `TZ=Asia/Jakarta npx tsx scripts/batch11-logic-check.ts`.
+
 ## PWA dan offline (0.11.0)
 
 CampusBest bisa dipasang sebagai aplikasi (manifest, ikon, service worker buatan sendiri, tanpa dependency baru).

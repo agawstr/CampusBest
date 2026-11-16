@@ -280,7 +280,7 @@ async function main() {
   ok("ScheduleItem model not changed (no new field)", !/importSource/.test(view("src/types/models.ts").split("export interface ScheduleItem")[1].split("export type EventType")[0]));
   eq("still the same 7 storage keys", Object.values(STORAGE_KEYS).sort(), ["campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
-  ok("version 0.10.0 or later (0.11.0 after PWA)", ["0.10.0", "0.11.0"].includes(pkg.version), pkg.version);
+  ok("version 0.10.0 or later (0.11.0 after PWA, 0.12.0 after Batch 5)", ["0.10.0", "0.11.0", "0.12.0"].includes(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
   ok("runner lists batch9", /batch9-logic-check\.ts/.test(view("scripts/run-logic-checks.sh")));
 

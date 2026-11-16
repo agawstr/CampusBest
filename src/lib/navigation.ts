@@ -42,8 +42,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "import", href: "/import", label: "Import", icon: ClipboardPaste, primary: false,
     description: "Impor tugas dari Google Classroom dan BRONE." },
   { key: "statistics", href: "/statistics", label: "Statistics", icon: BarChart3, primary: false,
-    description: "Grafik progres belajar dan produktivitas.",
-    placeholder: { title: "Belum ada statistik", description: "Statistik muncul setelah kamu mulai mencatat aktivitas." } },
+    description: "Ringkasan tugas, ujian, dan waktu fokus." },
   { key: "settings", href: "/settings", label: "Settings", icon: Settings, primary: false,
     description: "Tema, tampilan, dan data aplikasi." },
 ];
