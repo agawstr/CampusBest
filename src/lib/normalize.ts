@@ -73,6 +73,7 @@ export function normalizeSubject(raw: Rec, index = 0): Subject {
     ...base(raw, "subject", index),
     name: str(raw.name, "Tanpa nama"),
     code: optStr(raw.code),
+    abbr: optStr(raw.abbr),
     lecturer: optStr(raw.lecturer),
     credits: optNum(raw.credits),
     semester: optNum(raw.semester),

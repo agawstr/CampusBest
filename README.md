@@ -57,6 +57,15 @@ Semua uji sekaligus, di lima zona waktu: `bash scripts/run-logic-checks.sh`.
 
 Logika di `src/lib/import/`. Semua uji sekaligus: `bash scripts/run-logic-checks.sh`.
 
+## Calendar: agenda di samping kalender (0.12.1)
+
+Hanya tampilan `/calendar` yang berubah; data dan LocalStorage tidak disentuh.
+- Tanggal hari ini otomatis terpilih dan agenda tanggal terpilih langsung terlihat (di samping kalender mulai layar `lg`, di bawah kalender di HP dan tablet).
+- Layar `lg` ke atas: sel tanggal menampilkan chip berwarna berisi judul (maksimal 2 di `lg`, 3 di `xl`), sisanya menjadi `+N lagi`. Urutannya sama dengan daftar di kartu agenda. Judul panjang dipotong dengan "...".
+- HP dan tablet (di bawah `lg`): tetap titik indikator per jenis.
+- Perlu diuji manual: `+12 lagi` (dua digit) di layar `lg` dengan sidebar terbuka; sel hanya sekitar 50 px dan sisa ruang label sekitar 10 px, jadi bisa terpotong. Lihat `docs/PROGRESS.md` bagian 13.
+- Logika: `previewEntries()` di `src/lib/calendar.ts`. Uji: `TZ=Asia/Jakarta npx tsx scripts/batch12-logic-check.ts`.
+
 ## Statistics, Settings, Cadangan data (0.12.0)
 
 - **Statistics** (`/statistics`): ringkasan tugas, per mata kuliah, ujian dan event, waktu fokus; periode 7 hari terakhir, 30 hari terakhir, atau semua waktu. Logika: `src/lib/statistics.ts`.
@@ -73,3 +82,6 @@ CampusBest bisa dipasang sebagai aplikasi (manifest, ikon, service worker buatan
 - Pembaruan: versi baru menunggu sampai kamu menekan "Perbarui" (tidak ada pengambilalihan otomatis). Service worker hanya memakai Cache Storage; ia tidak bisa dan tidak pernah menyentuh LocalStorage, jadi update tidak menghapus data. Browser tetap bisa menghapus data situs bila kamu membersihkannya sendiri.
 - Saat menaikkan versi aplikasi: ubah `version` di `package.json`, `APP_VERSION` di `src/lib/pwa.ts`, dan `VERSION` di `public/sw.js` (diperiksa `scripts/batch10-logic-check.ts`).
 - Uji: `TZ=Asia/Jakarta npx tsx scripts/batch10-logic-check.ts`.
+
+## Calendar HP: singkatan mata kuliah (0.12.2)
+Isi "Singkatan" di halaman Subjects (mis. KG, JST, PAPB); kosong = otomatis dari nama. Jadwal di ruang lab (teks ruangan memuat "Lab", atau kode ruangan ada di `LAB_ROOM_CODES` di `src/lib/course-label.ts`) tampil dengan akhiran P, mis. `JST P`. Di layar kecil tiap hari menampilkan chip singkatan + jam mulai; tugas dan event menampilkan nama ringkas + jam deadline/mulai bila ada.

@@ -32,7 +32,9 @@ export function SubjectCard({ subject, counts, delay, onEdit, onDelete }: Subjec
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="break-words font-semibold leading-snug">{subject.name}</h2>
-          {subject.code && <p className="mt-0.5 text-xs text-muted">{subject.code}</p>}
+          {(subject.code || subject.abbr) && (
+            <p className="mt-0.5 text-xs text-muted">{[subject.code, subject.abbr ? `Singkatan: ${subject.abbr}` : null].filter(Boolean).join(" · ")}</p>
+          )}
         </div>
         <div className="flex shrink-0 gap-0.5">
           <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Edit ${subject.name}`} onClick={() => onEdit(subject)}>

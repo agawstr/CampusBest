@@ -1,5 +1,6 @@
 import type { Subject, Task } from "@/types";
 import { isTaskDone } from "./domain";
+import { validateAbbr } from "./course-label";
 import { generateId } from "./id";
 
 export const SUBJECT_COLORS = [
@@ -43,6 +44,8 @@ export function sortSubjects(subjects: readonly Subject[]): Subject[] {
 export interface SubjectFormValues {
   name: string;
   code: string;
+  /** Optional so older callers/forms without the field keep working. */
+  abbr?: string;
   lecturer: string;
   credits: string;
   semester: string;
@@ -53,13 +56,14 @@ export const MAX_CREDITS = 24;
 export const MAX_SEMESTER = 14;
 
 export function emptySubjectForm(color: string): SubjectFormValues {
-  return { name: "", code: "", lecturer: "", credits: "", semester: "", color };
+  return { name: "", code: "", abbr: "", lecturer: "", credits: "", semester: "", color };
 }
 
 export function subjectToFormValues(subject: Subject): SubjectFormValues {
   return {
     name: subject.name,
     code: subject.code ?? "",
+    abbr: subject.abbr ?? "",
     lecturer: subject.lecturer ?? "",
     credits: subject.credits !== undefined ? String(subject.credits) : "",
     semester: subject.semester !== undefined ? String(subject.semester) : "",
@@ -67,7 +71,7 @@ export function subjectToFormValues(subject: Subject): SubjectFormValues {
   };
 }
 
-export type SubjectFormErrors = Partial<Record<"name" | "credits" | "semester", string>>;
+export type SubjectFormErrors = Partial<Record<"name" | "abbr" | "credits" | "semester", string>>;
 
 function parseOptionalInt(value: string, max: number): { ok: boolean; value?: number } {
   const text = value.trim();
@@ -79,6 +83,8 @@ function parseOptionalInt(value: string, max: number): { ok: boolean; value?: nu
 export function validateSubjectForm(values: SubjectFormValues): SubjectFormErrors {
   const errors: SubjectFormErrors = {};
   if (!values.name.trim()) errors.name = "Nama mata kuliah wajib diisi.";
+  const abbrError = validateAbbr(values.abbr ?? "");
+  if (abbrError) errors.abbr = abbrError;
   if (!parseOptionalInt(values.credits, MAX_CREDITS).ok) errors.credits = `SKS berupa angka bulat 1 sampai ${MAX_CREDITS}.`;
   if (!parseOptionalInt(values.semester, MAX_SEMESTER).ok) errors.semester = `Semester berupa angka bulat 1 sampai ${MAX_SEMESTER}.`;
   return errors;
@@ -90,6 +96,7 @@ function fields(values: SubjectFormValues) {
   return {
     name: values.name.trim(),
     code: blankToUndefined(values.code),
+    abbr: blankToUndefined((values.abbr ?? "").replace(/\s+/g, " ")),
     lecturer: blankToUndefined(values.lecturer),
     credits: parseOptionalInt(values.credits, MAX_CREDITS).value,
     semester: parseOptionalInt(values.semester, MAX_SEMESTER).value,

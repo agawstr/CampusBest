@@ -14,7 +14,7 @@ const KIND_ICON: Record<CalendarKind, LucideIcon> = {
   task: ClipboardList,
 };
 
-const KIND_TONE: Record<CalendarKind, string> = {
+export const KIND_TONE: Record<CalendarKind, string> = {
   class: "bg-accent/15 text-accent",
   event: "bg-success/15 text-success",
   task: "bg-amber-500/15 text-amber-600 dark:text-amber-400",

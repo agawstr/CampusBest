@@ -11,6 +11,7 @@ import {
 } from "@/lib/subjects";
 import { cn } from "@/lib/utils";
 import type { Subject } from "@/types";
+import { autoAbbreviation, classLabel } from "@/lib/course-label";
 
 interface SubjectFormModalProps {
   open: boolean;
@@ -79,6 +80,22 @@ export function SubjectFormModal({ open, onOpenChange, subject, suggestedColor, 
             onChange={(e) => set("name", e.target.value)}
             placeholder="Contoh: Basis Data"
             aria-invalid={Boolean(errors.name)}
+          />
+        </Field>
+
+        <Field
+          label="Singkatan (opsional)"
+          htmlFor={`${uid}-abbr`}
+          error={errors.abbr}
+          hint={`Dipakai di Calendar HP. Kosong = otomatis (${autoAbbreviation(values.name)}). Jadwal di ruang lab otomatis jadi "${classLabel((values.abbr ?? "").trim() || autoAbbreviation(values.name), true)}".`}
+        >
+          <Input
+            id={`${uid}-abbr`}
+            value={values.abbr ?? ""}
+            onChange={(e) => set("abbr", e.target.value)}
+            placeholder="JST"
+            autoCapitalize="characters"
+            aria-invalid={Boolean(errors.abbr)}
           />
         </Field>
 

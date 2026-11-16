@@ -1,6 +1,6 @@
 # CampusBest — Progres Pengembangan
 
-Terakhir diperbarui: setelah Phase 3 Batch 5 (Statistics + Settings + Export/Import JSON, versi 0.12.0). Phase 2 dan Phase 3 Batch 1-5 selesai dikodekan dan lolos typecheck, semua logic test, dan build produksi (font di-stub, lihat bagian 12). Berikutnya: Batch 6 (Final Testing). Bagian 6, 9, 10, 11 di bawah adalah catatan historis per batch; status terkini ada di bagian 12.
+Terakhir diperbarui: setelah Calendar mini-batch 2 (0.12.2, bagian 14), sebelumnya Phase 3 Batch 5 (Statistics + Settings + Export/Import JSON, versi 0.12.0). Phase 2 dan Phase 3 Batch 1-5 selesai dikodekan dan lolos typecheck, semua logic test, dan build produksi (font di-stub, lihat bagian 12). Berikutnya: Batch 6 (Final Testing). Bagian 6, 9, 10, 11 di bawah adalah catatan historis per batch; status terkini ada di bagian 12.
 
 ## 1. Teknologi dan struktur
 - Next.js 15 (App Router), React 19, TypeScript strict, Tailwind 3.4 (CSS variable RGB), Radix Dialog, class-variance-authority, clsx + tailwind-merge, Lucide, Framer Motion, font Plus Jakarta Sans.
@@ -43,7 +43,7 @@ Navigasi: `lib/navigation.ts` (`NAV_ITEMS`) adalah sumber tunggal. Mobile: 4 ite
 - Tasks (`/tasks`): daftar, tambah/edit/hapus, centang selesai/belum, judul, deskripsi, mata kuliah, tanggal + jam deadline, prioritas, status (Belum mulai/Dikerjakan/Selesai), filter status dan prioritas, pencarian (judul, deskripsi, nama/kode mata kuliah), urut deadline atau prioritas, empty state (belum ada tugas, dan tidak ada hasil filter).
 - Subjects (`/subjects`): daftar kartu, tambah/edit/hapus, nama, kode, dosen, SKS, semester, warna, jumlah tugas terkait (aktif/selesai), empty state. Hapus mata kuliah TIDAK menghapus tugas terkait.
 - Schedule (`/schedule`): tampilan mingguan (Senin-Minggu atau Minggu-Sabtu sesuai `weekStartsOn`; 7 kolom di layar >= 1536px, daftar per hari di bawahnya), navigasi minggu sebelumnya/berikutnya/"Minggu ini", tambah/edit/hapus (dengan konfirmasi), pilih mata kuliah dari Subjects, hari atau tanggal, jam mulai/selesai, ruangan, mode Online/Offline, pengulangan Mingguan/2 mingguan/Sekali. Tiap kartu menampilkan jam, mata kuliah, kode, dosen, mode + ruangan. Empty state (juga yang mengarahkan ke Subjects bila belum ada mata kuliah). Bagian "Perlu tanggal" untuk jadwal none/biweekly yang tidak punya tanggal valid.
-- Calendar (`/calendar`): kalender bulanan, navigasi bulan, tombol "Hari ini", penanda hari ini, titik indikator per jenis (Kuliah = biru, Event = hijau, Deadline tugas = kuning), pilih tanggal untuk melihat daftar aktivitas, empty state per tanggal, tampilan Agenda (daftar hari yang berisi di bulan itu). Data dibaca langsung dari `schedules`, `tasks`, dan `events`; tidak ada penyimpanan kalender.
+- Calendar (`/calendar`; sejak 0.12.1 sel tanggal menampilkan judul singkat di layar `lg` ke atas, lihat bagian 13): kalender bulanan, navigasi bulan, tombol "Hari ini", penanda hari ini, titik indikator per jenis (Kuliah = biru, Event = hijau, Deadline tugas = kuning), pilih tanggal untuk melihat daftar aktivitas, empty state per tanggal, tampilan Agenda (daftar hari yang berisi di bulan itu). Data dibaca langsung dari `schedules`, `tasks`, dan `events`; tidak ada penyimpanan kalender.
 - Exams & Events (`/exams`): daftar ujian dan event, tambah/edit/hapus (dengan konfirmasi), nama, deskripsi, kategori (UTS, UAS, Quiz, Presentasi, Praktikum, Seminar, Lainnya), tanggal, jam mulai/selesai (opsional), lokasi, mata kuliah (opsional). Pencarian (nama, deskripsi, lokasi, nama/kode mata kuliah), filter kategori, filter waktu (Semua, Hari ini, 7 hari ke depan, Mendatang, Sudah lewat), urut tanggal terdekat, penanda hitung mundur ("Besok", "3 hari lagi", "5 hari lalu"), empty state (belum ada event, dan tidak ada hasil filter).
 - Event dari Exams otomatis muncul di Calendar (kartu Batch 3 yang sama, label kategori ikut tampil). Kalender hanya membaca koleksi `events`.
 - Dashboard terhubung ke Tasks, Subjects, Schedule, dan Exams & Events (Batch 5), plus aksi cepat "Tambah catatan" (Phase 3 Batch 1).
@@ -427,3 +427,62 @@ Dikerjakan bertahap dan dilaporkan per bagian: A Statistics, B Settings, C Expor
 
 ### Instruksi melanjutkan
 Batch 6 (Final Testing) BELUM dimulai. Lihat "Instruksi melanjutkan ke Phase 3 Batch 6" di `docs/HANDOFF.md`.
+
+## 13. Status Calendar mini-batch (0.12.1)
+Penyempurnaan tampilan `/calendar` berdasarkan referensi pemilik: kalender bulanan dengan daftar agenda di sampingnya. Baseline resmi: ZIP v0.12.0. Tidak ada perubahan model data, key LocalStorage, `storage.ts`, `normalize.ts`, atau dependency. Phase 3 Batch 6 BELUM dimulai (menunggu persetujuan pemilik atas mini-batch ini).
+
+### Hasil analisis v0.12.0 (sebelum mengubah)
+Sudah sesuai kesepakatan dan dipertahankan apa adanya: tanggal hari ini terpilih otomatis (`useState(todayKey())`), kartu agenda tanggal terpilih langsung terlihat, dua kolom mulai `lg` (`lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]`), agenda di bawah kalender pada layar lebih kecil, navigasi bulan, tombol "Hari ini", pilih tanggal (termasuk hari abu-abu bulan tetangga), toggle Bulan/Agenda, titik indikator.
+Yang belum ada: judul acara di dalam sel tanggal dan `+N lagi`.
+
+### Perubahan
+- `src/lib/calendar.ts`: fungsi murni baru `previewEntries(entries, max)` -> `{ shown, more }` (`shown` = `max` entri pertama dengan urutan yang sama dengan daftar agenda, `more` = sisanya; `shown.length + more` selalu sama dengan total). Fungsi lama tidak diubah.
+- `src/components/calendar/calendar-view.tsx`: hanya sel tanggal.
+  - Di bawah `lg`: seperti sebelumnya (angka + titik per jenis).
+  - `lg` ke atas: titik disembunyikan (`lg:hidden`); muncul chip judul berwarna menurut jenis (biru = kuliah, hijau = event, kuning = deadline tugas, warna sama dengan legenda). Maksimal 2 judul di `lg`, 3 di `xl` (judul ke-3 `hidden xl:block`). Label `+N lagi` dibuat dua versi lewat CSS (`+{total-2}` untuk `lg`, `+{total-3}` untuk `xl`) sehingga tidak butuh deteksi ukuran layar lewat JavaScript. Judul panjang dipotong `truncate`; atribut `title` menampilkan judul penuh saat di-hover. Tugas selesai dicoret. Label aksesibilitas sel tetap "N aktivitas"; chip `aria-hidden`.
+  - Tinggi sel: `h-14` (HP), `sm:h-[4.5rem]` (tablet), `lg:h-[6.75rem]`, `xl:h-[8.25rem]`; semua sel dalam satu ukuran tetap supaya baris rata.
+  - Penyesuaian kecil di `lg` karena sel hanya sekitar 50 px saat sidebar terbuka: jarak antar sel `lg:gap-0.5` (kembali `xl:gap-1`), padding kartu `lg:p-3` (kembali `xl:p-4`), padding sel `lg:px-0.5`, teks `+N lagi` `text-[10px]` di `lg`. Tanpa ini `+3 lagi` terpotong menjadi "+3 l...".
+- `src/components/calendar/calendar-entry-row.tsx`: `KIND_TONE` kini diekspor (dipakai chip). Isinya tidak berubah.
+- Versi 0.12.1 di `package.json`, `package-lock.json`, `APP_VERSION` (`lib/pwa.ts`), dan `VERSION` (`public/sw.js`).
+- `scripts/batch12-logic-check.ts` (baru, 111 pemeriksaan) ditambahkan ke `scripts/run-logic-checks.sh`. `batch8/9/10`: hanya pengecekan versi yang diperluas agar menerima 0.12.1 (batch10 kini memakai `pkg.version` untuk nama cache SW).
+
+### Hasil pengujian (benar-benar dijalankan)
+- Logic test, 11 skrip x 5 zona waktu (Asia/Jakarta, America/New_York, Europe/London, Pacific/Auckland, America/Sao_Paulo) = 55 kombinasi, semua 0 gagal: batch2 83, batch3 132, batch4 108, batch5 69, batch6 109, batch7 183, batch8 170, batch9 119, batch10 116, batch11 248, batch12 111. (Dijalankan dengan `tsx` langsung, setara isi `run-logic-checks.sh`; skrip itu sendiri memakai `npx --yes tsx` yang butuh internet.)
+- batch12 mencakup: hitungan `shown/more` untuk n = 0..8 pada batas 2 dan 3, batas pas, tepat 1 di atas batas, entri kosong/undefined, batas 0/negatif/NaN/pecahan, tanpa mutasi input, judul panjang tidak diubah, kesamaan urutan dan jumlah dengan `entriesForDate` untuk SETIAP sel bulan, judul hanya dari tanggal itu, tugas selesai tetap `done`, hari tanpa agenda, perilaku lama (`defaultSelectionFor`, `shiftMonth`, `monthGrid`, `agendaForMonth`), tidak menulis storage, dan pemeriksaan sumber tampilan (batas 2/3, titik `lg:hidden`, `truncate`, tinggi tetap, sorotan hari ini dan terpilih, dua kolom `lg`, navigasi, view hanya membaca, tanpa dependency baru, versi konsisten).
+- Mutasi sengaja (setelah pemeriksaan diperketat): `more` salah satu, urutan dibalik, titik tidak disembunyikan di `lg`, `truncate` dihapus, batas `xl` jadi 4 membuat 31, 4, 1, 1, dan 1 pemeriksaan gagal; kode dikembalikan dan semua lolos lagi. (Mutasi `truncate` awalnya LOLOS tanpa terdeteksi; regex diperketat lalu terdeteksi.)
+- `tsc` strict (TypeScript 7.0.2) untuk `lib/calendar.ts`, `lib/pwa.ts` (dengan shim tipe `next`) dan skrip batch3, 8, 9, 10, 11, 12: 0 error. TSX TIDAK dicek tipenya (paket `@types/react` dan `next` tidak ada di sandbox).
+- Pemeriksaan visual dan interaksi di Chromium (Playwright): komponen `CalendarView` ASLI di-bundle dengan esbuild (storage layer dan hook asli; hanya `framer-motion`, `lucide-react`, `class-variance-authority` di-stub; `clsx` dan `tailwind-merge` asli), CSS dari `tailwind.config.ts` asli. Data contoh disuntik ke LocalStorage, jam dibekukan ke 16 Nov 2026. Lebar layar 390, 768, 1024, 1280, 1536 px (sidebar disimulasikan 84/272 px). Hasil: titik hanya di 390 dan 768; chip judul di 1024+; 2 judul + `+3 lagi` di 1024, 3 judul + `+2 lagi` di 1280 dan 1536; semua sel satu tinggi (56/72/108/132 px); tidak ada luapan horizontal halaman atau sel; ruang sisa label `+N lagi` sekitar 10 px di 1024. Interaksi 24 pemeriksaan di lebar 1280 dan 390 lolos: hari ini terpilih otomatis, agenda hari ini terlihat tanpa klik, pilih tanggal, hari kosong menampilkan empty state, bulan berikutnya/sebelumnya (terpilih tanggal 1), "Hari ini" kembali, mode Agenda dan kembali ke Bulan, tanpa error JS.
+
+### BELUM terverifikasi / risiko yang diketahui
+- `npm install`, `npm run typecheck`, dan `npm run build` TIDAK dijalankan (sandbox tanpa jaringan dan tanpa `node_modules`). Perlu dijalankan di mesin pemilik.
+- Pemeriksaan visual memakai Tailwind v4 (satu-satunya yang tersedia) sebagai pengganti Tailwind 3.4 project, dan font sistem sebagai pengganti Plus Jakarta Sans. Tata letak kemungkinan sama, tetapi lebar teks dengan font asli bisa sedikit berbeda. Belum dilihat di browser dengan build asli, di mode terang, di HP/tablet sungguhan, atau dengan data asli pemilik.
+- Di `lg` (1024 px) dengan sidebar terbuka, sel hanya sekitar 50 px sehingga judul terpotong pendek ("Basis..."), sedangkan `+N lagi` tetap terbaca. Judul penuh ada di kartu agenda dan di tooltip. Menciutkan sidebar atau layar `xl` memberi sel lebih lebar (sekitar 70 px dan lebih).
+- **PERLU PENGUJIAN MANUAL: `+12 lagi` (dua digit atau lebih) di layar `lg` (1024-1279 px) dengan sidebar terbuka.** Belum diukur; sisa ruang label `+N lagi` di sana hanya sekitar 10 px (untuk satu digit) dengan font pengganti, jadi label dua digit bisa terpotong. Cara uji: buat 12 agenda lebih di satu hari, buka di lebar 1024-1279 px dengan sidebar terbuka, lihat apakah label masih terbaca utuh. Bila terpotong, opsi perbaikannya: perkecil teks lagi, atau tampilkan `+12` saja di `lg`.
+- Tooltip `title` tidak muncul di layar sentuh (tidak masalah di HP karena judul tidak ditampilkan di sel di bawah `lg`).
+- Event tanpa tanggal valid tetap tidak tampil di Calendar (perilaku lama, tidak diubah).
+
+### Instruksi melanjutkan
+Tunggu persetujuan pemilik atas 0.12.1. Setelah itu baru Phase 3 Batch 6 (Final Testing); lihat `docs/HANDOFF.md`.
+
+## 14. Calendar mini-batch 2 (0.12.2): singkatan mata kuliah + chip Calendar HP
+Baseline: ZIP 0.12.1 (tidak ada perubahan parsial dari sesi sebelumnya; diperiksa lewat tanggal file, versi, dan pencarian kode). Tanpa dependency baru, tanpa key storage baru, `storage.ts`/`storage-keys.ts`/PWA tidak diubah. Detail aturan ada di `docs/HANDOFF.md` ("Calendar mini-batch 2").
+
+### Perubahan
+- `types/models.ts`: `Subject.abbr?`. `lib/normalize.ts`: `abbr: optStr(raw.abbr)`. `lib/subjects.ts`: `abbr` di form (opsional, divalidasi maks 6 karakter, dikosongkan = dihapus). `components/subjects/subject-form-modal.tsx` (field "Singkatan (opsional)" + hint yang menampilkan singkatan otomatis dan bentuk "JST P"), `subject-card.tsx` (menampilkan singkatan).
+- Baru `lib/course-label.ts` (deteksi lab, singkatan otomatis, label, pemotongan judul).
+- `lib/calendar.ts`: `CalendarEntry.shortTitle/shortTime/lab`; aturan urutan dan gabungan tidak diubah.
+- `components/calendar/calendar-view.tsx`: chip kecil di bawah `lg` menggantikan titik; desktop tidak berubah. `calendar-entry-row.tsx` tidak diubah.
+- Versi 0.12.2 di `package.json`, `package-lock.json`, `APP_VERSION`, `VERSION` sw.js. Baru `scripts/batch13-logic-check.ts` (65 pemeriksaan).
+
+### Hasil pengujian (benar-benar dijalankan)
+- 12 skrip logic test x 5 zona waktu = 60 kombinasi, semua 0 gagal: batch2 83, batch3 132, batch4 108, batch5 69, batch6 109, batch7 183, batch8 170, batch9 119, batch10 116, batch11 248, batch12 111, batch13 65. Dijalankan dengan `tsx` langsung.
+- batch13 memakai ruangan asli dari SIAM pemilik: G1.5 dan G1.2 = lab (P), F3.17/F3.7/F3.5 = bukan lab, huruf gedung saja bukan lab, "Labuan" bukan lab. Mutasi sengaja (semua ruang G dianggap lab; kata "lab" tanpa batas kata; `Subject.code` dipakai sebagai singkatan; status lab tidak dipakai) membuat 2, 1, 4, dan 4 pemeriksaan gagal, lalu kode dikembalikan.
+- `tsc` strict atas `lib/*`, `types/*`, dan semua skrip: tidak ada error di file yang diubah; sisa keluhan hanya karena `@types/node`, `next`, `lucide-react`, `clsx` tidak terpasang di sandbox.
+- Chromium (Playwright), komponen `CalendarView` asli di-bundle esbuild (`framer-motion`/`lucide-react` di-stub, Tailwind v4 pengganti, font sistem), data berisi jadwal nyata (JST di G1.5, PAPB di G1.2, MLOps di F3.17), padding halaman 16 px (<768) / 32 px. Lebar 320, 360, 390, 412, 768 dan 1024/1280/1536 (sidebar 272 px): tanpa luapan horizontal halaman atau sel, tanpa elemen terpotong di dalam sel, tinggi sel seragam (96 px HP, 104 px 768, 108/132 px desktop), singkatan tidak terpotong di semua lebar (di 320 px label `MLOPS` perlu `tracking-tighter` dan teks 9 px), hanya nama tugas/event yang dipotong dengan "…". Desktop: blok chip HP `display:none` dan tinggi/jumlah judul sama seperti 0.12.1.
+- Dua temuan visual dari sesi sebelumnya (overflow di 768 px dan label sempit di 320 px) TIDAK tercatat di dokumen dan gambarnya tidak ada; ukuran diulang dari awal. Pada 0.12.1 yang dilampirkan 320 px belum pernah diuji; pada 0.12.2 tidak ada luapan di 768 px dan label 320 px muat setelah penyesuaian di atas.
+
+### BELUM terverifikasi
+- `npm install`, `npm run typecheck`, `npm run build`; tipe TSX.
+- Tailwind 3.4 asli, font Plus Jakarta Sans (lebar teks bisa sedikit beda), mode terang, HP nyata (Samsung A35), data asli. Karena label 9-10 px sangat kecil, perlu dilihat langsung di HP.
+- `+12 lagi` dua digit di `lg` dengan sidebar terbuka (catatan lama 0.12.1).
+- Daftar kode ruangan lab (`LAB_ROOM_CODES`) hanya G1.2 dan G1.5; ruangan lab lain yang namanya tidak memuat kata "Lab" harus ditambahkan manual.

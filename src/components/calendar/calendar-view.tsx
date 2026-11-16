@@ -9,12 +9,12 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SegmentedControl } from "@/components/ui/field";
 import { useStorage } from "@/hooks/use-storage";
 import {
-  CALENDAR_KIND_LABELS, agendaForMonth, defaultSelectionFor, entriesByDate, entriesForDate, kindsPresent, monthGrid,
-  monthOf, shiftMonth, type CalendarKind, type YearMonth,
+  CALENDAR_KIND_LABELS, agendaForMonth, defaultSelectionFor, entriesByDate, entriesForDate, monthGrid,
+  monthOf, previewEntries, shiftMonth, type CalendarKind, type YearMonth,
 } from "@/lib/calendar";
 import { WEEKDAY_LABELS_ID, formatDateID, todayKey, weekdayOrder } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import { CalendarEntryRow, KIND_DOT } from "./calendar-entry-row";
+import { CalendarEntryRow, KIND_DOT, KIND_TONE } from "./calendar-entry-row";
 
 type ViewMode = "month" | "agenda";
 const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
@@ -22,6 +22,11 @@ const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
   { value: "agenda", label: "Agenda" },
 ];
 const KINDS: CalendarKind[] = ["class", "event", "task"];
+// Inside a day cell. Below `lg`: compact chips (short label + start time), 2 on phones, 3 from `sm`.
+// From `lg`: full titles, 2 from `lg`, 3 from `xl` (unchanged since 0.12.1).
+const TITLES_MOBILE = 2;
+const TITLES_LG = 2;
+const TITLES_XL = 3;
 
 function Skeleton() {
   return <div className="glass h-[420px] animate-pulse rounded-card" aria-hidden />;
@@ -116,17 +121,20 @@ export function CalendarView() {
 
           {mode === "month" ? (
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-              <Card animate={false} className="p-3 sm:p-4">
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted" aria-hidden>
+              <Card animate={false} className="p-2 sm:p-4 lg:p-3 xl:p-4">
+                <div className="grid grid-cols-7 gap-0.5 text-center text-xs font-medium text-muted sm:gap-1 lg:gap-0.5 xl:gap-1" aria-hidden>
                   {headers.map((d) => <span key={d} className="py-1.5">{WEEKDAY_LABELS_ID[d].slice(0, 3)}</span>)}
                 </div>
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-0.5 sm:gap-1 lg:gap-0.5 xl:gap-1">
                   {cells.map((cell) => {
                     const entries = byDate.get(cell.key);
-                    const kinds = kindsPresent(entries);
                     const isToday = cell.key === today;
                     const isSelected = cell.key === selected;
                     const count = entries?.length ?? 0;
+                    const { shown } = previewEntries(entries, TITLES_XL);
+                    const moreLg = previewEntries(entries, TITLES_LG).more;
+                    const moreXl = previewEntries(entries, TITLES_XL).more;
+                    const moreMobile = previewEntries(entries, TITLES_MOBILE).more;
                     return (
                       <button
                         key={cell.key}
@@ -136,22 +144,65 @@ export function CalendarView() {
                         aria-current={isToday ? "date" : undefined}
                         aria-label={`${formatDateID(cell.key, { day: "numeric", month: "long", year: "numeric" })}${isToday ? ", hari ini" : ""}, ${count > 0 ? `${count} aktivitas` : "tidak ada aktivitas"}`}
                         className={cn(
-                          "flex h-14 flex-col items-center justify-start gap-1 rounded-control border pt-1.5 text-sm transition-colors duration-fast sm:h-[4.5rem] sm:pt-2",
+                          "flex h-[6rem] min-w-0 flex-col items-center justify-start gap-0.5 overflow-hidden rounded-control border px-px pt-1 text-sm transition-colors duration-fast sm:h-[6.5rem] sm:px-1 sm:pt-1.5 lg:h-[6.75rem] lg:items-stretch lg:gap-0.5 lg:px-0.5 lg:pt-1.5 xl:px-1 xl:h-[8.25rem]",
                           isSelected ? "border-accent/60 bg-accent/15" : "border-transparent hover:bg-fg/[0.06]",
                           !cell.inMonth && "text-muted/50",
                         )}
                       >
                         <span
                           className={cn(
-                            "grid h-7 w-7 place-items-center rounded-full font-medium",
+                            "grid h-6 w-6 shrink-0 place-items-center rounded-full text-[13px] font-medium sm:h-7 sm:w-7 sm:text-sm lg:self-start",
                             isToday && "bg-accent text-accent-fg",
                           )}
                         >
                           {cell.day}
                         </span>
-                        <span className="flex h-2 items-center gap-1" aria-hidden>
-                          {kinds.map((k) => <span key={k} className={cn("h-1.5 w-1.5 rounded-full", KIND_DOT[k], !cell.inMonth && "opacity-50")} />)}
-                        </span>
+                        {shown.length > 0 && (
+                          <span className="flex w-full min-w-0 flex-col gap-0.5 lg:hidden" aria-hidden>
+                            {shown.map((e, i) => (
+                              <span
+                                key={e.key}
+                                title={e.title}
+                                className={cn(
+                                  "flex min-w-0 flex-col items-center rounded px-px py-px text-center sm:flex-row sm:justify-between sm:gap-1 sm:px-1",
+                                  KIND_TONE[e.kind],
+                                  !cell.inMonth && "opacity-50",
+                                  e.done && "line-through opacity-60",
+                                  i >= TITLES_MOBILE && "hidden sm:flex",
+                                )}
+                              >
+                                <span className="block w-full min-w-0 truncate text-[9px] font-semibold leading-[11px] tracking-tighter min-[360px]:text-[10px] min-[360px]:tracking-normal sm:w-auto sm:text-[11px] sm:leading-3">{e.shortTitle}</span>
+                                {e.shortTime && <span className="block text-[9px] leading-[10px] opacity-80 sm:shrink-0 sm:text-[10px] sm:leading-3">{e.shortTime}</span>}
+                              </span>
+                            ))}
+                            {moreMobile > 0 && <span className="block whitespace-nowrap text-[9px] leading-[10px] text-muted sm:hidden">+{moreMobile}</span>}
+                            {moreXl > 0 && <span className="hidden whitespace-nowrap text-[10px] leading-3 text-muted sm:block">+{moreXl} lagi</span>}
+                          </span>
+                        )}
+                        {shown.length > 0 && (
+                          <span className={cn("hidden min-w-0 flex-col gap-0.5 text-left lg:flex", !cell.inMonth && "opacity-50")} aria-hidden>
+                            {shown.map((e, i) => (
+                              <span
+                                key={e.key}
+                                title={e.title}
+                                className={cn(
+                                  "block truncate rounded px-1 text-[11px] font-medium leading-4",
+                                  KIND_TONE[e.kind],
+                                  e.done && "line-through opacity-60",
+                                  i >= TITLES_LG && "hidden xl:block",
+                                )}
+                              >
+                                {e.title}
+                              </span>
+                            ))}
+                            {moreLg > 0 && (
+                              <span className="block whitespace-nowrap px-0.5 text-[10px] leading-4 text-muted xl:hidden">+{moreLg} lagi</span>
+                            )}
+                            {moreXl > 0 && (
+                              <span className="hidden whitespace-nowrap px-1 text-[11px] leading-4 text-muted xl:block">+{moreXl} lagi</span>
+                            )}
+                          </span>
+                        )}
                       </button>
                     );
                   })}

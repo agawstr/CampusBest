@@ -107,7 +107,7 @@ async function main() {
   const pkg = JSON.parse(read("package.json"));
 
   // ---------- versions ----------
-  ok("package.json version is 0.12.0", pkg.version === "0.12.0");
+  ok("package.json version is 0.12.0, 0.12.1 or 0.12.2", ["0.12.0", "0.12.1", "0.12.2"].includes(pkg.version), pkg.version);
   ok("APP_VERSION matches package.json", pwa.APP_VERSION === pkg.version);
   ok("sw.js VERSION matches package.json", new RegExp(`const VERSION = "${pkg.version}"`).test(swSource));
 
@@ -188,7 +188,7 @@ async function main() {
   (await fakeCaches.open("campusbest-pages")).put("/tasks", new Response("old tasks page"));
   failUrls = new Set(["/tasks"]);
   await dispatch("install");
-  ok("install precached the shell", (await fakeCaches.keys()).includes("campusbest-shell-v0.12.0") && (await stores.get("campusbest-shell-v0.12.0")!.keys()).length === precache.length);
+  ok("install precached the shell", (await fakeCaches.keys()).includes(`campusbest-shell-v${pkg.version}`) && (await stores.get(`campusbest-shell-v${pkg.version}`)!.keys()).length === precache.length);
   ok("install: a failing warm page does not fail install, and keeps the older copy", (await text(await stores.get("campusbest-pages")!.match("/tasks"))) === "old tasks page" && (await stores.get("campusbest-pages")!.match("/dashboard")) !== undefined);
   eq("install did NOT skipWaiting (update waits for the user)", skipWaitingCalls, 0);
 
@@ -201,7 +201,7 @@ async function main() {
   await dispatch("activate");
   const names = await fakeCaches.keys();
   ok("activate removed old campusbest shell versions", !names.includes("campusbest-shell-v0.1.0") && !names.includes("campusbest-shell-v0.10.0"));
-  ok("activate kept current shell, pages, and foreign caches", names.includes("campusbest-shell-v0.12.0") && names.includes("campusbest-pages") && names.includes("some-other-app-cache"));
+  ok("activate kept current shell, pages, and foreign caches", names.includes(`campusbest-shell-v${pkg.version}`) && names.includes("campusbest-pages") && names.includes("some-other-app-cache"));
   eq("activate claims clients", claimCalls, 1);
   await dispatch("message", { data: { type: "SKIP_WAITING" } });
   eq("SKIP_WAITING message triggers skipWaiting", skipWaitingCalls, 1);

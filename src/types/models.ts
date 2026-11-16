@@ -9,6 +9,8 @@ export interface BaseEntity {
 export interface Subject extends BaseEntity {
   name: string;
   code?: string;
+  /** Short label for the calendar (e.g. "JST"). Optional; the calendar builds one from the name when empty. Not the course code. */
+  abbr?: string;
   lecturer?: string;
   credits?: number;
   /** Semester number, e.g. 3. */
