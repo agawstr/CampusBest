@@ -1,17 +1,18 @@
-import type { CampusEvent, ScheduleItem, Subject, Task } from "@/types";
+import type { Activity, CampusEvent, ScheduleItem, Subject, Task } from "@/types";
 import { EVENT_CATEGORY_LABELS, getTaskDeadline, isTaskDone } from "./domain";
 import { addDays, isValidTime, parseDateKey, timeToMinutes, toDateKey } from "./date";
 import { classLabel, isLabRoom, shortenTitle, subjectAbbreviation } from "./course-label";
 import { scheduleOnDate } from "./schedule";
+import { activitiesOnDate, activityDetail } from "./activities";
 
 /**
  * The calendar owns no data. It reads schedules, tasks and events straight from their own
  * collections and turns them into display entries on the fly, so nothing is duplicated or can go stale.
  */
-export type CalendarKind = "class" | "task" | "event";
+export type CalendarKind = "class" | "task" | "event" | "activity";
 
 export const CALENDAR_KIND_LABELS: Record<CalendarKind, string> = {
-  class: "Kuliah", task: "Deadline tugas", event: "Event",
+  class: "Kuliah", task: "Deadline tugas", event: "Event", activity: "Kegiatan",
 };
 
 export interface CalendarEntry {
@@ -44,9 +45,11 @@ export interface CalendarSources {
   tasks: readonly Task[];
   events: readonly CampusEvent[];
   subjects: readonly Subject[];
+  /** Kegiatan Lain. Optional so callers that predate it keep working. */
+  activities?: readonly Activity[];
 }
 
-const KIND_ORDER: Record<CalendarKind, number> = { class: 0, event: 1, task: 2 };
+const KIND_ORDER: Record<CalendarKind, number> = { class: 0, event: 1, task: 2, activity: 3 };
 
 /** Timed entries first by start time; untimed ones (all-day) after them. Ties: kind, then title. */
 function compareEntries(a: CalendarEntry, b: CalendarEntry): number {
@@ -122,6 +125,21 @@ export function entriesForDate(dateKey: string, src: CalendarSources): CalendarE
     });
   }
 
+  for (const activity of activitiesOnDate(src.activities ?? [], dateKey)) {
+    out.push({
+      key: `activity:${activity.id}:${dateKey}`,
+      kind: "activity",
+      date: dateKey,
+      sourceId: activity.id,
+      title: activity.title,
+      shortTitle: shortenTitle(activity.title),
+      shortTime: validTime(activity.startTime),
+      detail: activityDetail(activity),
+      startTime: activity.startTime,
+      endTime: activity.endTime,
+    });
+  }
+
   return out.sort(compareEntries);
 }
 
@@ -168,7 +186,7 @@ export function entriesByDate(cells: readonly MonthCell[], src: CalendarSources)
 /** Which kinds appear in a list, in a fixed order, for the dots under a day number. */
 export function kindsPresent(entries: readonly CalendarEntry[] | undefined): CalendarKind[] {
   if (!entries?.length) return [];
-  return (["class", "event", "task"] as const).filter((k) => entries.some((e) => e.kind === k));
+  return (["class", "event", "task", "activity"] as const).filter((k) => entries.some((e) => e.kind === k));
 }
 
 /**

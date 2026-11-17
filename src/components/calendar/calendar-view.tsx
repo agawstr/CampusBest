@@ -21,7 +21,7 @@ const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
   { value: "month", label: "Bulan" },
   { value: "agenda", label: "Agenda" },
 ];
-const KINDS: CalendarKind[] = ["class", "event", "task"];
+const KINDS: CalendarKind[] = ["class", "event", "task", "activity"];
 // Inside a day cell. Below `lg`: compact chips (short label + start time), 2 on phones, 3 from `sm`.
 // From `lg`: full titles, 2 from `lg`, 3 from `xl` (unchanged since 0.12.1).
 const TITLES_MOBILE = 2;
@@ -37,28 +37,30 @@ export function CalendarView() {
   const tasksStore = useStorage("tasks");
   const eventsStore = useStorage("events");
   const subjectsStore = useStorage("subjects");
+  const activitiesStore = useStorage("activities");
   const settingsStore = useStorage("settings");
 
   const [ym, setYm] = useState<YearMonth>(() => monthOf(todayKey()) as YearMonth);
   const [selected, setSelected] = useState<string>(() => todayKey());
   const [mode, setMode] = useState<ViewMode>("month");
 
-  const ready = [schedulesStore, tasksStore, eventsStore, subjectsStore, settingsStore].every((s) => s.isReady);
+  const ready = [schedulesStore, tasksStore, eventsStore, subjectsStore, activitiesStore, settingsStore].every((s) => s.isReady);
   const weekStartsOn = settingsStore.data.weekStartsOn;
   const schedules = schedulesStore.data;
   const tasks = tasksStore.data;
   const events = eventsStore.data;
   const subjects = subjectsStore.data;
+  const activities = activitiesStore.data;
 
   const cells = useMemo(() => monthGrid(ym.year, ym.month, weekStartsOn), [ym, weekStartsOn]);
   const byDate = useMemo(
-    () => entriesByDate(cells, { schedules, tasks, events, subjects }),
-    [cells, schedules, tasks, events, subjects],
+    () => entriesByDate(cells, { schedules, tasks, events, subjects, activities }),
+    [cells, schedules, tasks, events, subjects, activities],
   );
   const agenda = useMemo(() => agendaForMonth(cells, byDate), [cells, byDate]);
   const selectedEntries = useMemo(
-    () => byDate.get(selected) ?? entriesForDate(selected, { schedules, tasks, events, subjects }),
-    [byDate, selected, schedules, tasks, events, subjects],
+    () => byDate.get(selected) ?? entriesForDate(selected, { schedules, tasks, events, subjects, activities }),
+    [byDate, selected, schedules, tasks, events, subjects, activities],
   );
 
   const today = todayKey();
@@ -90,7 +92,7 @@ export function CalendarView() {
 
   return (
     <>
-      <PageHeader title="Calendar" description="Jadwal kuliah, deadline tugas, dan event kampus dalam satu kalender." />
+      <PageHeader title="Calendar" description="Jadwal kuliah, deadline tugas, event kampus, dan kegiatan lain dalam satu kalender." />
 
       {!ready ? (
         <Skeleton />
@@ -220,7 +222,7 @@ export function CalendarView() {
                     icon={CalendarDays}
                     className="px-2 py-8"
                     title="Tidak ada aktivitas"
-                    description="Belum ada kuliah, deadline, atau event di tanggal ini."
+                    description="Belum ada kuliah, deadline, event, atau kegiatan di tanggal ini."
                   />
                 ) : (
                   <ul className="mt-3 space-y-2.5">
@@ -236,7 +238,7 @@ export function CalendarView() {
                   icon={CalendarDays}
                   className="px-2 py-8"
                   title="Bulan ini masih kosong"
-                  description="Belum ada kuliah, deadline, atau event di bulan ini."
+                  description="Belum ada kuliah, deadline, event, atau kegiatan di bulan ini."
                 />
               ) : (
                 <div className="space-y-5">

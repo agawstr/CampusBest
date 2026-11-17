@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, GraduationCap, type LucideIcon } from "lucide-react";
+import { CalendarDays, ClipboardList, GraduationCap, Users, type LucideIcon } from "lucide-react";
 import { CALENDAR_KIND_LABELS, type CalendarEntry, type CalendarKind } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
 
@@ -6,18 +6,21 @@ export const KIND_DOT: Record<CalendarKind, string> = {
   class: "bg-accent",
   event: "bg-success",
   task: "bg-amber-500",
+  activity: "bg-violet-500",
 };
 
 const KIND_ICON: Record<CalendarKind, LucideIcon> = {
   class: GraduationCap,
   event: CalendarDays,
   task: ClipboardList,
+  activity: Users,
 };
 
 export const KIND_TONE: Record<CalendarKind, string> = {
   class: "bg-accent/15 text-accent",
   event: "bg-success/15 text-success",
   task: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  activity: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
 };
 
 function timeLabel(entry: CalendarEntry): string {

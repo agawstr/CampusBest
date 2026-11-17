@@ -23,9 +23,17 @@ export const SUPPORTED_SCHEMA_VERSION = DEFAULT_SETTINGS.schemaVersion;
 /** Larger than LocalStorage can hold anyway (about 5 MB); a bigger file is not one of ours. */
 export const MAX_BACKUP_CHARS = 8 * 1024 * 1024;
 
+/** Collections every backup file must carry (unchanged since format version 1). */
 export const COLLECTION_NAMES = ["subjects", "tasks", "schedules", "events", "notes", "focusSessions"] as const;
-export type CollectionName = (typeof COLLECTION_NAMES)[number];
-export const BACKUP_NAMES: readonly StorageName[] = [...COLLECTION_NAMES, "settings"];
+/**
+ * Collections added later. Backups made before they existed don't have them, so a missing one is NOT an error:
+ * it is reported as absent and left untouched on this device (never read as "empty"). A present one must be a list.
+ */
+export const OPTIONAL_COLLECTION_NAMES = ["activities"] as const;
+export const ALL_COLLECTION_NAMES = [...COLLECTION_NAMES, ...OPTIONAL_COLLECTION_NAMES] as const;
+export type CollectionName = (typeof ALL_COLLECTION_NAMES)[number];
+const isOptionalName = (name: CollectionName): boolean => (OPTIONAL_COLLECTION_NAMES as readonly string[]).includes(name);
+export const BACKUP_NAMES: readonly StorageName[] = [...ALL_COLLECTION_NAMES, "settings"];
 
 export const COLLECTION_LABELS: Record<CollectionName, string> = {
   subjects: "Mata kuliah",
@@ -34,6 +42,7 @@ export const COLLECTION_LABELS: Record<CollectionName, string> = {
   events: "Ujian & event",
   notes: "Catatan",
   focusSessions: "Sesi fokus",
+  activities: "Kegiatan lain",
 };
 
 /** Raw stored value per storage name. `null` = the key does not exist. */
@@ -101,7 +110,7 @@ const settingsForBackup = (raw: unknown): Rec => (isPlainObject(raw) ? stripTime
 export function buildBackup(snapshot: Snapshot, now: Date): BackupFile {
   const data: Rec = {};
   const counts = {} as Record<CollectionName, number>;
-  for (const name of COLLECTION_NAMES) {
+  for (const name of ALL_COLLECTION_NAMES) {
     const list = asArray(snapshot[name]);
     data[name] = list;
     counts[name] = list.length;
@@ -127,6 +136,8 @@ export interface CollectionInfo { total: number; recognized: number; unrecognize
 export interface ParsedBackup {
   meta: { appVersion?: string; exportedAt?: string; schemaVersion: number; formatVersion: number };
   data: Record<CollectionName, unknown[]>;
+  /** Optional collections the file does not contain at all (an older backup). Their data is [] here but they are never written or cleared. */
+  absent: CollectionName[];
   /** Without focusTimer. */
   settings: Rec;
   info: Record<CollectionName, CollectionInfo>;
@@ -165,8 +176,15 @@ export function parseBackup(text: string): ParseOutcome {
 
   const data = {} as Record<CollectionName, unknown[]>;
   const info = {} as Record<CollectionName, CollectionInfo>;
-  for (const name of COLLECTION_NAMES) {
+  const absent: CollectionName[] = [];
+  for (const name of ALL_COLLECTION_NAMES) {
     const list = dataRaw[name];
+    if (isOptionalName(name) && list === undefined) {
+      absent.push(name);
+      data[name] = [];
+      info[name] = { total: 0, recognized: 0, unrecognized: 0, duplicateIds: 0 };
+      continue;
+    }
     if (!Array.isArray(list)) { errors.push(`Data "${COLLECTION_LABELS[name]}" tidak ada atau bukan daftar.`); continue; }
     data[name] = list;
     const seen = new Set<string>();
@@ -186,11 +204,13 @@ export function parseBackup(text: string): ParseOutcome {
   if (errors.length > 0) return { ok: false, errors };
 
   if (isPlainObject(raw.counts)) {
-    for (const name of COLLECTION_NAMES) {
+    for (const name of ALL_COLLECTION_NAMES) {
+      if (absent.includes(name)) continue;
       const claimed = (raw.counts as Rec)[name];
       if (isInt(claimed) && claimed !== data[name].length) warnings.push(`${COLLECTION_LABELS[name]}: jumlah di header (${claimed}) berbeda dari isi file (${data[name].length}). File mungkin diubah.`);
     }
   }
+  for (const name of absent) warnings.push(`${COLLECTION_LABELS[name]}: tidak ada di file ini (cadangan dari versi lama). Data ini di perangkat tidak diubah.`);
   if ((raw.schemaVersion as number) < SUPPORTED_SCHEMA_VERSION) warnings.push("Cadangan ini dari versi skema lama. Datanya tetap dibaca dengan aturan kompatibilitas yang sama seperti data lama di aplikasi.");
 
   return {
@@ -204,6 +224,7 @@ export function parseBackup(text: string): ParseOutcome {
         formatVersion: raw.formatVersion as number,
       },
       data,
+      absent,
       settings: stripTimer(dataRaw.settings as Rec),
       info,
     },
@@ -217,7 +238,7 @@ export function parseBackup(text: string): ParseOutcome {
 export function verifyBackupMatches(content: string, snapshot: Snapshot): string | null {
   const parsed = parseBackup(content);
   if (!parsed.ok) return parsed.errors[0];
-  for (const name of COLLECTION_NAMES) {
+  for (const name of ALL_COLLECTION_NAMES) {
     if (!deepEqual(parsed.backup.data[name], asArray(snapshot[name]))) return `Isi cadangan untuk "${COLLECTION_LABELS[name]}" tidak sama dengan data di perangkat.`;
   }
   if (!deepEqual(parsed.backup.settings, settingsForBackup(snapshot.settings))) return "Isi cadangan untuk pengaturan tidak sama dengan data di perangkat.";
@@ -245,6 +266,8 @@ export interface CollectionPlan {
   keptCurrent: number;
   /** Entries without a valid id, left out of a merge. */
   skipped: number;
+  /** The file has no such collection (older backup): nothing is changed for it, merge or replace. */
+  absent?: boolean;
 }
 
 export interface ImportPlan {
@@ -305,11 +328,17 @@ export function planImport(snapshot: Snapshot, backup: ParsedBackup, mode: Impor
   const writes: Partial<Record<StorageName, unknown>> = {};
   const warnings: string[] = [];
 
-  for (const name of COLLECTION_NAMES) {
+  for (const name of ALL_COLLECTION_NAMES) {
     const incoming = backup.data[name];
     const currentRaw = snapshot[name];
     let next: unknown[];
     let plan: CollectionPlan;
+    if (backup.absent?.includes(name)) {
+      // Not in the file: leave what is on this device exactly as it is (an old backup must never wipe newer data).
+      const current = Array.isArray(currentRaw) ? currentRaw.length : currentRaw === null || currentRaw === undefined ? 0 : 1;
+      collections.push({ name, label: COLLECTION_LABELS[name], current, incoming: 0, resulting: current, added: 0, updated: 0, unchanged: 0, keptCurrent: 0, skipped: 0, absent: true });
+      continue;
+    }
     if (mode === "merge") {
       ({ next, plan } = mergeCollection(name, currentRaw, incoming));
     } else {
@@ -328,7 +357,8 @@ export function planImport(snapshot: Snapshot, backup: ParsedBackup, mode: Impor
     if (!sameStored(next, snapshot.settings)) { writes.settings = next; settings = "replaced"; }
   }
 
-  const sum = (pick: (c: CollectionPlan) => number) => collections.reduce((n, c) => n + pick(c), 0);
+  // Absent collections are left out of the comparison: they are not part of what the file would replace.
+  const sum = (pick: (c: CollectionPlan) => number) => collections.reduce((n, c) => n + (c.absent ? 0 : pick(c)), 0);
   const totals = { current: sum((c) => c.current), incoming: sum((c) => c.incoming), resulting: sum((c) => c.resulting) };
 
   if (mode === "replace") {

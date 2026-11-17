@@ -209,7 +209,7 @@ async function main() {
   eq("wantsAdd", ["?tambah=1", "?tambah", "?x=1&tambah=1", "", "?x=1", "?tambahan=1"].map(Q.wantsAdd), [true, true, true, false, false, false]);
   eq("withoutAddParam", ["?tambah=1", "?tambah=1&x=2", "?x=2&tambah=1", "", "?x=2"].map(Q.withoutAddParam), ["", "?x=2", "?x=2", "", "?x=2"]);
   const view = (f: string) => fs.readFileSync(path.join(process.cwd(), f), "utf8");
-  ok("Tasks, Schedule, Exams and Notes open their own existing form from the flag (no second form)", ["tasks/tasks-view", "schedule/schedule-view", "events/events-view", "notes/notes-view"].every((f) => /useOpenFromQuery\(openCreate\)/.test(view(`src/components/${f}.tsx`))));
+  ok("Tasks, Schedule, Exams and Notes open their own existing form from the flag (no second form)", ["tasks/tasks-view", "schedule/course-schedule-panel", "events/events-view", "notes/notes-view"].every((f) => /useOpenFromQuery\(openCreate\)/.test(view(`src/components/${f}.tsx`))));
   ok("the dashboard contains no form modal of its own", !/FormModal|createTask|createEvent|createSchedule|storage\.(write|update)|\.update\(|\.set\(/.test(["dashboard-view", "quick-actions", "today-schedule-card", "upcoming-tasks-card", "upcoming-events-card", "task-progress-card"].map((f) => view(`src/components/dashboard/${f}.tsx`)).join("\n")));
 
   /* ================= static guards over the whole codebase ================= */

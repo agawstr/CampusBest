@@ -1,10 +1,10 @@
 import type {
-  AppSettings, CampusEvent, FocusSession, Note, ScheduleItem, StorageName, Subject, Task,
+  Activity, AppSettings, CampusEvent, FocusSession, Note, ScheduleItem, StorageName, Subject, Task,
 } from "@/types";
 import { isValidTime } from "./date";
 import { normalizeFocusSettings, normalizeTimerState } from "./focus";
 import {
-  EVENT_CATEGORIES, EVENT_TYPES, SCHEDULE_MODES, SCHEDULE_RECURRENCES, TASK_PRIORITIES, TASK_STATUSES,
+  ACTIVITY_CATEGORIES, EVENT_CATEGORIES, EVENT_TYPES, SCHEDULE_MODES, SCHEDULE_RECURRENCES, TASK_PRIORITIES, TASK_STATUSES,
   eventTypeFromCategory, inferEventCategory,
 } from "./domain";
 
@@ -147,6 +147,25 @@ export function normalizeFocusSession(raw: Rec, index = 0): FocusSession {
   };
 }
 
+export function normalizeActivity(raw: Rec, index = 0): Activity {
+  const day = optNum(raw.dayOfWeek);
+  return {
+    ...raw,
+    ...base(raw, "activity", index),
+    title: str(raw.title, "Tanpa judul"),
+    category: oneOf(raw.category, ACTIVITY_CATEGORIES, "lainnya"),
+    // Same safe fallbacks as schedules: an invalid day shows as Monday, an unknown recurrence as weekly (in memory only).
+    recurrence: oneOf(raw.recurrence, SCHEDULE_RECURRENCES, "weekly"),
+    dayOfWeek: (day !== undefined && Number.isInteger(day) && day >= 0 && day <= 6 ? day : 1) as Activity["dayOfWeek"],
+    // Not validated on purpose (like Schedule.date): a malformed value stays in the record, lib/activities treats it as "no usable date".
+    date: optStr(raw.date),
+    startTime: optTime(raw.startTime) ?? "08:00",
+    endTime: optTime(raw.endTime),
+    location: optStr(raw.location),
+    notes: optStr(raw.notes),
+  };
+}
+
 export function normalizeSettings(value: unknown): AppSettings {
   const raw: Rec = isRec(value) ? value : {};
   const version = optNum(raw.schemaVersion);
@@ -175,6 +194,7 @@ const NORMALIZERS: Record<CollectionName, (raw: Rec, index: number) => unknown> 
   events: normalizeEvent,
   notes: normalizeNote,
   focusSessions: normalizeFocusSession,
+  activities: normalizeActivity,
 };
 
 /**
@@ -192,6 +212,7 @@ const ENUM_FIELDS: Record<CollectionName, readonly string[]> = {
   events: ["type", "category"],
   notes: [],
   focusSessions: [],
+  activities: ["category", "recurrence", "dayOfWeek"],
 };
 
 export interface NormalizedCollection { items: unknown[]; orphans: unknown[]; coerced: CoercionMap }

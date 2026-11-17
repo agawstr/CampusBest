@@ -5,7 +5,7 @@
 set -u
 status=0
 for tz in Asia/Jakarta America/New_York Europe/London Pacific/Auckland America/Sao_Paulo; do
-  for f in scripts/batch2-logic-check.ts scripts/batch3-logic-check.ts scripts/batch4-logic-check.ts scripts/batch5-logic-check.ts scripts/batch6-logic-check.ts scripts/batch7-logic-check.ts scripts/batch8-logic-check.ts scripts/batch9-logic-check.ts scripts/batch10-logic-check.ts scripts/batch11-logic-check.ts scripts/batch12-logic-check.ts scripts/batch13-logic-check.ts; do
+  for f in scripts/batch2-logic-check.ts scripts/batch3-logic-check.ts scripts/batch4-logic-check.ts scripts/batch5-logic-check.ts scripts/batch6-logic-check.ts scripts/batch7-logic-check.ts scripts/batch8-logic-check.ts scripts/batch9-logic-check.ts scripts/batch10-logic-check.ts scripts/batch11-logic-check.ts scripts/batch12-logic-check.ts scripts/batch13-logic-check.ts scripts/batch14-logic-check.ts; do
     result=$(TZ="$tz" npx --yes tsx "$f" 2>&1 | tail -1)
     echo "$tz  $(basename "$f" .ts): $result"
     case "$result" in *" 0 failed"*) ;; *) status=1 ;; esac

@@ -67,6 +67,35 @@ export interface ScheduleItem extends BaseEntity {
   date?: string;
 }
 
+/** Kegiatan Lain (di luar kuliah). Kategori adalah daftar tetap; nilai tak dikenal ditampilkan sebagai "lainnya". */
+export type ActivityCategory = "organisasi" | "olahraga" | "pekerjaan" | "keluarga" | "ibadah" | "sosial" | "hobi" | "lainnya";
+/** Sama persis dengan pengulangan jadwal kuliah: sekali, mingguan, dua mingguan. */
+export type ActivityRecurrence = ScheduleRecurrence;
+
+/**
+ * Stored in its own collection (`campusbest_activities`). Never mixed into subjects/schedules/tasks/events,
+ * and never counted in the per-mata-kuliah study numbers.
+ */
+export interface Activity extends BaseEntity {
+  title: string;
+  category: ActivityCategory;
+  recurrence: ActivityRecurrence;
+  /** 0 = Sunday ... 6 = Saturday. For "none" and "biweekly" it is kept in sync with `date` on save. */
+  dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /**
+   * "YYYY-MM-DD", local date.
+   *  - "none": the one date it happens (required for it to show up anywhere).
+   *  - "biweekly": the anchor, i.e. the first occurrence; every 14 days from it.
+   *  - "weekly": not used.
+   */
+  date?: string;
+  startTime: string; // "HH:mm", local time
+  /** "HH:mm". Optional: an activity may have only a start time. */
+  endTime?: string;
+  location?: string;
+  notes?: string;
+}
+
 export type EventType = "event" | "exam" | "deadline" | "other";
 
 export type EventCategory = "uts" | "uas" | "quiz" | "presentasi" | "praktikum" | "seminar" | "lainnya";

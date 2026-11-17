@@ -158,7 +158,7 @@ async function main() {
   ok("the Subjects form has an abbreviation field with a hint", /Singkatan \(opsional\)/.test(form) && /hint=/.test(form) && /errors\.abbr/.test(form));
   const pkg = JSON.parse(view("package.json"));
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
-  ok("version 0.12.2 everywhere", pkg.version === "0.12.2" && /APP_VERSION = "0\.12\.2"/.test(view("src/lib/pwa.ts")) && /const VERSION = "0\.12\.2"/.test(view("public/sw.js")));
+  ok("version is the same everywhere (0.12.2 or 0.13.0)", ["0.12.2", "0.13.0"].includes(pkg.version) && view("src/lib/pwa.ts").includes(`APP_VERSION = "${pkg.version}"`) && view("public/sw.js").includes(`const VERSION = "${pkg.version}"`));
   ok("storage layer files untouched by name (no new key)", !/abbr/.test(view("src/lib/storage-keys.ts")) && !/abbr/.test(view("src/lib/storage.ts")));
 
   console.log(`\n${pass} passed, ${fail} failed`);

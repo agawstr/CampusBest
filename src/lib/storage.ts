@@ -266,7 +266,7 @@ export async function runStorageSelfTest(): Promise<SelfTestResult[]> {
 
   await check("LocalStorage tersedia", async () => adapter.isAvailable());
   await check("Semua key memakai prefix campusbest_", () =>
-    STORAGE_NAMES.length === 7 && STORAGE_NAMES.every((n) => STORAGE_KEYS[n].startsWith(STORAGE_PREFIX)));
+    STORAGE_NAMES.length === 8 && STORAGE_NAMES.every((n) => STORAGE_KEYS[n].startsWith(STORAGE_PREFIX)));
   await check("Tulis dan baca ulang", async () => {
     await adapter.setRaw(key, { a: 1, b: ["x"] });
     const v = (await adapter.getRaw(key)) as { a?: number } | null;

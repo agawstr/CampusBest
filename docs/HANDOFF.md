@@ -114,3 +114,14 @@ Hanya tampilan Calendar dan satu field opsional baru. Tanpa dependency baru, tan
 
 ## Instruksi melanjutkan ke Phase 3 Batch 6 (Final Testing)
 Batch 6 BELUM dimulai; tunggu instruksi pemilik. Cakupan sesuai pemilik: typecheck penuh, build produksi, regression testing semua fitur, pengujian PWA, responsive, LocalStorage, perbaikan bug, optimasi akhir, pemeriksaan konsistensi UI/UX. Jangan menambah fitur baru. Langkah awal: ekstrak ZIP, baca `docs/PROGRESS.md` bagian 12, `npm install`, `npx tsc --noEmit`, `bash scripts/run-logic-checks.sh`, `npm run build` (di mesin dengan internet agar font asli terambil), lalu uji manual di browser/perangkat nyata dan laporkan temuan sebelum memperbaiki. Phase 4 (API eksternal) opsional dan tidak boleh mengubah fakta bahwa CampusBest harus lengkap tanpa integrasi eksternal.
+
+## Update: Kegiatan Lain (0.13.0)
+
+- Schedule punya dua tab: **Kuliah** (`components/schedule/course-schedule-panel.tsx`, isi lama dipindah apa adanya, hanya menerima `tabs` untuk ditampilkan di bawah header) dan **Kegiatan Lain** (`activities-panel.tsx`, `activity-card.tsx`, `activity-form-modal.tsx`). `schedule-view.tsx` kini hanya cangkang tab; `?tab=lain` membuka tab kedua, `?tambah=1` dipakai panel yang aktif.
+- Data: koleksi baru `campusbest_activities` (storage name `activities`), tipe `Activity` di `types/models.ts`, `normalizeActivity` di `lib/normalize.ts`. Field: title, category (8 kategori, `lib/domain.ts`), recurrence (none/weekly/biweekly), dayOfWeek, date, startTime, endTime? (opsional), location?, notes?. Koleksi lama tidak diubah.
+- Logika murni di `lib/activities.ts` (aturan pengulangan sama dengan jadwal kuliah, selisih hari kalender sehingga aman DST, form, agenda Dashboard).
+- Calendar: `CalendarKind` + `"activity"`, `CalendarSources.activities?` (opsional). Dashboard: kartu "Kegiatan lain" (hari ini + 6 hari ke depan), `DashboardModel.activities/hasActivities`.
+- Backup/Restore: `activities` ikut diekspor. Format tetap versi 1. Koleksi opsional (`OPTIONAL_COLLECTION_NAMES`): backup lama tanpa `activities` tetap diterima dan data kegiatan di perangkat TIDAK diubah (merge maupun replace). Jika ada tetapi bukan daftar, file ditolak.
+- Statistics tidak menyentuh kegiatan (diuji).
+- Uji: `scripts/batch14-logic-check.ts` (104 pemeriksaan, masuk `run-logic-checks.sh`). Asersi lama yang sengaja berubah: jumlah key storage 7 -> 8 (batch7/8/9/11), kunci model Dashboard (batch7), bentuk export (batch11), file Schedule dipindah (batch5/9), versi (batch8-13).
+- Belum diverifikasi di lingkungan pembuatan: `npm run build`, `tsc` penuh untuk file .tsx, dan tampilan di browser (tidak ada node_modules/jaringan). Jalankan `npm install && npm run typecheck && npm run build` dan cek manual tab, form, Calendar, Dashboard, Backup.

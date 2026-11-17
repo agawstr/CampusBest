@@ -107,7 +107,7 @@ async function main() {
   const pkg = JSON.parse(read("package.json"));
 
   // ---------- versions ----------
-  ok("package.json version is 0.12.0, 0.12.1 or 0.12.2", ["0.12.0", "0.12.1", "0.12.2"].includes(pkg.version), pkg.version);
+  ok("package.json version is 0.12.0 to 0.13.0", ["0.12.0", "0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
   ok("APP_VERSION matches package.json", pwa.APP_VERSION === pkg.version);
   ok("sw.js VERSION matches package.json", new RegExp(`const VERSION = "${pkg.version}"`).test(swSource));
 
@@ -310,7 +310,7 @@ async function main() {
   }
   ok("sw.js deletes caches only with the campusbest- prefix", /n\.startsWith\(PREFIX\)/.test(swSource) && (swSource.match(/caches\.delete/g) ?? []).length === 1);
   ok("next.config has no Clear-Site-Data header", !/Clear-Site-Data/i.test(cfg));
-  const callers = fs.readdirSync(path.join(process.cwd(), "src"), { recursive: true }).map(String).filter((f) => /\.(ts|tsx)$/.test(f)).filter((f) => /clearAll\(/.test(read("src/" + f)));
+  const callers = fs.readdirSync(path.join(process.cwd(), "src"), { recursive: true }).map(String).map((f) => f.replace(/\\/g, "/")).filter((f) => /\.(ts|tsx)$/.test(f)).filter((f) => /clearAll\(/.test(read("src/" + f)));
   eq("storage.clearAll() is only defined in storage.ts and called only from Settings > Hapus data", callers.sort(), ["app/settings/page.tsx", "lib/storage.ts"]);
   const keysSrc = read("src/lib/storage-keys.ts");
   ok("storage keys and adapter untouched", keysSrc.includes('STORAGE_PREFIX = "campusbest_"') && keysSrc.includes('LEGACY_STORAGE_PREFIX = "campusmate_"') && ["subjects", "tasks", "schedules", "events", "notes", "focus_sessions", "settings"].every((k) => keysSrc.includes(`"${k}"`)));

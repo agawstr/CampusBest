@@ -275,12 +275,12 @@ async function main() {
   ok("commitImport (tasks) and its UI still exist", /export async function commitImport/.test(view("src/lib/import/commit.ts")) && /commitImport\(/.test(view("src/components/import/import-view.tsx")));
   ok("schedule UI writes only through commitScheduleImport", !/storage\.(write|update|remove)|getStorageAdapter|setRaw|localStorage/.test(view("src/components/import/schedule-import-view.tsx")) && /commitScheduleImport\(/.test(view("src/components/import/schedule-import-view.tsx")));
   ok("no dangerouslySetInnerHTML in the schedule import UI", ["schedule-import-view", "schedule-import-item-card"].every((n) => !/dangerouslySetInnerHTML|innerHTML/.test(view(`src/components/import/${n}.tsx`))));
-  ok("Schedule page links to /import?sumber=siam", /href="\/import\?sumber=siam"/.test(view("src/components/schedule/schedule-view.tsx")) && /useOpenFromQuery\(openCreate\)/.test(view("src/components/schedule/schedule-view.tsx")));
+  ok("Schedule page links to /import?sumber=siam", /href="\/import\?sumber=siam"/.test(view("src/components/schedule/course-schedule-panel.tsx")) && /useOpenFromQuery\(openCreate\)/.test(view("src/components/schedule/course-schedule-panel.tsx")));
   ok("lib/schedule, calendar, dashboard, tasks, events don't import lib/import", ["schedule", "calendar", "dashboard", "tasks", "events"].every((n) => !/lib\/import|\.\/import\//.test(view(`src/lib/${n}.ts`))));
   ok("ScheduleItem model not changed (no new field)", !/importSource/.test(view("src/types/models.ts").split("export interface ScheduleItem")[1].split("export type EventType")[0]));
-  eq("still the same 7 storage keys", Object.values(STORAGE_KEYS).sort(), ["campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
+  eq("the original 7 storage keys plus campusbest_activities (0.13.0)", Object.values(STORAGE_KEYS).sort(), ["campusbest_activities", "campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
-  ok("version 0.10.0 or later (0.11.0 after PWA, 0.12.0 after Batch 5)", ["0.10.0", "0.11.0", "0.12.0", "0.12.1", "0.12.2"].includes(pkg.version), pkg.version);
+  ok("version 0.10.0 or later (0.11.0 after PWA, 0.12.0 after Batch 5)", ["0.10.0", "0.11.0", "0.12.0", "0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
   ok("runner lists batch9", /batch9-logic-check\.ts/.test(view("scripts/run-logic-checks.sh")));
 

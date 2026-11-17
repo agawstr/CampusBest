@@ -401,7 +401,7 @@ async function main() {
   /* ================= dashboard summary ================= */
   const empty0 = Dash.buildDashboard({ tasks: [], subjects: [], schedules: [], events: [] }, now);
   eq("dashboard without focus data: zeros", empty0.focus, { minutes: 0, sessions: 0, completed: 0 });
-  eq("dashboard model keeps its earlier parts and adds focus", Object.keys(empty0).sort(), ["dateLine", "events", "focus", "greeting", "progress", "stats", "tasks", "today"]);
+  eq("dashboard model keeps its earlier parts and adds focus", Object.keys(empty0).sort(), ["activities", "dateLine", "events", "focus", "greeting", "hasActivities", "progress", "stats", "tasks", "today"]);
   eq("dashboard stats are unchanged by focus data", Object.keys(empty0.stats).sort(), ["doneTasks", "openTasks", "overdueTasks", "subjects", "totalTasks", "upcomingEvents"]);
   const withFocus = Dash.buildDashboard({ tasks: [], subjects: [], schedules: [], events: [], focusSessions: [sess("a", new Date(2026, 10, 18, 9, 0), 25, true), sess("b", new Date(2026, 10, 17, 9, 0), 25, true)] }, now);
   eq("dashboard: today's focus time and finished sessions only", withFocus.focus, { minutes: 25, sessions: 1, completed: 1 });
@@ -436,7 +436,7 @@ async function main() {
   ok("the mini timer hides on /focus and the header shows it", /pathname === "\/focus"/.test(view("src/components/layout/focus-mini-timer.tsx")) && /<FocusMiniTimer \/>/.test(view("src/components/layout/header.tsx")));
   ok("Settings' delete-all text mentions focus sessions", /sesi fokus/.test(view("src/app/settings/page.tsx")));
   ok("the model change is additive and optional (endedAt?, focus?, focusTimer?)", /endedAt\?: string/.test(view("src/types/models.ts")) && /focus\?: FocusSettings/.test(view("src/types/models.ts")) && /focusTimer\?: FocusTimerState/.test(view("src/types/models.ts")));
-  eq("no new storage key (still the same 7)", Object.values(STORAGE_KEYS).sort(), ["campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
+  eq("storage keys: the original 7 plus campusbest_activities (0.13.0)", Object.values(STORAGE_KEYS).sort(), ["campusbest_activities", "campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
   ok("version is 0.8.0 or later (0.x)", /^0\.([89]|[1-9]\d)\.\d+$/.test(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);

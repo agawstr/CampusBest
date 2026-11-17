@@ -156,7 +156,9 @@ export function BackupCard() {
                     <span className="tabular-nums text-muted">{c.current} → <span className="font-semibold text-fg">{c.resulting}</span></span>
                   </div>
                   <p className="text-xs text-muted">
-                    {replace
+                    {c.absent
+                      ? "Tidak ada di file, data di perangkat tidak diubah"
+                      : replace
                       ? `${c.incoming} di file`
                       : [`${c.added} baru`, `${c.updated} diperbarui`, `${c.unchanged} sama`, c.keptCurrent > 0 ? `${c.keptCurrent} tetap pakai data perangkat` : "", c.skipped > 0 ? `${c.skipped} dilewati` : ""].filter(Boolean).join(", ")}
                   </p>

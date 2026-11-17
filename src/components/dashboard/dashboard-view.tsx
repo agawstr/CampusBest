@@ -8,6 +8,7 @@ import { useStorage } from "@/hooks/use-storage";
 import { buildDashboard } from "@/lib/dashboard";
 import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
 import { formatDateID } from "@/lib/date";
+import { ActivitiesCard } from "./activities-card";
 import { FocusTodayCard } from "./focus-today-card";
 import { QuickActions } from "./quick-actions";
 import { TaskProgressCard } from "./task-progress-card";
@@ -32,6 +33,7 @@ export function DashboardView() {
   const schedulesStore = useStorage("schedules");
   const eventsStore = useStorage("events");
   const focusStore = useStorage("focusSessions");
+  const activitiesStore = useStorage("activities");
   const now = useNow();
 
   const tasks = tasksStore.data;
@@ -39,12 +41,13 @@ export function DashboardView() {
   const schedules = schedulesStore.data;
   const events = eventsStore.data;
   const focusSessions = focusStore.data;
-  const ready = [tasksStore, subjectsStore, schedulesStore, eventsStore, focusStore].every((s) => s.isReady) && now !== null;
+  const activities = activitiesStore.data;
+  const ready = [tasksStore, subjectsStore, schedulesStore, eventsStore, focusStore, activitiesStore].every((s) => s.isReady) && now !== null;
 
   const subjectsById = useMemo(() => new Map(subjects.map((s) => [s.id, s])), [subjects]);
   const model = useMemo(
-    () => (ready && now ? buildDashboard({ tasks, subjects, schedules, events, focusSessions }, now) : null),
-    [ready, now, tasks, subjects, schedules, events, focusSessions],
+    () => (ready && now ? buildDashboard({ tasks, subjects, schedules, events, focusSessions, activities }, now) : null),
+    [ready, now, tasks, subjects, schedules, events, focusSessions, activities],
   );
 
   return (
@@ -81,6 +84,7 @@ export function DashboardView() {
                   hasSchedules={schedules.length > 0}
                   dayLabel={formatDateID(now, { weekday: "long", day: "numeric", month: "long" })}
                 />
+                <ActivitiesCard activities={model.activities} hasActivities={model.hasActivities} />
                 <UpcomingTasksCard tasks={model.tasks} subjectsById={subjectsById} allTasks={tasks.length} now={now} />
               </div>
               <div className="space-y-4">

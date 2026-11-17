@@ -15,6 +15,7 @@ const SUFFIX: Record<StorageName, string> = {
   events: "events",
   notes: "notes",
   focusSessions: "focus_sessions",
+  activities: "activities",
   settings: "settings",
 };
 

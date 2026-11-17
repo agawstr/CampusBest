@@ -1,5 +1,5 @@
 import type {
-  AppSettings, CampusEvent, FocusSession, Note, ScheduleItem, Subject, Task,
+  Activity, AppSettings, CampusEvent, FocusSession, Note, ScheduleItem, Subject, Task,
 } from "./models";
 
 export * from "./models";
@@ -12,6 +12,8 @@ export interface StorageSchema {
   events: CampusEvent[];
   notes: Note[];
   focusSessions: FocusSession[];
+  /** Kegiatan Lain. Optional in backups made before it existed. */
+  activities: Activity[];
   settings: AppSettings;
 }
 

@@ -1,5 +1,6 @@
-import type { CampusEvent, FocusSession, ScheduleItem, Subject, Task } from "@/types";
+import type { Activity, CampusEvent, FocusSession, ScheduleItem, Subject, Task } from "@/types";
 import { isTaskDone } from "./domain";
+import { activityAgenda, type AgendaActivity } from "./activities";
 import { formatDateID, timeToMinutes, toDateKey } from "./date";
 import { filterEvents, sortEvents } from "./events";
 import { focusToday, type FocusToday } from "./focus";
@@ -19,6 +20,8 @@ export interface DashboardData {
   events: readonly CampusEvent[];
   /** Optional (Phase 3 Batch 2). Left out, the focus summary is simply zero. */
   focusSessions?: readonly FocusSession[];
+  /** Optional (Kegiatan Lain). Left out, the activity list is simply empty. */
+  activities?: readonly Activity[];
 }
 
 /* ---------------- greeting ---------------- */
@@ -120,6 +123,10 @@ export interface DashboardModel {
   events: Limited<CampusEvent>;
   /** Focus time and finished sessions on today's local date. */
   focus: FocusToday;
+  /** Kegiatan Lain: today and the next 6 days. */
+  activities: AgendaActivity[];
+  /** Whether any activity exists at all, to word the empty state. */
+  hasActivities: boolean;
 }
 
 export function buildDashboard(data: DashboardData, now: Date, limit = 5): DashboardModel {
@@ -141,5 +148,7 @@ export function buildDashboard(data: DashboardData, now: Date, limit = 5): Dashb
     tasks: upcomingTasks(data.tasks, limit),
     events,
     focus: focusToday(data.focusSessions ?? [], now),
+    activities: activityAgenda(data.activities ?? [], now, 7),
+    hasActivities: (data.activities ?? []).length > 0,
   };
 }

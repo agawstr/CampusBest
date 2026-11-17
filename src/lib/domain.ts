@@ -1,5 +1,5 @@
 import type {
-  EventCategory, EventType, ScheduleMode, ScheduleRecurrence, Task, TaskPriority, TaskStatus,
+  ActivityCategory, EventCategory, EventType, ScheduleMode, ScheduleRecurrence, Task, TaskPriority, TaskStatus,
 } from "@/types";
 
 export const TASK_STATUSES = ["todo", "in_progress", "done", "completed"] as const satisfies readonly TaskStatus[];
@@ -67,3 +67,18 @@ export function inferEventCategory(title: string): EventCategory {
   if (/seminar/.test(t)) return "seminar";
   return "lainnya";
 }
+
+export const ACTIVITY_CATEGORIES = [
+  "organisasi", "olahraga", "pekerjaan", "keluarga", "ibadah", "sosial", "hobi", "lainnya",
+] as const satisfies readonly ActivityCategory[];
+
+export const ACTIVITY_CATEGORY_LABELS: Record<ActivityCategory, string> = {
+  organisasi: "Organisasi",
+  olahraga: "Olahraga",
+  pekerjaan: "Pekerjaan",
+  keluarga: "Keluarga",
+  ibadah: "Ibadah",
+  sosial: "Sosial",
+  hobi: "Hobi",
+  lainnya: "Lainnya",
+};

@@ -1,4 +1,4 @@
-// Phase 3 Batch 5 (Statistics + Settings + Export/Import) logic checks. Part A: Statistics. Part B: Settings.
+﻿// Phase 3 Batch 5 (Statistics + Settings + Export/Import) logic checks. Part A: Statistics. Part B: Settings.
 // Run from the project root:  TZ=Asia/Jakarta npx tsx scripts/batch11-logic-check.ts
 // Try other zones too (DST): TZ=America/New_York, TZ=Europe/London, TZ=Pacific/Auckland
 export {}; // makes this file a module so the scripts don't share globals under `tsc`
@@ -246,7 +246,7 @@ ok("service worker VERSION matches package.json (0.12.0 after Batch 5)", new Reg
   await saveFocusSettings({ focusMinutes: 30, shortBreakMinutes: 6, longBreakMinutes: 18 });
   eq("focus durations saved into settings.focus", rawSettings().focus, { focusMinutes: 30, shortBreakMinutes: 6, longBreakMinutes: 18 });
   eq("saving durations leaves the running timer, week start, theme and unknown fields alone", [rawSettings().focusTimer, rawSettings().weekStartsOn, rawSettings().theme, rawSettings().futureField], [timer, 1, "light", seed.futureField]);
-  eq("still exactly the 7 storage keys (no new store)", Object.keys(STORAGE_KEYS).length, 7);
+  eq("storage keys: the original 7 plus activities (0.13.0)", Object.keys(STORAGE_KEYS).length, 8);
   ok("lib/settings.ts writes only through storage.update('settings')", /storage\.update\("settings"/.test(view("src/lib/settings.ts")) && !/localStorage|setRaw|STORAGE_KEYS|storage\.write\(/.test(view("src/lib/settings.ts").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")));
 
   // delete-all summary
@@ -273,7 +273,7 @@ ok("service worker VERSION matches package.json (0.12.0 after Batch 5)", new Reg
 
   /* ================= Part C: Export/Import ================= */
   const FIXED = new Date(2026, 10, 15, 10, 30);
-  const emptySnap = (): Snapshot => ({ subjects: null, tasks: null, schedules: null, events: null, notes: null, focusSessions: null, settings: null });
+  const emptySnap = (): Snapshot => ({ subjects: null, tasks: null, schedules: null, events: null, notes: null, focusSessions: null, activities: null, settings: null });
   const snapOf = (o: Partial<Snapshot>): Snapshot => ({ ...emptySnap(), ...o });
   const parsedOf = (o: Partial<Snapshot>): ParsedBackup => {
     const r = parseBackup(buildBackup(snapOf(o), FIXED).content);
@@ -299,7 +299,7 @@ ok("service worker VERSION matches package.json (0.12.0 after Batch 5)", new Reg
   const built = buildBackup(dev, FIXED);
   const env = JSON.parse(built.content);
   eq("export envelope", [env.app, env.format, env.formatVersion, env.schemaVersion, env.appVersion, env.exportedAt], ["CampusBest", "campusbest-backup", 1, SUPPORTED_SCHEMA_VERSION, APP_VERSION, FIXED.toISOString()]);
-  eq("export counts", built.counts, { subjects: 1, tasks: 3, schedules: 0, events: 0, notes: 0, focusSessions: 1 });
+  eq("export counts", built.counts, { subjects: 1, tasks: 3, schedules: 0, events: 0, notes: 0, focusSessions: 1, activities: 0 });
   eq("export carries every collection and settings", Object.keys(env.data).sort(), [...BACKUP_NAMES].sort());
   eq("export keeps raw records verbatim (legacy fields, unknown fields, entries that are not objects)", env.data.tasks, dev.tasks);
   ok("export never contains the running timer", !("focusTimer" in env.data.settings) && !/endsAt/.test(built.content));
@@ -307,7 +307,7 @@ ok("service worker VERSION matches package.json (0.12.0 after Batch 5)", new Reg
   eq("export does not modify the snapshot", JSON.stringify(dev), devCopy);
   const nothing = JSON.parse(buildBackup(emptySnap(), FIXED).content);
   eq("export of an empty device: empty lists and {} settings", [nothing.data.tasks, nothing.data.settings, nothing.counts.tasks], [[], {}, 0]);
-  eq("export of a non-list stored value becomes an empty list", JSON.parse(buildBackup(snapOf({ tasks: "garbage", settings: [1] }), FIXED).content).data, { subjects: [], tasks: [], schedules: [], events: [], notes: [], focusSessions: [], settings: {} });
+  eq("export of a non-list stored value becomes an empty list", JSON.parse(buildBackup(snapOf({ tasks: "garbage", settings: [1] }), FIXED).content).data, { subjects: [], tasks: [], schedules: [], events: [], notes: [], focusSessions: [], activities: [], settings: {} });
 
   // ---- round trip and verify ----
   const rtParsed = parseBackup(built.content);

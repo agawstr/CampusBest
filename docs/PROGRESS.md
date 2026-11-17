@@ -486,3 +486,7 @@ Baseline: ZIP 0.12.1 (tidak ada perubahan parsial dari sesi sebelumnya; diperiks
 - Tailwind 3.4 asli, font Plus Jakarta Sans (lebar teks bisa sedikit beda), mode terang, HP nyata (Samsung A35), data asli. Karena label 9-10 px sangat kecil, perlu dilihat langsung di HP.
 - `+12 lagi` dua digit di `lg` dengan sidebar terbuka (catatan lama 0.12.1).
 - Daftar kode ruangan lab (`LAB_ROOM_CODES`) hanya G1.2 dan G1.5; ruangan lab lain yang namanya tidak memuat kata "Lab" harus ditambahkan manual.
+
+## 15. Kegiatan Lain (0.13.0)
+
+Lihat bagian "Update: Kegiatan Lain" di `docs/HANDOFF.md`. Status: kode selesai; logic test lulus di 5 zona waktu; typecheck lib/types bersih (tsc, tanpa modul pihak ketiga); file .tsx hanya dicek dengan stub (bukan `next build`); belum dicek visual di browser.
