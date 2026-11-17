@@ -23,10 +23,10 @@ import { TimerRing } from "./timer-ring";
 function Skeleton() {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" aria-hidden>
-      <div className="glass h-[560px] animate-pulse rounded-card" />
+      <div className="glass-item h-[560px] animate-pulse rounded-card" />
       <div className="space-y-4">
-        <div className="glass h-[120px] animate-pulse rounded-card" />
-        <div className="glass h-[240px] animate-pulse rounded-card" />
+        <div className="glass-item h-[120px] animate-pulse rounded-card" />
+        <div className="glass-item h-[240px] animate-pulse rounded-card" />
       </div>
     </div>
   );

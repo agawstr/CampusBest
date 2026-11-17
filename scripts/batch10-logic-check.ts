@@ -107,7 +107,7 @@ async function main() {
   const pkg = JSON.parse(read("package.json"));
 
   // ---------- versions ----------
-  ok("package.json version is 0.12.0 to 0.13.0", ["0.12.0", "0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
+  ok("package.json version is 0.12.0 to 0.13.0", ["0.12.0", "0.12.1", "0.12.2", "0.13.0", "0.13.1"].includes(pkg.version), pkg.version);
   ok("APP_VERSION matches package.json", pwa.APP_VERSION === pkg.version);
   ok("sw.js VERSION matches package.json", new RegExp(`const VERSION = "${pkg.version}"`).test(swSource));
 
@@ -118,7 +118,7 @@ async function main() {
   ok("manifest start_url is an app route", m.start_url === "/dashboard" && read("src/lib/navigation.ts").includes(`href: "${m.start_url}"`));
   ok("manifest scope is /", m.scope === "/");
   ok("theme/background colors are hex", /^#[0-9A-Fa-f]{6}$/.test(m.theme_color) && /^#[0-9A-Fa-f]{6}$/.test(m.background_color));
-  ok("manifest theme color matches the dark --background token or layout", read("src/app/layout.tsx").includes("THEME_COLOR") && m.theme_color === "#0B1020");
+  ok("manifest theme color matches the dark --background token or layout", read("src/app/layout.tsx").includes("THEME_COLOR") && m.theme_color === "#060608");
   const pngSize = (p: string) => { const b = fs.readFileSync(path.join(process.cwd(), p)); return b.slice(0, 8).toString("hex") === "89504e470d0a1a0a" ? [b.readUInt32BE(16), b.readUInt32BE(20)] : null; };
   for (const icon of m.icons) {
     const file = "public" + icon.src;

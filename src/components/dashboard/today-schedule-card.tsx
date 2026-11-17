@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Subject } from "@/types";
 import { SectionHeader } from "./section-header";
 
-const FALLBACK_COLOR = "#9AAAC2";
+const FALLBACK_COLOR = "#9A9AA3";
 
 const STATUS_CHIP: Partial<Record<ClassStatus, { label: string; className: string }>> = {
   ongoing: { label: "Sedang berlangsung", className: "bg-accent/15 text-accent" },
@@ -46,7 +46,7 @@ export function TodayScheduleCard({ classes, subjectsById, hasSchedules, dayLabe
             return (
               <li
                 key={item.id}
-                className={cn("glass rounded-control p-3.5", status === "done" && "opacity-70")}
+                className={cn("glass-item rounded-control p-3.5", status === "done" && "opacity-70")}
                 style={{ borderLeft: `4px solid ${subject?.color ?? FALLBACK_COLOR}` }}
               >
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

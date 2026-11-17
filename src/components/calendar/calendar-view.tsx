@@ -29,7 +29,7 @@ const TITLES_LG = 2;
 const TITLES_XL = 3;
 
 function Skeleton() {
-  return <div className="glass h-[420px] animate-pulse rounded-card" aria-hidden />;
+  return <div className="glass-item h-[420px] animate-pulse rounded-card" aria-hidden />;
 }
 
 export function CalendarView() {

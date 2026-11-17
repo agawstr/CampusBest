@@ -424,7 +424,7 @@ async function main() {
   ok("the model change is additive and optional (url?, importSource?)", /url\?: string/.test(view("src/types/models.ts")) && /importSource\?: string/.test(view("src/types/models.ts")));
   eq("storage keys: the original 7 plus campusbest_activities (0.13.0)", Object.values(STORAGE_KEYS).sort(), ["campusbest_activities", "campusbest_events", "campusbest_focus_sessions", "campusbest_notes", "campusbest_schedules", "campusbest_settings", "campusbest_subjects", "campusbest_tasks"]);
   const pkg = JSON.parse(view("package.json"));
-  ok("version is 0.9.0 or later (0.10.0 after Bulk Import 2, 0.11.0 after PWA, 0.12.0 after Batch 5)", ["0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
+  ok("version is 0.9.0 or later (0.10.0 after Bulk Import 2, 0.11.0 after PWA, 0.12.0 after Batch 5)", ["0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.12.1", "0.12.2", "0.13.0", "0.13.1"].includes(pkg.version), pkg.version);
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
   eq("no page is a placeholder anymore (Statistics built in Phase 3 Batch 5 part A)", navHrefs.filter((h) => /PlaceholderPage/.test(view(`src/app${h}/page.tsx`))), []);
   ok("the Dashboard, Calendar and Tasks logic were not touched by the import (no import of lib/import there)", ["lib/dashboard.ts", "lib/calendar.ts", "lib/tasks.ts", "lib/schedule.ts", "lib/events.ts"].every((f) => !/lib\/import|\.\/import\//.test(view(`src/${f}`))));

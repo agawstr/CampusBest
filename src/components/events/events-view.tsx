@@ -37,7 +37,7 @@ const TIME_OPTIONS: { value: TimeFilter; label: string }[] = [
 function ListSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
-      {[0, 1, 2].map((i) => <div key={i} className="glass h-[112px] animate-pulse rounded-card" />)}
+      {[0, 1, 2].map((i) => <div key={i} className="glass-item h-[112px] animate-pulse rounded-card" />)}
     </div>
   );
 }

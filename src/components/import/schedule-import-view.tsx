@@ -117,8 +117,8 @@ export function ScheduleImportView() {
               </p>
               <p className="mt-1 text-sm text-muted">Jadwalnya berulang tiap minggu dan sudah muncul di Schedule, Kalender, dan Dashboard. Jadwal lamamu tidak diubah.</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link href="/schedule" className="glass inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Schedule</Link>
-                <Link href="/calendar" className="glass inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Kalender</Link>
+                <Link href="/schedule" className="glass-item inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Schedule</Link>
+                <Link href="/calendar" className="glass-item inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Kalender</Link>
               </div>
             </div>
           </div>

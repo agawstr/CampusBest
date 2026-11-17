@@ -37,7 +37,7 @@ const PRIORITY_OPTIONS: { value: PriorityFilter; label: string }[] = [
 function ListSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
-      {[0, 1, 2].map((i) => <div key={i} className="glass h-[88px] animate-pulse rounded-card" />)}
+      {[0, 1, 2].map((i) => <div key={i} className="glass-item h-[88px] animate-pulse rounded-card" />)}
     </div>
   );
 }
@@ -138,7 +138,7 @@ export function TasksView() {
         description="Kelola tugas berdasarkan mata kuliah dan prioritas."
         actions={
           <>
-            <Link href="/import" className="glass inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
+            <Link href="/import" className="glass-item inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
               <ClipboardPaste className="h-4 w-4" aria-hidden />
               Import
             </Link>

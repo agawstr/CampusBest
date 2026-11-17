@@ -151,7 +151,7 @@ export function SubjectFormModal({ open, onOpenChange, subject, suggestedColor, 
                   title={c.label}
                   onClick={() => set("color", c.value)}
                   className={cn(
-                    "grid h-9 w-9 place-items-center rounded-full text-[#0B1020] transition-shadow duration-fast",
+                    "grid h-9 w-9 place-items-center rounded-full text-[#0A0A0C] transition-shadow duration-fast",
                     active && "ring-2 ring-fg ring-offset-2 ring-offset-card",
                   )}
                   style={{ backgroundColor: c.value }}

@@ -32,7 +32,7 @@ export function ScheduleView() {
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
   }
 
-  if (tab === null) return <div className="glass h-[120px] animate-pulse rounded-card" aria-hidden />;
+  if (tab === null) return <div className="glass-item h-[120px] animate-pulse rounded-card" aria-hidden />;
 
   const tabs = (
     <div className="mb-4 sm:w-80">

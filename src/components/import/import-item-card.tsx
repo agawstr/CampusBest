@@ -77,7 +77,7 @@ export function ImportItemCard({ state, subjects, onChange, onRemove }: Props) {
   const dimmed = !item.included || (dup !== undefined && item.dupAction === "skip");
 
   return (
-    <li className={cn("glass rounded-card p-4 shadow-soft transition-opacity duration-fast", dimmed && "opacity-60", hasErr && item.included && "ring-1 ring-danger/50")}>
+    <li className={cn("glass-item rounded-card p-4 shadow-soft transition-opacity duration-fast", dimmed && "opacity-60", hasErr && item.included && "ring-1 ring-danger/50")}>
       <div className="flex items-start gap-3">
         <input
           type="checkbox"

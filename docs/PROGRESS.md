@@ -490,3 +490,7 @@ Baseline: ZIP 0.12.1 (tidak ada perubahan parsial dari sesi sebelumnya; diperiks
 ## 15. Kegiatan Lain (0.13.0)
 
 Lihat bagian "Update: Kegiatan Lain" di `docs/HANDOFF.md`. Status: kode selesai; logic test lulus di 5 zona waktu; typecheck lib/types bersih (tsc, tanpa modul pihak ketiga); file .tsx hanya dicek dengan stub (bukan `next build`); belum dicek visual di browser.
+
+## 16. Re-skin Dark Liquid Glass (tampilan saja)
+
+Lihat bagian "Update: Re-skin Dark Liquid Glass" di `docs/HANDOFF.md`. Status: kode selesai; logic tidak disentuh (satu asersi warna PWA di batch10 diperbarui); belum dijalankan `npm install`/typecheck/build dan belum dicek visual di browser atau HP.

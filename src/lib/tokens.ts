@@ -5,8 +5,8 @@
  * documented reference for the rest.
  */
 export const colors = {
-  dark: { bg: "#0B1020", surface: "#111A2E", card: "#172238", accent: "#65B8FF", fg: "#F3F6FC", muted: "#9AAAC2" },
-  light: { bg: "#F4F7FC", surface: "#E9EFF9", card: "#FFFFFF", accent: "#1F7AE0", fg: "#0F1A2E", muted: "#5B6B85" },
+  dark: { bg: "#060608", surface: "#0E0E11", card: "#1A1A1F", accent: "#E4E4EA", fg: "#F4F4F6", muted: "#9A9AA3" },
+  light: { bg: "#E6E6EA", surface: "#DBDBE1", card: "#FFFFFF", accent: "#2E2E36", fg: "#121216", muted: "#5C5C66" },
 } as const;
 
 export const typography = {

@@ -14,7 +14,7 @@ interface ActivityCardProps {
 export function ActivityCard({ item, onEdit, onDelete }: ActivityCardProps) {
   const note = activityRecurrenceNote(item);
   return (
-    <div className="glass flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: "4px solid #8B5CF6" }}>
+    <div className="glass-item flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: "4px solid rgb(var(--kind-activity))" }}>
       <p className="flex items-center gap-1.5 text-sm font-semibold">
         <Clock className="h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
         {activityTimeRange(item)}

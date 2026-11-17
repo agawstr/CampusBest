@@ -174,9 +174,9 @@ export function StatisticsView() {
       {!model ? (
         <div className="space-y-4" aria-hidden>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {[0, 1, 2, 3].map((i) => <div key={i} className="glass h-[104px] animate-pulse rounded-card" />)}
+            {[0, 1, 2, 3].map((i) => <div key={i} className="glass-item h-[104px] animate-pulse rounded-card" />)}
           </div>
-          <div className="glass h-[220px] animate-pulse rounded-card" />
+          <div className="glass-item h-[220px] animate-pulse rounded-card" />
         </div>
       ) : !model.hasData ? (
         <Card>

@@ -33,7 +33,7 @@ export function CalendarEntryRow({ entry }: { entry: CalendarEntry }) {
   const Icon = KIND_ICON[entry.kind];
   return (
     <li
-      className="glass flex items-start gap-3 rounded-control p-3.5"
+      className="glass-item flex items-start gap-3 rounded-control p-3.5"
       style={entry.color ? { borderLeft: `4px solid ${entry.color}` } : undefined}
     >
       <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full", KIND_TONE[entry.kind])} aria-hidden>

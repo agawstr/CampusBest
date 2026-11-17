@@ -288,7 +288,7 @@ async function main() {
   ok("calendar view and dashboard view read activities", /useStorage\("activities"\)/.test(view("src/components/calendar/calendar-view.tsx")) && /useStorage\("activities"\)/.test(view("src/components/dashboard/dashboard-view.tsx")) && /ActivitiesCard/.test(view("src/components/dashboard/dashboard-view.tsx")));
   ok("no other component or lib touches the key directly", !/campusbest_activities/.test([ "src/components", ].flatMap((d) => fs.readdirSync(d, { recursive: true }) as string[]).filter((f) => /\.tsx$/.test(f)).map((f) => view(`src/components/${f}`)).join("")));
   const pkg = JSON.parse(view("package.json"));
-  ok("version 0.13.0 everywhere", pkg.version === "0.13.0" && view("src/lib/pwa.ts").includes('APP_VERSION = "0.13.0"') && view("public/sw.js").includes('const VERSION = "0.13.0"'));
+  ok("version 0.13.1 everywhere", pkg.version === "0.13.1" && view("src/lib/pwa.ts").includes('APP_VERSION = "0.13.1"') && view("public/sw.js").includes('const VERSION = "0.13.1"'));
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
 
   console.log(`\n${pass} passed, ${fail} failed`);

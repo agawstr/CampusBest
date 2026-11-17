@@ -27,8 +27,8 @@ export function ActivitiesCard({ activities, hasActivities }: ActivitiesCardProp
           {activities.map(({ item, date, daysFromToday, status }) => (
             <li
               key={`${item.id}:${date}`}
-              className={cn("glass rounded-control p-3.5", status === "done" && "opacity-70")}
-              style={{ borderLeft: "4px solid #8B5CF6" }}
+              className={cn("glass-item rounded-control p-3.5", status === "done" && "opacity-70")}
+              style={{ borderLeft: "4px solid rgb(var(--kind-activity))" }}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <p className="text-sm font-semibold">{activityTimeRange(item)}</p>

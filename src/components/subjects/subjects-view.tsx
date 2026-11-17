@@ -84,7 +84,7 @@ export function SubjectsView() {
 
       {!ready ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-hidden>
-          {[0, 1, 2].map((i) => <div key={i} className="glass h-40 animate-pulse rounded-card" />)}
+          {[0, 1, 2].map((i) => <div key={i} className="glass-item h-40 animate-pulse rounded-card" />)}
         </div>
       ) : subjects.length === 0 ? (
         <Card>

@@ -17,6 +17,7 @@ const config: Config = {
         muted: c("muted"),
         danger: c("danger"),
         success: c("success"),
+        activity: c("kind-activity"),
       },
       fontFamily: { sans: ["var(--font-sans)", "system-ui", "sans-serif"] },
       borderRadius: {

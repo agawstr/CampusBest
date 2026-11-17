@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 import { APP_DESCRIPTION, APP_NAME } from "./brand";
 
 /** Keep in sync with package.json and public/sw.js (scripts/batch10-logic-check.ts verifies all three). */
-export const APP_VERSION = "0.13.0";
+export const APP_VERSION = "0.13.1";
 
 export const SW_URL = "/sw.js";
 export const SW_SCOPE = "/";
 export const OFFLINE_URL = "/offline.html";
-export const THEME_COLOR = "#0B1020";
-export const BACKGROUND_COLOR = "#0B1020";
+export const THEME_COLOR = "#060608";
+export const BACKGROUND_COLOR = "#060608";
 export const START_URL = "/dashboard";
 
 export function buildManifest(): MetadataRoute.Manifest {

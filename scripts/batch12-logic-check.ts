@@ -154,7 +154,7 @@ async function main() {
   ok("storage layer, keys, models and normalize do not mention previewEntries", ["src/lib/storage.ts", "src/lib/storage-keys.ts", "src/lib/normalize.ts", "src/types/models.ts"].every((f) => !/previewEntries/.test(view(f))));
   const pkg = JSON.parse(view("package.json"));
   eq("no dependency added", Object.keys(pkg.dependencies).sort(), ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "framer-motion", "lucide-react", "next", "react", "react-dom", "tailwind-merge"]);
-  ok("version 0.12.1 or 0.12.2 (0.12.2 after the abbreviation mini-batch)", ["0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
+  ok("version 0.12.1 or 0.12.2 (0.12.2 after the abbreviation mini-batch)", ["0.12.1", "0.12.2", "0.13.0", "0.13.1"].includes(pkg.version), pkg.version);
   ok("APP_VERSION and sw.js VERSION match package.json", view("src/lib/pwa.ts").includes(`APP_VERSION = "${pkg.version}"`) && view("public/sw.js").includes(`const VERSION = "${pkg.version}"`));
   ok("tailwind screens are defaults (lg 1024, xl 1280)", !/screens/.test(view("tailwind.config.ts")));
 

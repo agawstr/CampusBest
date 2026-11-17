@@ -38,7 +38,7 @@ export function ScheduleImportItemCard({ state, subjects, onChange, onRemove }: 
   const title = item.sourceSubject || "Tanpa nama";
 
   return (
-    <li className={cn("glass rounded-card p-4 shadow-soft transition-opacity duration-fast", dimmed && "opacity-60", hasErr && item.included && "ring-1 ring-danger/50")}>
+    <li className={cn("glass-item rounded-card p-4 shadow-soft transition-opacity duration-fast", dimmed && "opacity-60", hasErr && item.included && "ring-1 ring-danger/50")}>
       <div className="flex items-start gap-3">
         <input
           type="checkbox"

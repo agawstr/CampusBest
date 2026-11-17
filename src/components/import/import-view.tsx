@@ -182,8 +182,8 @@ function TaskImport() {
               </p>
               <p className="mt-1 text-sm text-muted">Tugasnya sudah muncul di Tasks, Kalender, dan Dashboard.</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link href="/tasks" className="glass inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Tasks</Link>
-                <Link href="/calendar" className="glass inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Kalender</Link>
+                <Link href="/tasks" className="glass-item inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Tasks</Link>
+                <Link href="/calendar" className="glass-item inline-flex h-9 items-center rounded-control px-3.5 text-sm font-semibold hover:bg-fg/10">Lihat Kalender</Link>
               </div>
             </div>
           </div>

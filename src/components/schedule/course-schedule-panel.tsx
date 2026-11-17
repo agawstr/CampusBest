@@ -25,7 +25,7 @@ import { ScheduleItemCard } from "./schedule-item-card";
 function Skeleton() {
   return (
     <div className="space-y-3" aria-hidden>
-      {[0, 1, 2].map((i) => <div key={i} className="glass h-[120px] animate-pulse rounded-card" />)}
+      {[0, 1, 2].map((i) => <div key={i} className="glass-item h-[120px] animate-pulse rounded-card" />)}
     </div>
   );
 }
@@ -121,7 +121,7 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
         description="Jadwal kuliah mingguanmu, lengkap dengan dosen dan ruangan."
         actions={
           <>
-            <Link href="/import?sumber=siam" className="glass inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
+            <Link href="/import?sumber=siam" className="glass-item inline-flex h-11 items-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors duration-fast hover:bg-fg/10">
               <ClipboardPaste className="h-4 w-4" aria-hidden />
               Import SIAM
             </Link>

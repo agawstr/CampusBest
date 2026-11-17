@@ -24,7 +24,7 @@ export function SubjectCard({ subject, counts, delay, onEdit, onDelete }: Subjec
     <Card delay={delay} className="flex w-full flex-col p-4">
       <div className="flex items-start gap-3">
         <span
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-control text-[#0B1020]"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-control text-[#0A0A0C]"
           style={{ backgroundColor: subject.color }}
           aria-hidden
         >

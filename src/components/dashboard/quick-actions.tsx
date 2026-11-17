@@ -19,7 +19,7 @@ export function QuickActions() {
           <Link
             key={action.key}
             href={action.href}
-            className="glass flex items-center last:odd:col-span-2 sm:last:odd:col-span-1 gap-3 rounded-card p-3.5 shadow-soft transition-colors duration-fast hover:bg-fg/[0.06] sm:p-4"
+            className="glass-item flex items-center last:odd:col-span-2 sm:last:odd:col-span-1 gap-3 rounded-card p-3.5 shadow-soft transition-colors duration-fast hover:bg-fg/[0.06] sm:p-4"
           >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-accent/15 text-accent">
               <Icon className="h-5 w-5" aria-hidden />

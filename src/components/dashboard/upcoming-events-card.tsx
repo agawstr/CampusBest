@@ -35,7 +35,7 @@ export function UpcomingEventsCard({ events, subjectsById, now }: UpcomingEvents
               const subject = event.subjectId ? subjectsById.get(event.subjectId) : undefined;
               const date = eventDateInfo(event, now);
               return (
-                <li key={event.id} className="glass rounded-control p-3.5">
+                <li key={event.id} className="glass-item rounded-control p-3.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", CATEGORY_TONE[event.category] ?? CATEGORY_TONE.lainnya)}>
                       {EVENT_CATEGORY_LABELS[event.category] ?? EVENT_CATEGORY_LABELS.lainnya}

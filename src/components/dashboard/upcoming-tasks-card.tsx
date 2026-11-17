@@ -38,7 +38,7 @@ export function UpcomingTasksCard({ tasks, subjectsById, allTasks, now }: Upcomi
               const deadline = deadlineInfo(task, now);
               const overdue = deadline?.tone === "overdue";
               return (
-                <li key={task.id} className={cn("glass rounded-control p-3.5", overdue && "border border-danger/40")}>
+                <li key={task.id} className={cn("glass-item rounded-control p-3.5", overdue && "border border-danger/40")}>
                   <div className="flex flex-wrap items-center gap-2">
                     {overdue && <span className="rounded-full bg-danger/15 px-2 py-0.5 text-xs font-semibold text-danger">Terlambat</span>}
                     <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", PRIORITY_TONE[task.priority] ?? PRIORITY_TONE.medium)}>

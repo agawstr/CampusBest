@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { recurrenceNote, subjectTitle, timeRange } from "@/lib/schedule";
 import type { ScheduleItem, Subject } from "@/types";
 
-const FALLBACK_COLOR = "#9AAAC2";
+const FALLBACK_COLOR = "#9A9AA3";
 
 interface ScheduleItemCardProps {
   item: ScheduleItem;
@@ -20,7 +20,7 @@ export function ScheduleItemCard({ item, subject, onEdit, onDelete }: ScheduleIt
   const online = item.mode === "online";
 
   return (
-    <div className="glass flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: `4px solid ${subject?.color ?? FALLBACK_COLOR}` }}>
+    <div className="glass-item flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: `4px solid ${subject?.color ?? FALLBACK_COLOR}` }}>
       <p className="flex items-center gap-1.5 text-sm font-semibold">
         <Clock className="h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
         {timeRange(item)}

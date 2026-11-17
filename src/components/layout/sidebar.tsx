@@ -23,7 +23,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "glass sticky top-0 z-40 hidden h-dvh shrink-0 flex-col border-y-0 border-l-0 px-3 py-5 transition-[width] duration-base ease-smooth md:flex",
+        "glass glass-plain sticky top-0 z-40 hidden h-dvh shrink-0 flex-col border-y-0 border-l-0 px-3 py-5 transition-[width] duration-base ease-smooth md:flex",
         collapsed ? "w-[84px]" : "w-[84px] lg:w-[272px]",
       )}
     >

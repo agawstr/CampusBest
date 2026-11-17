@@ -25,7 +25,7 @@ const SORT_OPTIONS = NOTE_SORTS.map((value) => ({ value, label: NOTE_SORT_LABELS
 function ListSkeleton() {
   return (
     <div className="grid gap-3 md:grid-cols-2" aria-hidden>
-      {[0, 1, 2, 3].map((i) => <div key={i} className="glass h-[140px] animate-pulse rounded-card" />)}
+      {[0, 1, 2, 3].map((i) => <div key={i} className="glass-item h-[140px] animate-pulse rounded-card" />)}
     </div>
   );
 }
