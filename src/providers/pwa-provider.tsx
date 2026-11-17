@@ -143,12 +143,12 @@ export function PwaProvider({ children }: { children: ReactNode }) {
         aria-live="polite"
       >
         {!online && (
-          <div role="status" className="glass pointer-events-auto flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+          <div role="status" className="glass glass-raised shadow-raised pointer-events-auto flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
             <WifiOff className="h-4 w-4 text-accent" aria-hidden /> Kamu offline. Data tetap tersimpan di perangkat.
           </div>
         )}
         {updateReady && (
-          <div role="status" className="glass pointer-events-auto flex items-center gap-3 rounded-full py-1.5 pl-4 pr-1.5 text-sm font-medium">
+          <div role="status" className="glass glass-raised shadow-raised pointer-events-auto flex items-center gap-3 rounded-full py-1.5 pl-4 pr-1.5 text-sm font-medium">
             Versi baru tersedia
             <button
               type="button"

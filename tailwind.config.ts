@@ -27,6 +27,7 @@ const config: Config = {
       },
       boxShadow: {
         soft: "var(--shadow-soft)",
+        raised: "var(--shadow-raised)",
         float: "var(--shadow-float)",
         glow: "var(--shadow-glow)",
       },

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { APP_DESCRIPTION, APP_NAME } from "./brand";
 
 /** Keep in sync with package.json and public/sw.js (scripts/batch10-logic-check.ts verifies all three). */
-export const APP_VERSION = "0.13.1";
+export const APP_VERSION = "0.13.0";
 
 export const SW_URL = "/sw.js";
 export const SW_SCOPE = "/";

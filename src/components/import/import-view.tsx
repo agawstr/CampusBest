@@ -282,7 +282,7 @@ function TaskImport() {
                 ))}
               </ul>
 
-              <div className="glass sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 flex flex-wrap items-center justify-between gap-3 rounded-card p-3.5 shadow-float md:bottom-4">
+              <div className="glass glass-raised sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 flex flex-wrap items-center justify-between gap-3 rounded-card p-3.5 shadow-raised md:bottom-4">
                 <p className="min-w-0 text-sm text-muted">
                   {summary.ready > 0
                     ? `${summary.ready} tugas siap masuk${summary.newSubjects > 0 ? `, ${summary.newSubjects} mata kuliah baru dibuat` : ""}.`

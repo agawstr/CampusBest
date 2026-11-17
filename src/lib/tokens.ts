@@ -5,7 +5,7 @@
  * documented reference for the rest.
  */
 export const colors = {
-  dark: { bg: "#060608", surface: "#0E0E11", card: "#1A1A1F", accent: "#E4E4EA", fg: "#F4F4F6", muted: "#9A9AA3" },
+  dark: { bg: "#060608", surface: "#0E0E11", card: "#1A1A1F", accent: "#E4E4EA", fg: "#F4F4F6", muted: "#AAAAB3" },
   light: { bg: "#E6E6EA", surface: "#DBDBE1", card: "#FFFFFF", accent: "#2E2E36", fg: "#121216", muted: "#5C5C66" },
 } as const;
 

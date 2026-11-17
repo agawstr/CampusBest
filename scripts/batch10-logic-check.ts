@@ -107,7 +107,7 @@ async function main() {
   const pkg = JSON.parse(read("package.json"));
 
   // ---------- versions ----------
-  ok("package.json version is 0.12.0 to 0.13.0", ["0.12.0", "0.12.1", "0.12.2", "0.13.0", "0.13.1"].includes(pkg.version), pkg.version);
+  ok("package.json version is 0.12.0 to 0.13.0", ["0.12.0", "0.12.1", "0.12.2", "0.13.0"].includes(pkg.version), pkg.version);
   ok("APP_VERSION matches package.json", pwa.APP_VERSION === pkg.version);
   ok("sw.js VERSION matches package.json", new RegExp(`const VERSION = "${pkg.version}"`).test(swSource));
 
