@@ -19,7 +19,7 @@ export function MobileBottomNavigation() {
   const moreActive = SECONDARY_NAV.some((i) => isActivePath(pathname, i.href));
 
   const Indicator = () => (
-    <motion.span layoutId="mobile-active" transition={spring} className="absolute inset-0 rounded-full bg-accent/16 ring-1 ring-accent/30" />
+    <motion.span layoutId="mobile-active" transition={spring} className="nav-pill absolute inset-0 rounded-full" />
   );
 
   return (
@@ -29,7 +29,7 @@ export function MobileBottomNavigation() {
         className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 md:hidden"
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
-        <div className="glass pointer-events-auto mx-auto flex max-w-md items-center gap-1 rounded-full p-1.5 shadow-float">
+        <div className="glass glass-raised pointer-events-auto mx-auto flex max-w-md items-center gap-1 rounded-full p-1.5 shadow-raised">
           {PRIMARY_NAV.map(({ key, href, label, icon: Icon }) => {
             const active = isActivePath(pathname, href);
             return (

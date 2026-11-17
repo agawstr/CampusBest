@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.97 }}
                 transition={{ duration: duration.base, ease: easing.smooth }}
-                className="glass pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-control p-3.5 shadow-float"
+                className="glass glass-raised pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-control p-3.5 shadow-raised"
               >
                 <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", TONES[variant])} aria-hidden />
                 <div className="min-w-0 flex-1">

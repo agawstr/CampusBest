@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-accent text-accent-fg shadow-glow hover:brightness-110",
+        primary: "btn-metal text-accent-fg shadow-glow hover:brightness-110",
         secondary: "glass-item text-fg hover:bg-fg/10",
         ghost: "text-muted hover:bg-fg/[0.07] hover:text-fg",
         danger: "bg-danger text-white hover:brightness-110",

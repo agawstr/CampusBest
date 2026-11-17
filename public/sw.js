@@ -9,7 +9,7 @@
  * page that is open never has its chunks swapped out from under it.
  * Keep VERSION equal to package.json "version" and APP_VERSION in src/lib/pwa.ts (tested).
  */
-const VERSION = "0.13.1";
+const VERSION = "0.13.0";
 const PREFIX = "campusbest-";
 const SHELL_CACHE = PREFIX + "shell-v" + VERSION; // precached on install, replaced per version
 const PAGES_CACHE = PREFIX + "pages";             // visited pages; kept across versions

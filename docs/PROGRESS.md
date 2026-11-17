@@ -494,3 +494,7 @@ Lihat bagian "Update: Kegiatan Lain" di `docs/HANDOFF.md`. Status: kode selesai;
 ## 16. Re-skin Dark Liquid Glass (tampilan saja)
 
 Lihat bagian "Update: Re-skin Dark Liquid Glass" di `docs/HANDOFF.md`. Status: kode selesai; logic tidak disentuh (satu asersi warna PWA di batch10 diperbarui); belum dijalankan `npm install`/typecheck/build dan belum dicek visual di browser atau HP.
+
+## 17. Redesign visual Fase A (fondasi kedalaman)
+
+Lihat "Update: Redesign visual Fase A" di `docs/HANDOFF.md`. Status: kode selesai; 13 suite logic test lulus di 5 zona waktu (dijalankan dengan loader Node sederhana, bukan `tsx`); belum dibuild dan belum dicek visual. Fase B (Dashboard), C (Jadwal/Kalender), D (Statistik/Fokus/Catatan/Pengaturan) menunggu review.

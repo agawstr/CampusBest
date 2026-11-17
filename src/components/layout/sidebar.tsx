@@ -52,7 +52,7 @@ export function Sidebar() {
                 <motion.span
                   layoutId="sidebar-active"
                   transition={spring}
-                  className="absolute inset-0 rounded-control bg-accent/14 ring-1 ring-accent/30"
+                  className="nav-pill absolute inset-0 rounded-control"
                 />
               )}
               <Icon className="relative h-5 w-5 shrink-0" aria-hidden />
