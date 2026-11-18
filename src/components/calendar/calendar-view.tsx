@@ -216,7 +216,7 @@ export function CalendarView() {
               </Card>
 
               <Card raised animate={false} className="self-start">
-                <h3 className="font-semibold">
+                <h3 className="font-semibold tracking-tight">
                   {formatDateID(selected, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                 </h3>
                 {selected === today && <p className="mt-0.5 text-xs text-accent">Hari ini</p>}

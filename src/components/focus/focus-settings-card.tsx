@@ -64,7 +64,7 @@ export function FocusSettingsCard({ settings, onSave, title = "Durasi" }: Props)
 
   return (
     <Card animate={false}>
-      <h2 className="font-semibold">{title}</h2>
+      <h2 className="font-semibold tracking-tight">{title}</h2>
       <p className="mt-0.5 text-xs text-muted">
         Tersimpan di perangkat ini. Sesi yang sedang berjalan tidak berubah; durasi baru dipakai mulai sesi berikutnya.
       </p>

@@ -510,3 +510,7 @@ Lihat "Update: Redesign visual Fase C" di `docs/HANDOFF.md`. Status: kode selesa
 ## 20. Redesign visual Fase D (Statistik, Fokus, Catatan, Pengaturan)
 
 Lihat "Update: Redesign visual Fase D" di `docs/HANDOFF.md`. Status: kode selesai; suite logic test lulus; render Chromium tanpa error. Tersisa Fase E (pemeriksaan akhir semua halaman, termasuk Tasks, Subjects, Exams, Import, dan dialog) dan verifikasi di HP asli.
+
+## 21. Redesign visual Fase E (pemeriksaan akhir)
+
+Lihat "Update: Redesign visual Fase E" di `docs/HANDOFF.md`. Status: kode selesai; seluruh fase redesign (A sampai E) selesai di sisi kode. Tersisa verifikasi di HP asli, `npm run build`, dan keputusan soal kenaikan versi.
