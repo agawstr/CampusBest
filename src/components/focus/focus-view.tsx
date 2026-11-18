@@ -200,7 +200,7 @@ export function FocusView() {
 
           <div className="space-y-4">
             <Card animate={false}>
-              <h2 className="font-semibold">Hari ini</h2>
+              <h2 className="font-semibold tracking-tight">Hari ini</h2>
               <dl className="mt-3 grid grid-cols-2 gap-3">
                 <div>
                   <dt className="eyebrow">Waktu fokus</dt>

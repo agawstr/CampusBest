@@ -197,7 +197,7 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
 
           {undated.length > 0 && (
             <section className="mt-8">
-              <h2 className="font-semibold">Perlu tanggal</h2>
+              <h2 className="font-semibold tracking-tight">Perlu tanggal</h2>
               <p className="mb-3 mt-1 text-sm text-muted">
                 Jadwal ini belum punya tanggal, jadi belum muncul di minggu atau kalender mana pun. Edit untuk melengkapinya.
               </p>

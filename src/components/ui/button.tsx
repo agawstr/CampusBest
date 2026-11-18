@@ -13,7 +13,7 @@ const buttonVariants = cva(
         primary: "btn-metal text-accent-fg shadow-glow hover:brightness-110",
         secondary: "glass-item text-fg hover:bg-fg/10",
         ghost: "text-muted hover:bg-fg/[0.07] hover:text-fg",
-        danger: "bg-danger text-white hover:brightness-110",
+        danger: "bg-danger text-accent-fg hover:brightness-110",
       },
       size: { sm: "h-9 px-3.5 text-sm", md: "h-11 px-5 text-sm", lg: "h-12 px-6 text-base", icon: "h-10 w-10" },
     },

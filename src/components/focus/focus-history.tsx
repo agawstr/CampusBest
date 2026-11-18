@@ -19,7 +19,7 @@ export function FocusHistory({ sessions, subjectsById, tasksById, now }: Props) 
   const list = sortSessions(sessions);
   return (
     <Card animate={false}>
-      <h2 className="font-semibold">Riwayat</h2>
+      <h2 className="font-semibold tracking-tight">Riwayat</h2>
       {list.length === 0 ? (
         <EmptyState icon={History} title="Belum ada sesi" description="Sesi fokus yang kamu selesaikan, atau hentikan setelah minimal 1 menit, akan tercatat di sini." className="py-8" />
       ) : (

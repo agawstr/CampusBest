@@ -46,7 +46,7 @@ export function TaskItem({ task, subject, now, onToggle, onEdit, onDelete }: Tas
           <span
             className={cn(
               "grid h-6 w-6 place-items-center rounded-full border-2 transition-colors duration-fast",
-              done ? "border-success bg-success text-white" : "border-fg/30 hover:border-accent",
+              done ? "border-success bg-success text-accent-fg" : "border-fg/30 hover:border-accent",
             )}
           >
             {done && <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />}

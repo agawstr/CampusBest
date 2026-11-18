@@ -153,7 +153,7 @@ export function PwaProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={applyUpdate}
-              className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-accent-fg"
+              className="btn-metal rounded-full px-3 py-1.5 text-xs font-semibold text-accent-fg"
             >
               Perbarui
             </button>
