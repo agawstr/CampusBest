@@ -12,7 +12,7 @@ export function AboutCard() {
 
   return (
     <Card>
-      <h2 className="text-base font-semibold">Tentang aplikasi</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Tentang aplikasi</h2>
       <dl className="mt-3 space-y-2 text-sm">
         <div className="flex justify-between gap-4"><dt className="text-muted">Nama</dt><dd className="font-medium">{info.name}</dd></div>
         <div className="flex justify-between gap-4"><dt className="text-muted">Versi</dt><dd className="font-medium tabular-nums">{info.version}</dd></div>

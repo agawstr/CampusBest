@@ -26,12 +26,13 @@ export function TimerRing({ progress, clock, caption, tone, active, label }: Tim
           cx="100" cy="100" r={RADIUS} fill="none" strokeWidth="10" strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
-          className={cn("transition-[stroke-dashoffset] duration-slow ease-linear motion-reduce:transition-none", tone === "accent" ? "stroke-accent" : "stroke-success", !active && progress === 0 && "opacity-0")}
+          className={cn("transition-[stroke-dashoffset] duration-slow ease-linear motion-reduce:transition-none", tone === "accent" ? "stroke-accent [filter:drop-shadow(0_0_5px_rgb(var(--accent)/0.55))]" : "stroke-success [filter:drop-shadow(0_0_5px_rgb(var(--success)/0.55))]", !active && progress === 0 && "opacity-0")}
         />
       </svg>
+      <div className="glass-item absolute inset-[11%] rounded-full" aria-hidden />
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <p role="timer" className="text-5xl font-bold tabular-nums tracking-tight sm:text-6xl">{clock}</p>
-        <p className="mt-1.5 text-sm text-muted">{caption}</p>
+        <p role="timer" className="text-silver text-[3.25rem] font-bold leading-none tabular-nums tracking-tight sm:text-7xl">{clock}</p>
+        <p className="mt-2 text-sm text-muted">{caption}</p>
       </div>
     </div>
   );

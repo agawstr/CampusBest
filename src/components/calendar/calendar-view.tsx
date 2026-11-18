@@ -107,7 +107,7 @@ export function CalendarView() {
                 <ChevronRight className="h-5 w-5" aria-hidden />
               </Button>
             </div>
-            <h2 className="min-w-0 flex-1 text-lg font-semibold capitalize" aria-live="polite">{monthTitle}</h2>
+            <h2 className="text-silver min-w-0 flex-1 text-xl font-bold capitalize tracking-tight" aria-live="polite">{monthTitle}</h2>
             <Button
               variant="secondary"
               size="sm"
@@ -124,7 +124,7 @@ export function CalendarView() {
           {mode === "month" ? (
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
               <Card animate={false} className="p-2 sm:p-4 lg:p-3 xl:p-4">
-                <div className="grid grid-cols-7 gap-0.5 text-center text-xs font-medium text-muted sm:gap-1 lg:gap-0.5 xl:gap-1" aria-hidden>
+                <div className="grid grid-cols-7 gap-0.5 text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-muted sm:gap-1 sm:text-xs lg:gap-0.5 xl:gap-1" aria-hidden>
                   {headers.map((d) => <span key={d} className="py-1.5">{WEEKDAY_LABELS_ID[d].slice(0, 3)}</span>)}
                 </div>
                 <div className="grid grid-cols-7 gap-0.5 sm:gap-1 lg:gap-0.5 xl:gap-1">
@@ -147,7 +147,8 @@ export function CalendarView() {
                         aria-label={`${formatDateID(cell.key, { day: "numeric", month: "long", year: "numeric" })}${isToday ? ", hari ini" : ""}, ${count > 0 ? `${count} aktivitas` : "tidak ada aktivitas"}`}
                         className={cn(
                           "flex h-[6rem] min-w-0 flex-col items-center justify-start gap-0.5 overflow-hidden rounded-control border px-px pt-1 text-sm transition-colors duration-fast sm:h-[6.5rem] sm:px-1 sm:pt-1.5 lg:h-[6.75rem] lg:items-stretch lg:gap-0.5 lg:px-0.5 lg:pt-1.5 xl:px-1 xl:h-[8.25rem]",
-                          isSelected ? "border-accent/60 bg-accent/15" : "border-transparent hover:bg-fg/[0.06]",
+                          isToday && "bg-fg/[0.05]",
+                          isSelected ? "border-accent/60 bg-accent/15 shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_0_18px_-6px_rgb(var(--accent)/0.4)]" : "border-transparent hover:bg-fg/[0.06]",
                           !cell.inMonth && "text-muted/50",
                         )}
                       >
@@ -155,6 +156,7 @@ export function CalendarView() {
                           className={cn(
                             "grid h-6 w-6 shrink-0 place-items-center rounded-full text-[13px] font-medium sm:h-7 sm:w-7 sm:text-sm lg:self-start",
                             isToday && "bg-accent text-accent-fg",
+                            isToday && "btn-metal shadow-glow",
                           )}
                         >
                           {cell.day}
@@ -190,6 +192,7 @@ export function CalendarView() {
                                 className={cn(
                                   "block truncate rounded px-1 text-[11px] font-medium leading-4",
                                   KIND_TONE[e.kind],
+                                  "shadow-[inset_0_1px_0_rgb(255_255_255/0.1)]",
                                   e.done && "line-through opacity-60",
                                   i >= TITLES_LG && "hidden xl:block",
                                 )}
@@ -212,7 +215,7 @@ export function CalendarView() {
                 <div className="mt-3 border-t border-fg/10 pt-3">{legend}</div>
               </Card>
 
-              <Card animate={false} className="self-start">
+              <Card raised animate={false} className="self-start">
                 <h3 className="font-semibold">
                   {formatDateID(selected, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                 </h3>

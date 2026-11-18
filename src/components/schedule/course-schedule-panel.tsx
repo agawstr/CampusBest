@@ -108,7 +108,7 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
   const subjectsLink = (
     <Link
       href="/subjects"
-      className="inline-flex h-11 items-center justify-center rounded-control bg-accent px-5 text-sm font-semibold text-accent-fg shadow-glow transition hover:brightness-110"
+      className="inline-flex h-11 items-center justify-center rounded-control btn-metal px-5 text-sm font-semibold text-accent-fg shadow-glow transition hover:brightness-110"
     >
       Tambah mata kuliah dulu
     </Link>
@@ -159,7 +159,7 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
               </Button>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-semibold" aria-live="polite">{formatWeekRange(weekStart)}</p>
+              <p className="text-silver text-lg font-bold tracking-tight" aria-live="polite">{formatWeekRange(weekStart)}</p>
               <p className="text-xs text-muted">{weekSummary}</p>
             </div>
             <Button variant="secondary" size="sm" disabled={weekOffset === 0} onClick={() => setWeekOffset(0)}>
@@ -173,11 +173,11 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
               return (
                 <section key={day.key} aria-label={formatDateID(day.date, { weekday: "long", day: "numeric", month: "long" })} className="min-w-0">
                   <div className="mb-2 flex items-center gap-2">
-                    <h2 className={cn("font-semibold", isToday && "text-accent")}>
+                    <h2 className={cn("font-semibold tracking-tight", isToday && "text-accent")}>
                       {formatDateID(day.date, { weekday: "long" })}
                     </h2>
                     <span className="text-sm text-muted">{formatDateID(day.date, { day: "numeric", month: "short" })}</span>
-                    {isToday && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">Hari ini</span>}
+                    {isToday && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent shadow-[0_0_14px_-4px_rgb(var(--accent)/0.5)]">Hari ini</span>}
                   </div>
                   {day.items.length === 0 ? (
                     <p className="rounded-control border border-dashed border-fg/10 px-3 py-4 text-center text-xs text-muted">Tidak ada kelas</p>

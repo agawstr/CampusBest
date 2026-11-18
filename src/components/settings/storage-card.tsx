@@ -11,7 +11,7 @@ export function StorageCard() {
   const [results, setResults] = useState<SelfTestResult[] | null>(null);
   return (
     <Card>
-      <h2 className="text-base font-semibold">Penyimpanan lokal</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Penyimpanan lokal</h2>
       <p className="mt-1 text-sm text-muted">Uji dasar membaca dan menulis. Data kuliahmu tidak disentuh.</p>
       <Button className="mt-4" variant="secondary" onClick={async () => setResults(await runStorageSelfTest())}>
         Jalankan uji penyimpanan

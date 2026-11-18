@@ -98,7 +98,7 @@ export function BackupCard() {
 
   return (
     <Card delay={0.1}>
-      <h2 className="text-base font-semibold">Cadangan data</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Cadangan data</h2>
       <p className="mt-1 text-sm text-muted">Simpan semua datamu ke satu file JSON, atau pulihkan dari file cadangan. Timer yang sedang berjalan tidak ikut.</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="secondary" onClick={exportNow} disabled={exporting}><Download className="h-4 w-4" aria-hidden /> {exporting ? "Menyiapkan…" : "Ekspor data"}</Button>

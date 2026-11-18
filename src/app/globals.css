@@ -51,6 +51,10 @@
   --metal-bottom: 212 212 220;
   --pill-hi: 0.2;
   --pill-glow: 0.45;
+  --shadow-hero: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 2px 4px rgb(0 0 0 / 0.4), 0 24px 56px -16px rgb(0 0 0 / 0.9), 0 0 72px -28px rgb(255 255 255 / 0.16);
+  --hero-shade: rgb(0 0 0 / 0.22);
+  --tint-pct: 7%;
+  --tint-pct-featured: 11%;
   --bg-glow-a: rgb(255 255 255 / 0.085);
   --bg-glow-b: rgb(170 170 185 / 0.1);
   --bg-glow-c: rgb(255 255 255 / 0.045);
@@ -91,6 +95,10 @@
   --metal-bottom: 34 34 42;
   --pill-hi: 0.6;
   --pill-glow: 0.16;
+  --shadow-hero: inset 0 1px 0 rgb(255 255 255 / 1), 0 2px 4px rgb(20 20 30 / 0.08), 0 26px 56px -18px rgb(20 20 30 / 0.34);
+  --hero-shade: rgb(20 20 30 / 0.05);
+  --tint-pct: 9%;
+  --tint-pct-featured: 14%;
   --bg-glow-a: rgb(255 255 255 / 0.9);
   --bg-glow-b: rgb(150 150 165 / 0.2);
   --bg-glow-c: rgb(255 255 255 / 0.6);
@@ -164,6 +172,15 @@
     );
   }
 
+  /* Hero (one per screen): E3 plus a darker far corner for depth. No extra light is added inside it,
+     so muted text keeps its contrast; the glow lives outside the card (see --shadow-hero). */
+  .glass-hero {
+    background:
+      radial-gradient(90% 110% at 100% 100%, var(--hero-shade), transparent 70%),
+      linear-gradient(145deg, rgb(255 255 255 / var(--raised-sheen)) 0%, rgb(255 255 255 / 0) 52%),
+      rgb(var(--card) / var(--raised-alpha));
+  }
+
   /* E4 - modals and bottom sheets (blur tier 2): more opaque so forms stay readable. */
   .glass-strong {
     background:
@@ -181,6 +198,24 @@
       rgb(var(--card) / var(--item-alpha));
     border: 1px solid rgb(var(--fg) / var(--line-alpha));
     box-shadow: var(--shadow-soft);
+  }
+
+  /* Soft tint from the subject colour (set --tint inline). It lives on a pseudo-element under the content,
+     so a colour the browser cannot parse only loses the tint, never the glass itself. */
+  .subject-tint { position: relative; isolation: isolate; }
+  .subject-tint::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--tint, transparent) var(--tint-pct), transparent), transparent 60%);
+  }
+  /* The class the hero uses to lead with one item: stronger tint, raised shadow, thin silver rim. */
+  .item-featured {
+    --tint-pct: var(--tint-pct-featured);
+    box-shadow: var(--shadow-raised), inset 0 0 0 1px rgb(var(--accent) / 0.22);
   }
 
   /* Dimmed layer behind modals. Dim only (no blur): the modal itself already blurs what is behind it. */
@@ -232,7 +267,7 @@
   /* Typography helpers. */
   .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
   .text-silver {
-    background: linear-gradient(180deg, rgb(var(--fg)) 0%, rgb(var(--fg) / 0.68) 100%);
+    background: linear-gradient(180deg, rgb(var(--fg)) 0%, rgb(var(--fg) / 0.82) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

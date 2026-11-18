@@ -14,7 +14,7 @@ export function InstallCard() {
 
   return (
     <Card delay={0.12}>
-      <h2 className="text-base font-semibold">Pasang aplikasi</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Pasang aplikasi</h2>
       {mode === "installed" && <p className="mt-1 text-sm text-muted">CampusBest sudah terpasang dan dibuka sebagai aplikasi.</p>}
       {mode === "prompt" && (
         <>

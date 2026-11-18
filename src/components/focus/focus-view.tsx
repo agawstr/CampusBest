@@ -101,7 +101,7 @@ export function FocusView() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="space-y-4">
-            <Card animate={false}>
+            <Card raised animate={false}>
               <div role="group" aria-label="Fase timer" className="flex flex-wrap justify-center gap-2">
                 {FOCUS_MODES.map((m) => (
                   <span
@@ -109,7 +109,7 @@ export function FocusView() {
                     aria-current={m === timer.mode ? "step" : undefined}
                     className={cn(
                       "rounded-full border px-3.5 py-1.5 text-sm font-medium",
-                      m === timer.mode ? "border-accent/40 bg-accent/15 text-accent" : "border-fg/10 text-muted",
+                      m === timer.mode ? "border-accent/40 bg-accent/15 text-accent shadow-[0_0_16px_-6px_rgb(var(--accent)/0.5)]" : "border-fg/10 text-muted",
                     )}
                   >
                     {FOCUS_MODE_LABELS[m]}
@@ -203,12 +203,12 @@ export function FocusView() {
               <h2 className="font-semibold">Hari ini</h2>
               <dl className="mt-3 grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-sm text-muted">Waktu fokus</dt>
-                  <dd className="text-2xl font-bold tabular-nums">{formatMinutes(today.minutes)}</dd>
+                  <dt className="eyebrow">Waktu fokus</dt>
+                  <dd className="text-silver mt-1 text-3xl font-bold leading-none tabular-nums">{formatMinutes(today.minutes)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted">Sesi selesai</dt>
-                  <dd className="text-2xl font-bold tabular-nums">{today.completed}</dd>
+                  <dt className="eyebrow">Sesi selesai</dt>
+                  <dd className="text-silver mt-1 text-3xl font-bold leading-none tabular-nums">{today.completed}</dd>
                 </div>
               </dl>
               {today.sessions > today.completed && (
