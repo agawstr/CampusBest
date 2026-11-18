@@ -22,7 +22,7 @@ export function NoteCard({ note, subject, now, onEdit, onDelete, onTogglePin }: 
   const when = noteTimeLabel(note, now);
 
   return (
-    <Card animate={false} className={cn("flex h-full flex-col p-4", pinned && "border border-accent/30")}>
+    <Card raised={pinned} animate={false} className={cn("flex h-full flex-col p-4", pinned && "border border-accent/30")}>
       <div className="flex items-start gap-2">
         <button
           type="button"
@@ -31,7 +31,7 @@ export function NoteCard({ note, subject, now, onEdit, onDelete, onTogglePin }: 
           className="min-w-0 flex-1 rounded-lg text-left"
         >
           <span className="flex items-start gap-1.5">
-            {pinned && <Pin className="mt-1 h-3.5 w-3.5 shrink-0 fill-current text-accent" aria-label="Disematkan" />}
+            {pinned && <Pin className="mt-1 h-3.5 w-3.5 shrink-0 fill-current text-accent drop-shadow-[0_0_6px_rgb(var(--accent)/0.6)]" aria-label="Disematkan" />}
             <span className="block break-words font-semibold leading-snug">{note.title}</span>
           </span>
           {preview ? (

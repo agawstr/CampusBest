@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { CalendarDays, ClipboardList, GraduationCap, Users, type LucideIcon } from "lucide-react";
 import { CALENDAR_KIND_LABELS, type CalendarEntry, type CalendarKind } from "@/lib/calendar";
 import { cn } from "@/lib/utils";
@@ -33,8 +34,8 @@ export function CalendarEntryRow({ entry }: { entry: CalendarEntry }) {
   const Icon = KIND_ICON[entry.kind];
   return (
     <li
-      className="glass-item flex items-start gap-3 rounded-control p-3.5"
-      style={entry.color ? { borderLeft: `4px solid ${entry.color}` } : undefined}
+      className={cn("glass-item flex items-start gap-3 rounded-control p-3.5", entry.color && "subject-tint")}
+      style={entry.color ? ({ borderLeft: `4px solid ${entry.color}`, "--tint": entry.color } as CSSProperties) : undefined}
     >
       <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full", KIND_TONE[entry.kind])} aria-hidden>
         <Icon className="h-[18px] w-[18px]" />

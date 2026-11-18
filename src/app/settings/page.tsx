@@ -47,8 +47,8 @@ export default function SettingsPage() {
           <InstallCard />
           <AboutCard />
           <BackupCard />
-          <Card delay={0.15}>
-            <h2 className="text-base font-semibold">Hapus semua data</h2>
+          <Card delay={0.15} className="border border-danger/25">
+            <h2 className="text-[0.95rem] font-semibold tracking-tight">Hapus semua data</h2>
             <p className="mt-1 text-sm text-muted">Menghapus mata kuliah, tugas, jadwal, event, catatan, sesi fokus, dan pengaturan dari perangkat ini, termasuk data lama dari versi CampusMate. Tidak bisa dibatalkan, jadi ekspor cadangan dulu kalau datamu penting.</p>
             <p className="mt-2 text-sm">
               {summary ? <>Yang tersimpan sekarang: <span className="font-medium">{summary}</span>.</> : <span className="text-muted">Belum ada data yang tersimpan.</span>}

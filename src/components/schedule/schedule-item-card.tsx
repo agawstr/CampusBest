@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Clock, MapPin, Pencil, Repeat, Trash2, User, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { recurrenceNote, subjectTitle, timeRange } from "@/lib/schedule";
@@ -18,10 +19,11 @@ export function ScheduleItemCard({ item, subject, onEdit, onDelete }: ScheduleIt
   const note = recurrenceNote(item);
   const title = subjectTitle(subject);
   const online = item.mode === "online";
+  const color = subject?.color ?? FALLBACK_COLOR;
 
   return (
-    <div className="glass-item flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: `4px solid ${subject?.color ?? FALLBACK_COLOR}` }}>
-      <p className="flex items-center gap-1.5 text-sm font-semibold">
+    <div className="glass-item subject-tint flex h-full flex-col rounded-control p-3.5 shadow-soft" style={{ borderLeft: `4px solid ${color}`, "--tint": color } as CSSProperties}>
+      <p className="flex items-center gap-1.5 text-base font-bold tabular-nums tracking-tight">
         <Clock className="h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
         {timeRange(item)}
       </p>

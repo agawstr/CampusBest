@@ -498,3 +498,15 @@ Lihat bagian "Update: Re-skin Dark Liquid Glass" di `docs/HANDOFF.md`. Status: k
 ## 17. Redesign visual Fase A (fondasi kedalaman)
 
 Lihat "Update: Redesign visual Fase A" di `docs/HANDOFF.md`. Status: kode selesai; 13 suite logic test lulus di 5 zona waktu (dijalankan dengan loader Node sederhana, bukan `tsx`); belum dibuild dan belum dicek visual. Fase B (Dashboard), C (Jadwal/Kalender), D (Statistik/Fokus/Catatan/Pengaturan) menunggu review.
+
+## 18. Redesign visual Fase B (Dashboard)
+
+Lihat "Update: Redesign visual Fase B" di `docs/HANDOFF.md`. Status: kode selesai; suite logic test lulus; render Chromium headless tanpa error. Fase C (Jadwal/Kalender) dan D menunggu review.
+
+## 19. Redesign visual Fase C (Jadwal dan Kalender)
+
+Lihat "Update: Redesign visual Fase C" di `docs/HANDOFF.md`. Status: kode selesai; suite logic test lulus; render Chromium tanpa error. Fase D (Statistik, Fokus, Catatan, Pengaturan) belum dimulai.
+
+## 20. Redesign visual Fase D (Statistik, Fokus, Catatan, Pengaturan)
+
+Lihat "Update: Redesign visual Fase D" di `docs/HANDOFF.md`. Status: kode selesai; suite logic test lulus; render Chromium tanpa error. Tersisa Fase E (pemeriksaan akhir semua halaman, termasuk Tasks, Subjects, Exams, Import, dan dialog) dan verifikasi di HP asli.

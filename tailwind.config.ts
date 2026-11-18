@@ -29,6 +29,7 @@ const config: Config = {
         soft: "var(--shadow-soft)",
         raised: "var(--shadow-raised)",
         float: "var(--shadow-float)",
+        hero: "var(--shadow-hero)",
         glow: "var(--shadow-glow)",
       },
       transitionDuration: { fast: "150ms", base: "250ms", slow: "450ms" },

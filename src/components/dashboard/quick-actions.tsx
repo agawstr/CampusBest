@@ -10,27 +10,27 @@ const ICONS: Record<QuickActionKey, LucideIcon> = {
   calendar: CalendarDays,
 };
 
+/** Secondary shortcuts: a quiet row of pills under the headline numbers (the hint shows as a tooltip). */
 export function QuickActions() {
   return (
-    <nav aria-label="Aksi cepat" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {QUICK_ACTIONS.map((action) => {
-        const Icon = ICONS[action.key];
-        return (
-          <Link
-            key={action.key}
-            href={action.href}
-            className="glass-item flex items-center last:odd:col-span-2 sm:last:odd:col-span-1 gap-3 rounded-card p-3.5 shadow-soft transition-colors duration-fast hover:bg-fg/[0.06] sm:p-4"
-          >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-accent/15 text-accent">
-              <Icon className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold leading-tight">{action.label}</span>
-              <span className="mt-0.5 hidden text-xs text-muted sm:block">{action.hint}</span>
-            </span>
-          </Link>
-        );
-      })}
+    <nav aria-label="Aksi cepat" className="mt-6">
+      <p className="eyebrow mb-2.5" aria-hidden>Aksi cepat</p>
+      <div className="flex flex-wrap gap-2">
+        {QUICK_ACTIONS.map((action) => {
+          const Icon = ICONS[action.key];
+          return (
+            <Link
+              key={action.key}
+              href={action.href}
+              title={action.hint}
+              className="glass-item inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-fg/90 transition-colors duration-fast hover:bg-fg/10 hover:text-fg"
+            >
+              <Icon className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+              {action.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

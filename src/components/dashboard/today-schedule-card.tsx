@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { CalendarCheck, MapPin, User, Video } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -22,10 +23,13 @@ interface TodayScheduleCardProps {
   dayLabel: string;
 }
 
+/** The hero of the Dashboard. The class in progress (or else the first one still to come) leads; the rest stay in time order. */
 export function TodayScheduleCard({ classes, subjectsById, hasSchedules, dayLabel }: TodayScheduleCardProps) {
+  const ongoing = classes.findIndex((c) => c.status === "ongoing");
+  const featuredIndex = ongoing >= 0 ? ongoing : classes.findIndex((c) => c.status === "upcoming");
   return (
-    <Card animate={false}>
-      <SectionHeader title="Jadwal hari ini" subtitle={dayLabel} href="/schedule" linkLabel="Buka jadwal" />
+    <Card raised animate={false} className="glass-hero !shadow-hero p-5 md:p-7">
+      <SectionHeader size="hero" title="Jadwal hari ini" subtitle={dayLabel} href="/schedule" linkLabel="Buka jadwal" />
       {classes.length === 0 ? (
         <EmptyState
           icon={CalendarCheck}
@@ -38,31 +42,43 @@ export function TodayScheduleCard({ classes, subjectsById, hasSchedules, dayLabe
           }
         />
       ) : (
-        <ul className="space-y-2.5">
-          {classes.map(({ item, status }) => {
+        <ul className="space-y-3">
+          {classes.map(({ item, status }, index) => {
             const subject = subjectsById.get(item.subjectId);
             const chip = STATUS_CHIP[status];
             const online = item.mode === "online";
+            const featured = index === featuredIndex;
+            const color = subject?.color ?? FALLBACK_COLOR;
             return (
               <li
                 key={item.id}
-                className={cn("glass-item rounded-control p-3.5", status === "done" && "opacity-70")}
-                style={{ borderLeft: `4px solid ${subject?.color ?? FALLBACK_COLOR}` }}
+                className={cn(
+                  "glass-item subject-tint grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-4 rounded-control",
+                  featured ? "item-featured p-4 md:p-5" : "p-3.5",
+                  status === "done" && "opacity-60",
+                )}
+                style={{ borderLeft: `4px solid ${color}`, "--tint": color } as CSSProperties}
               >
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <p className="text-sm font-semibold">{timeRange(item)}</p>
-                  {chip && <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", chip.className)}>{chip.label}</span>}
+                <span className="sr-only">{timeRange(item)}</span>
+                <div className="min-w-[3.25rem] text-right" aria-hidden>
+                  <p className={cn("font-bold tabular-nums leading-none tracking-tight", featured ? "text-3xl" : "text-xl")}>{item.startTime}</p>
+                  <p className="mt-1.5 text-xs tabular-nums text-muted">{item.endTime}</p>
                 </div>
-                <p className="mt-1 break-words font-semibold leading-snug">{subjectTitle(subject)}</p>
-                {subject?.code && <p className="text-xs text-muted">{subject.code}</p>}
-                <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-                  {subject?.lecturer && (
-                    <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 shrink-0" aria-hidden />{subject.lecturer}</span>
+                <div className="min-w-0">
+                  {chip && (
+                    <span className={cn("mb-1.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium", chip.className)}>{chip.label}</span>
                   )}
-                  <span className="flex items-center gap-1.5">
-                    {online ? <Video className="h-3.5 w-3.5 shrink-0" aria-hidden /> : <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />}
-                    {online ? "Online" : "Offline"}{item.room ? ` · ${item.room}` : ""}
-                  </span>
+                  <p className={cn("break-words font-semibold leading-snug", featured && "text-lg")}>{subjectTitle(subject)}</p>
+                  {subject?.code && <p className="text-xs text-muted">{subject.code}</p>}
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+                    {subject?.lecturer && (
+                      <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 shrink-0" aria-hidden />{subject.lecturer}</span>
+                    )}
+                    <span className="flex items-center gap-1.5">
+                      {online ? <Video className="h-3.5 w-3.5 shrink-0" aria-hidden /> : <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+                      {online ? "Online" : "Offline"}{item.room ? ` · ${item.room}` : ""}
+                    </span>
+                  </div>
                 </div>
               </li>
             );

@@ -10,14 +10,15 @@ import { StatCard } from "@/components/ui/stat-card";
 import { useNow } from "@/hooks/use-now";
 import { useStorage } from "@/hooks/use-storage";
 import { formatMinutes } from "@/lib/focus";
+import { cn } from "@/lib/utils";
 import { buildStatistics, STATS_PERIOD_OPTIONS, type FocusStats, type StatsPeriod, type StatisticsModel } from "@/lib/statistics";
 
 const PERIOD_PHRASE: Record<StatsPeriod, string> = { "7d": "7 hari terakhir", "30d": "30 hari terakhir", all: "semua waktu" };
 
 function Bar({ percent, color, label }: { percent: number; color?: string; label: string }) {
   return (
-    <div role="img" aria-label={label} className="h-2 overflow-hidden rounded-full bg-fg/10">
-      <div className="h-full rounded-full bg-accent transition-[width] duration-slow ease-smooth" style={{ width: `${Math.max(0, Math.min(100, percent))}%`, backgroundColor: color }} />
+    <div role="img" aria-label={label} className="h-2 overflow-hidden rounded-full bg-fg/10 shadow-[inset_0_1px_2px_rgb(0_0_0/0.3)]">
+      <div className={cn("h-full rounded-full transition-[width] duration-slow ease-smooth", color ? "bg-accent" : "bg-gradient-to-r from-accent/55 to-accent")} style={{ width: `${Math.max(0, Math.min(100, percent))}%`, backgroundColor: color }} />
     </div>
   );
 }
@@ -32,24 +33,24 @@ function TaskCard({ model }: { model: StatisticsModel }) {
   ];
   return (
     <Card animate={false}>
-      <h2 className="text-base font-semibold">Tugas</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Tugas</h2>
       {t.total === 0 ? (
         <p className="mt-3 text-sm text-muted">Tidak ada tugas pada periode ini.</p>
       ) : (
         <>
-          <div role="img" aria-label={`${t.done} selesai, ${t.inProgress} dikerjakan, ${t.todo} belum mulai`} className="mt-4 flex h-3 overflow-hidden rounded-full bg-fg/10">
+          <div role="img" aria-label={`${t.done} selesai, ${t.inProgress} dikerjakan, ${t.todo} belum mulai`} className="mt-4 flex h-3 overflow-hidden rounded-full bg-fg/10 shadow-[inset_0_1px_2px_rgb(0_0_0/0.3)]">
             {parts.map((p) => p.n > 0 && <div key={p.label} className={p.cls} style={{ width: `${share(p.n)}%` }} />)}
           </div>
-          <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          <dl className="mt-4 grid grid-cols-2 items-end gap-3 text-sm sm:grid-cols-4">
             {parts.map((p) => (
               <div key={p.label}>
-                <dt className="flex items-center gap-1.5 text-muted"><span className={`h-2 w-2 rounded-full ${p.cls}`} aria-hidden />{p.label}</dt>
-                <dd className="text-lg font-semibold tabular-nums">{p.n}</dd>
+                <dt className="eyebrow flex items-start gap-1.5"><span className={`mt-[3px] h-2 w-2 shrink-0 rounded-full ${p.cls}`} aria-hidden />{p.label}</dt>
+                <dd className="mt-0.5 text-xl font-semibold tabular-nums">{p.n}</dd>
               </div>
             ))}
             <div>
-              <dt className="text-muted">Terlambat</dt>
-              <dd className="text-lg font-semibold tabular-nums">{t.overdue}</dd>
+              <dt className="eyebrow">Terlambat</dt>
+              <dd className="mt-0.5 text-xl font-semibold tabular-nums">{t.overdue}</dd>
             </div>
           </dl>
         </>
@@ -64,7 +65,7 @@ function FocusChart({ focus }: { focus: FocusStats }) {
   return (
     <Card animate={false}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-base font-semibold">Waktu fokus</h2>
+        <h2 className="text-[0.95rem] font-semibold tracking-tight">Waktu fokus</h2>
         <p className="text-xs text-muted">{focus.seriesUnit === "week" ? "Per minggu, 12 minggu terakhir" : "Per hari"}</p>
       </div>
       {focus.sessions === 0 ? (
@@ -75,7 +76,7 @@ function FocusChart({ focus }: { focus: FocusStats }) {
             {focus.series.map((b, i) => (
               <li key={b.key} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${b.label}: ${formatMinutes(b.minutes)}, ${b.sessions} sesi`}>
                 <div
-                  className={b.minutes > 0 ? "w-full rounded-t-md bg-accent" : "w-full rounded-t-md bg-fg/10"}
+                  className={b.minutes > 0 ? "w-full rounded-t-md bg-gradient-to-t from-accent/35 to-accent" : "w-full rounded-t-md bg-fg/10"}
                   style={{ height: b.minutes > 0 && max > 0 ? `${Math.max(4, (b.minutes / max) * 100)}%` : "2px" }}
                 />
                 <span className={`h-4 truncate text-[10px] text-muted ${dense && i % 5 !== 0 ? "invisible" : ""}`}>{b.label}</span>
@@ -84,9 +85,9 @@ function FocusChart({ focus }: { focus: FocusStats }) {
             ))}
           </ul>
           <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
-            <div><dt className="text-muted">Rata-rata sesi</dt><dd className="font-semibold tabular-nums">{formatMinutes(focus.averageMinutes)}</dd></div>
-            <div><dt className="text-muted">Sesi selesai</dt><dd className="font-semibold tabular-nums">{focus.completed}</dd></div>
-            <div><dt className="text-muted">Hari aktif</dt><dd className="font-semibold tabular-nums">{focus.activeDays}</dd></div>
+            <div><dt className="eyebrow">Rata-rata sesi</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{formatMinutes(focus.averageMinutes)}</dd></div>
+            <div><dt className="eyebrow">Sesi selesai</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{focus.completed}</dd></div>
+            <div><dt className="eyebrow">Hari aktif</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{focus.activeDays}</dd></div>
           </dl>
         </>
       )}
@@ -97,7 +98,7 @@ function FocusChart({ focus }: { focus: FocusStats }) {
 function SubjectCard({ model }: { model: StatisticsModel }) {
   return (
     <Card animate={false}>
-      <h2 className="text-base font-semibold">Per mata kuliah</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Per mata kuliah</h2>
       {model.bySubject.length === 0 ? (
         <p className="mt-3 text-sm text-muted">Belum ada tugas atau sesi fokus pada periode ini.</p>
       ) : (
@@ -126,11 +127,11 @@ function EventCard({ model }: { model: StatisticsModel }) {
   const max = Math.max(1, ...e.byCategory.map((c) => c.count));
   return (
     <Card animate={false}>
-      <h2 className="text-base font-semibold">Ujian & event</h2>
+      <h2 className="text-[0.95rem] font-semibold tracking-tight">Ujian & event</h2>
       <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
-        <div><dt className="text-muted">Pada periode ini</dt><dd className="text-lg font-semibold tabular-nums">{e.total}</dd></div>
-        <div><dt className="text-muted">Mendatang</dt><dd className="text-lg font-semibold tabular-nums">{e.upcoming}</dd></div>
-        <div><dt className="text-muted">Ujian mendatang</dt><dd className="text-lg font-semibold tabular-nums">{e.upcomingExams}</dd></div>
+        <div><dt className="eyebrow">Pada periode ini</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{e.total}</dd></div>
+        <div><dt className="eyebrow">Mendatang</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{e.upcoming}</dd></div>
+        <div><dt className="eyebrow">Ujian mendatang</dt><dd className="mt-0.5 text-xl font-semibold tabular-nums">{e.upcomingExams}</dd></div>
       </dl>
       <p className="mt-1 text-xs text-muted">&ldquo;Mendatang&rdquo; dihitung dari hari ini, tidak ikut periode.</p>
       {e.byCategory.length === 0 ? (
