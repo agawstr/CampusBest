@@ -77,7 +77,7 @@ function FocusChart({ focus }: { focus: FocusStats }) {
             {focus.series.map((b, i) => (
               <li key={b.key} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${b.label}: ${formatMinutes(b.minutes)}, ${b.sessions} sesi`}>
                 <div
-                  className={b.minutes > 0 ? "w-full rounded-t-md bg-gradient-to-t from-accent/35 to-accent" : "w-full rounded-t-md bg-fg/10"}
+                  className={b.minutes > 0 ? "animate-bar-grow w-full rounded-t-md bg-gradient-to-t from-accent/35 to-accent" : "w-full rounded-t-md bg-fg/10"}
                   style={{ height: b.minutes > 0 && max > 0 ? `${Math.max(4, (b.minutes / max) * 100)}%` : "2px" }}
                 />
                 <span className={`h-4 w-full truncate text-center text-[10px] text-muted ${dense && i % 5 !== 0 ? "invisible" : ""}`}>{b.label}</span>

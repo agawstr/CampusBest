@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AppBackdrop } from "./app-backdrop";
 import { Header } from "./header";
 import { MobileBottomNavigation } from "./mobile-bottom-navigation";
 import { Sidebar } from "./sidebar";
@@ -6,7 +7,7 @@ import { Sidebar } from "./sidebar";
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex min-h-dvh overflow-x-clip">
-      <div className="app-backdrop pointer-events-none fixed inset-0 -z-10" aria-hidden />
+      <AppBackdrop />
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />

@@ -50,7 +50,7 @@ export function TaskItem({ task, subject, now, onToggle, onCycleStatus, onToggle
           <span
             className={cn(
               "grid h-6 w-6 place-items-center rounded-full border-2 transition-colors duration-fast",
-              done ? "border-success bg-success text-accent-fg" : "border-fg/30 hover:border-accent",
+              done ? "animate-check-pop border-success bg-success text-accent-fg shadow-[0_0_14px_-2px_rgb(var(--success)/0.6)]" : "border-fg/30 hover:border-accent",
             )}
           >
             {done && <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />}

@@ -25,7 +25,7 @@ export function StatCard({ label, value, hint, icon: Icon, delay, tone = "defaul
       className={cn(
         "flex h-full flex-col justify-between gap-3",
         dense ? "p-3.5 sm:p-5" : "p-5",
-        onClick && "transition-[border-color,transform] duration-fast ease-smooth group-hover:border-accent/40 group-active:scale-[0.985]",
+        onClick && "transition-[border-color,transform] duration-fast ease-smooth group-hover:-translate-y-0.5 group-hover:border-accent/40 group-active:scale-[0.985]",
       )}
     >
       <div className="flex items-start justify-between gap-2">

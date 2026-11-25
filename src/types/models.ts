@@ -197,6 +197,10 @@ export interface AppSettings {
   theme: ThemeMode;
   /** Optional accent preset. Absent means "silver" (default monochrome). */
   accent?: AccentPreset;
+  /** Optional custom wallpaper data URL (compressed client-side). */
+  wallpaper?: string;
+  /** Optional dim overlay strength for custom wallpaper (0.25–0.85, default 0.52). */
+  wallpaperDim?: number;
   /** Optional chime sound when a Focus/Break phase finishes. Absent means true. */
   focusSound?: boolean;
   /** Optional weekly focus target in minutes. Absent means 300 (5 hours). */
