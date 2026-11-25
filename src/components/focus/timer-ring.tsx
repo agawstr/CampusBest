@@ -26,7 +26,7 @@ export function TimerRing({ progress, clock, caption, tone, active, label }: Tim
           cx="100" cy="100" r={RADIUS} fill="none" strokeWidth="10" strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
-          className={cn("transition-[stroke-dashoffset] duration-slow ease-linear motion-reduce:transition-none", tone === "accent" ? "stroke-accent [filter:drop-shadow(0_0_5px_rgb(var(--accent)/0.55))]" : "stroke-success [filter:drop-shadow(0_0_5px_rgb(var(--success)/0.55))]", !active && progress === 0 && "opacity-0")}
+          className={cn("transition-[stroke-dashoffset] duration-slow ease-linear motion-reduce:transition-none", tone === "accent" ? "stroke-accent" : "stroke-success", !active && progress === 0 && "opacity-0")}
         />
       </svg>
       <div className="glass-item absolute inset-[11%] rounded-full" aria-hidden />

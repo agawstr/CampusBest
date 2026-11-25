@@ -32,7 +32,7 @@ const config: Config = {
         hero: "var(--shadow-hero)",
         glow: "var(--shadow-glow)",
       },
-      transitionDuration: { fast: "150ms", base: "250ms", slow: "450ms" },
+      transitionDuration: { fast: "120ms", base: "180ms", slow: "260ms" },
       transitionTimingFunction: { smooth: "cubic-bezier(0.22, 1, 0.36, 1)" },
     },
   },

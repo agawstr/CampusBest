@@ -33,7 +33,7 @@ export function TaskItem({ task, subject, now, onToggle, onEdit, onDelete }: Tas
   const link = safeUrl(task.url);
 
   return (
-    <Card animate={false} className="p-4">
+    <Card surface="item" className="p-4">
       <div className="flex items-start gap-3">
         <button
           type="button"

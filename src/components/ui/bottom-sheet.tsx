@@ -28,7 +28,7 @@ export function BottomSheet({ open, onOpenChange, title, description, children }
             </Dialog.Overlay>
             <Dialog.Content asChild>
               <motion.div
-                className="glass-strong fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-xl rounded-t-sheet px-5 pt-3 shadow-float"
+                className="glass-strong fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-xl rounded-t-sheet px-5 pt-3 shadow-float will-change-transform"
                 style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
                 initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
                 transition={{ duration: duration.slow, ease: easing.smooth }}

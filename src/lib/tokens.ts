@@ -18,10 +18,10 @@ export const typography = {
 export const spacing = { 1: "4px", 2: "8px", 3: "12px", 4: "16px", 6: "24px", 8: "32px", 12: "48px" } as const;
 export const radius = { control: 14, card: 22, sheet: 28, pill: 999 } as const;
 
-export const duration = { fast: 0.15, base: 0.25, slow: 0.45 } as const;
+export const duration = { fast: 0.12, base: 0.18, slow: 0.26 } as const;
 export const easing = {
   smooth: [0.22, 1, 0.36, 1] as [number, number, number, number],
   standard: [0.4, 0, 0.2, 1] as [number, number, number, number],
 };
 
-export const spring = { type: "spring", stiffness: 420, damping: 34 } as const;
+export const spring = { type: "spring", stiffness: 520, damping: 38 } as const;

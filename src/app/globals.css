@@ -27,12 +27,12 @@
   --success: 92 214 164;
   --kind-activity: 139 92 246;
   --line-alpha: 0.1;
-  --blur-1: 24px;
-  --blur-2: 40px;
-  --glass-alpha: 0.52;
-  --raised-alpha: 0.66;
-  --glass-strong-alpha: 0.82;
-  --item-alpha: 0.55;
+  --blur-1: 12px;
+  --blur-2: 20px;
+  --glass-alpha: 0.62;
+  --raised-alpha: 0.72;
+  --glass-strong-alpha: 0.88;
+  --item-alpha: 0.58;
   --glass-sheen: 0.1;
   --raised-sheen: 0.14;
   --strong-sheen: 0.1;
@@ -73,10 +73,10 @@
   --success: 20 140 98;
   --kind-activity: 124 77 232;
   --line-alpha: 0.1;
-  --glass-alpha: 0.58;
-  --raised-alpha: 0.72;
-  --glass-strong-alpha: 0.86;
-  --item-alpha: 0.62;
+  --glass-alpha: 0.66;
+  --raised-alpha: 0.76;
+  --glass-strong-alpha: 0.9;
+  --item-alpha: 0.64;
   --glass-sheen: 0.7;
   --raised-sheen: 0.9;
   --strong-sheen: 0.9;
@@ -128,8 +128,8 @@
     background:
       linear-gradient(145deg, rgb(255 255 255 / var(--glass-sheen)) 0%, rgb(255 255 255 / 0) 42%),
       rgb(var(--card) / var(--glass-alpha));
-    -webkit-backdrop-filter: blur(var(--blur-1)) saturate(170%);
-    backdrop-filter: blur(var(--blur-1)) saturate(170%);
+    -webkit-backdrop-filter: blur(var(--blur-1)) saturate(140%);
+    backdrop-filter: blur(var(--blur-1)) saturate(140%);
     border: 1px solid rgb(var(--fg) / var(--line-alpha));
   }
   .glass::before {
@@ -186,8 +186,8 @@
     background:
       linear-gradient(150deg, rgb(255 255 255 / var(--strong-sheen)) 0%, rgb(255 255 255 / 0) 45%),
       rgb(var(--card) / var(--glass-strong-alpha));
-    -webkit-backdrop-filter: blur(var(--blur-2)) saturate(180%);
-    backdrop-filter: blur(var(--blur-2)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-2)) saturate(150%);
+    backdrop-filter: blur(var(--blur-2)) saturate(150%);
     border: 1px solid rgb(var(--fg) / calc(var(--line-alpha) + 0.05));
   }
 

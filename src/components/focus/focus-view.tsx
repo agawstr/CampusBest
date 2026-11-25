@@ -16,9 +16,43 @@ import {
 import { sortTasks } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 import { useFocusTimer } from "@/providers/focus-timer-provider";
+import type { FocusSettings, FocusTimerState } from "@/types";
 import { FocusHistory } from "./focus-history";
 import { FocusSettingsCard } from "./focus-settings-card";
 import { TimerRing } from "./timer-ring";
+
+/** Isolated ticking ring so the rest of FocusView (history, settings, selects) doesn't re-render twice a second. */
+function LiveTimerRing({
+  timer,
+  settings,
+  ticking,
+  caption,
+  tone,
+  active,
+  modeLabel,
+}: {
+  timer: FocusTimerState;
+  settings: FocusSettings;
+  ticking: boolean;
+  caption: string;
+  tone: "accent" | "success";
+  active: boolean;
+  modeLabel: string;
+}) {
+  const nowMs = useFocusClock(ticking);
+  const remaining = remainingMs(timer, settings, nowMs);
+  const progress = progressOf(timer, settings, nowMs);
+  return (
+    <TimerRing
+      progress={progress}
+      clock={formatClock(remaining)}
+      caption={caption}
+      tone={tone}
+      active={active}
+      label={`${modeLabel}, ${Math.round(progress * 100)} persen`}
+    />
+  );
+}
 
 function Skeleton() {
   return (
@@ -40,11 +74,11 @@ export function FocusView() {
   const tasksStore = useStorage("tasks");
   const sessionsStore = useStorage("focusSessions");
   const [pending, setPending] = useState<Pending>(null);
+  const [pendingMinutes, setPendingMinutes] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const running = timer.status === "running";
   const active = timer.status !== "idle";
-  const nowMs = useFocusClock(ready && running);
 
   const subjects = subjectsStore.data;
   const tasks = tasksStore.data;
@@ -60,11 +94,7 @@ export function FocusView() {
   );
   const taskOptions = link.subjectId ? choices.filter((t) => t.subjectId === link.subjectId) : choices;
 
-  const remaining = remainingMs(timer, settings, nowMs);
-  const progress = progressOf(timer, settings, nowMs);
-  const spentMinutes = Math.floor(elapsedMs(timer, settings, nowMs) / 60_000);
   const isFocus = timer.mode === "focus";
-  const savesOnStop = isFocus && active && spentMinutes >= MIN_RECORD_MINUTES;
   const today = focusToday(sessions, new Date());
 
   function changeSubject(value: string) {
@@ -80,7 +110,13 @@ export function FocusView() {
   }
 
   function ask(kind: Exclude<Pending, null>) {
-    if (savesOnStop) { setPending(kind); setConfirmOpen(true); return; }
+    const spent = Math.floor(elapsedMs(timer, settings, Date.now()) / 60_000);
+    if (isFocus && active && spent >= MIN_RECORD_MINUTES) {
+      setPending(kind);
+      setPendingMinutes(spent);
+      setConfirmOpen(true);
+      return;
+    }
     void (kind === "reset" ? reset() : skip());
   }
 
@@ -118,13 +154,14 @@ export function FocusView() {
               </div>
 
               <div className="mt-6">
-                <TimerRing
-                  progress={progress}
-                  clock={formatClock(remaining)}
+                <LiveTimerRing
+                  timer={timer}
+                  settings={settings}
+                  ticking={ready && running}
                   caption={caption}
                   tone={isFocus ? "accent" : "success"}
                   active={active}
-                  label={`${modeLabel}, ${Math.round(progress * 100)} persen`}
+                  modeLabel={modeLabel}
                 />
               </div>
 
@@ -224,7 +261,7 @@ export function FocusView() {
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title={pending === "skip" ? "Lewati sesi fokus ini?" : "Reset sesi fokus ini?"}
-        description={`Kamu sudah fokus ${spentMinutes} menit. Sesi ini akan dicatat sebagai belum selesai${pending === "skip" ? " dan timer pindah ke istirahat" : ""}.`}
+        description={`Kamu sudah fokus ${pendingMinutes} menit. Sesi ini akan dicatat sebagai belum selesai${pending === "skip" ? " dan timer pindah ke istirahat" : ""}.`}
         confirmLabel={pending === "skip" ? "Lewati" : "Reset"}
         destructive
         onConfirm={async () => { if (pending === "skip") await skip(); else await reset(); }}

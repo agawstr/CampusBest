@@ -13,14 +13,14 @@ import { cn } from "@/lib/utils";
 
 const itemClass = "relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-medium transition-colors duration-fast";
 
+function ActiveIndicator() {
+  return <motion.span layoutId="mobile-active" transition={spring} className="nav-pill absolute inset-0 rounded-full" />;
+}
+
 export function MobileBottomNavigation() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreActive = SECONDARY_NAV.some((i) => isActivePath(pathname, i.href));
-
-  const Indicator = () => (
-    <motion.span layoutId="mobile-active" transition={spring} className="nav-pill absolute inset-0 rounded-full" />
-  );
 
   return (
     <>
@@ -34,14 +34,14 @@ export function MobileBottomNavigation() {
             const active = isActivePath(pathname, href);
             return (
               <Link key={key} href={href} aria-current={active ? "page" : undefined} className={cn(itemClass, active ? "text-accent" : "text-muted")}>
-                {active && <Indicator />}
+                {active && <ActiveIndicator />}
                 <Icon className="relative h-5 w-5" aria-hidden />
                 <span className="relative">{label}</span>
               </Link>
             );
           })}
           <button onClick={() => setMoreOpen(true)} aria-haspopup="dialog" className={cn(itemClass, moreActive ? "text-accent" : "text-muted")}>
-            {moreActive && <Indicator />}
+            {moreActive && <ActiveIndicator />}
             <Ellipsis className="relative h-5 w-5" aria-hidden />
             <span className="relative">More</span>
           </button>

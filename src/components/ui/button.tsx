@@ -1,12 +1,11 @@
 "use client";
 
-import { forwardRef } from "react";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-control font-semibold transition-colors duration-fast disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-control font-semibold transition-[color,background-color,transform,filter] duration-fast active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -21,15 +20,13 @@ const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps extends HTMLMotionProps<"button">, VariantProps<typeof buttonVariants> {}
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, type = "button", ...props }, ref) => (
-    <motion.button
+    <button
       ref={ref}
       type={type}
-      whileTap={{ scale: 0.96 }}
-      transition={{ duration: 0.12 }}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
