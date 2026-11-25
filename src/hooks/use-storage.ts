@@ -12,8 +12,8 @@ export type StorageStatus = "loading" | "ready";
  * its own: defaults live in memory until the user saves something.
  */
 export function useStorage<K extends StorageName>(name: K) {
-  const [data, setData] = useState<StorageSchema[K]>(() => getDefault(name));
-  const [status, setStatus] = useState<StorageStatus>("loading");
+  const [data, setData] = useState<StorageSchema[K]>(() => storage.getCached(name) ?? getDefault(name));
+  const [status, setStatus] = useState<StorageStatus>(() => (storage.getCached(name) !== undefined ? "ready" : "loading"));
 
   useEffect(() => {
     let active = true;
@@ -23,7 +23,7 @@ export function useStorage<K extends StorageName>(name: K) {
         setData(value);
         setStatus("ready");
       });
-    void load();
+    if (storage.getCached(name) === undefined) void load();
     const unsubscribe = storage.subscribe(name, load);
     return () => { active = false; unsubscribe(); };
   }, [name]);

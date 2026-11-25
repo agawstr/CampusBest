@@ -134,12 +134,13 @@ export class LocalStorageAdapter implements StorageAdapter {
 }
 
 let adapter: StorageAdapter = new LocalStorageAdapter();
-export function setStorageAdapter(next: StorageAdapter) { adapter = next; }
+export function setStorageAdapter(next: StorageAdapter) { adapter = next; cache.clear(); }
 export function getStorageAdapter() { return adapter; }
 
 /* ---------------- change notification (same tab + other tabs) ---------------- */
 type Listener = () => void;
 const listeners = new Map<StorageName, Set<Listener>>();
+const cache = new Map<StorageName, StorageSchema[StorageName]>();
 let crossTabBound = false;
 
 function notify(name: StorageName) {
@@ -151,9 +152,9 @@ function bindCrossTab() {
   crossTabBound = true;
   window.addEventListener("storage", (e) => {
     // key === null means localStorage.clear() ran in another tab.
-    if (e.key === null) { STORAGE_NAMES.forEach(notify); return; }
+    if (e.key === null) { cache.clear(); STORAGE_NAMES.forEach(notify); return; }
     const name = STORAGE_NAMES.find((n) => STORAGE_KEYS[n] === e.key);
-    if (name) notify(name);
+    if (name) { cache.delete(name); notify(name); }
   });
 }
 
@@ -180,15 +181,22 @@ function load<K extends StorageName>(name: K, raw: unknown): StorageSchema[K] {
 const queues = new Map<StorageName, Promise<unknown>>();
 
 export const storage = {
+  /** Synchronous read of the last loaded value in this tab (undefined before first read). */
+  getCached<K extends StorageName>(name: K): StorageSchema[K] | undefined {
+    return cache.get(name) as StorageSchema[K] | undefined;
+  },
   /** Reads never write: missing or corrupt data falls back to normalized defaults in memory only. */
   async read<K extends StorageName>(name: K): Promise<StorageSchema[K]> {
-    return load(name, await adapter.getRaw(STORAGE_KEYS[name]));
+    const value = load(name, await adapter.getRaw(STORAGE_KEYS[name]));
+    cache.set(name, value);
+    return value;
   },
   async write<K extends StorageName>(name: K, value: StorageSchema[K]): Promise<void> {
     const extra = name === "settings" ? undefined : orphans.get(name);
     const restored = Array.isArray(value) ? restoreCoerced(value, coercions.get(name)) : value;
     const toSave = extra?.length && Array.isArray(restored) ? [...restored, ...extra] : restored;
     await adapter.setRaw(STORAGE_KEYS[name], toSave);
+    cache.set(name, value);
     notify(name);
   },
   /** Same signature as before. Calls on the same collection are serialized, so read-modify-write can't interleave in one tab. */
@@ -214,6 +222,7 @@ export const storage = {
   },
   async remove(name: StorageName): Promise<void> {
     await adapter.remove(STORAGE_KEYS[name]);
+    cache.delete(name);
     orphans.delete(name);
     coercions.delete(name);
     notify(name);
@@ -230,6 +239,7 @@ export const storage = {
       if (k.startsWith(STORAGE_PREFIX) || k.startsWith(LEGACY_STORAGE_PREFIX)) keys.add(k);
     }
     await Promise.all([...keys].map((k) => adapter.remove(k)));
+    cache.clear();
     orphans.clear();
     coercions.clear();
     STORAGE_NAMES.forEach(notify);

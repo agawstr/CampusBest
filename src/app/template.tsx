@@ -8,9 +8,10 @@ import { duration, easing } from "@/lib/tokens";
 export default function Template({ children }: { children: ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: duration.fast, ease: easing.standard }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: duration.base, ease: easing.smooth }}
+      className="will-change-[transform,opacity]"
     >
       {children}
     </motion.div>
