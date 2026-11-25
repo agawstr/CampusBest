@@ -110,6 +110,38 @@
   --radius-sheet: 28px;
 }
 
+/* Optional subtle accent presets (default "silver" uses the base theme tokens above). */
+[data-theme="dark"][data-accent="ice"] {
+  --accent: 147 197 253;
+  --metal-top: 191 219 254;
+  --metal-bottom: 125 180 248;
+}
+[data-theme="light"][data-accent="ice"] {
+  --accent: 37 99 235;
+  --metal-top: 59 130 246;
+  --metal-bottom: 29 78 216;
+}
+[data-theme="dark"][data-accent="mint"] {
+  --accent: 110 231 183;
+  --metal-top: 167 243 208;
+  --metal-bottom: 74 214 158;
+}
+[data-theme="light"][data-accent="mint"] {
+  --accent: 5 150 105;
+  --metal-top: 16 185 129;
+  --metal-bottom: 4 120 87;
+}
+[data-theme="dark"][data-accent="violet"] {
+  --accent: 196 181 253;
+  --metal-top: 221 214 254;
+  --metal-bottom: 167 139 250;
+}
+[data-theme="light"][data-accent="violet"] {
+  --accent: 109 40 217;
+  --metal-top: 139 92 246;
+  --metal-bottom: 91 33 182;
+}
+
 @layer base {
   * { @apply border-fg/10; }
   html { -webkit-tap-highlight-color: transparent; }

@@ -1,6 +1,8 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { motion } from "framer-motion";
+import { spring } from "@/lib/tokens";
 import { cn } from "@/lib/utils";
 
 const controlClass =
@@ -51,6 +53,7 @@ interface Option<T extends string> { value: T; label: string }
 export function SegmentedControl<T extends string>({
   label, value, onChange, options,
 }: { label: string; value: T; onChange: (value: T) => void; options: readonly Option<T>[] }) {
+  const groupId = useId();
   return (
     <div role="radiogroup" aria-label={label} className="grid grid-flow-col auto-cols-fr gap-1 rounded-control border border-fg/10 bg-surface/60 p-1">
       {options.map((option) => {
@@ -63,11 +66,18 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             onClick={() => onChange(option.value)}
             className={cn(
-              "h-9 rounded-[10px] px-2 text-sm font-medium transition-colors duration-fast",
-              active ? "btn-metal text-accent-fg shadow-soft" : "text-muted hover:text-fg",
+              "relative h-9 rounded-[10px] px-2 text-sm font-medium transition-colors duration-fast",
+              active ? "text-accent-fg" : "text-muted hover:text-fg",
             )}
           >
-            {option.label}
+            {active && (
+              <motion.span
+                layoutId={`seg-${groupId}`}
+                transition={spring}
+                className="btn-metal absolute inset-0 rounded-[10px] shadow-soft"
+              />
+            )}
+            <span className="relative">{option.label}</span>
           </button>
         );
       })}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,7 +13,10 @@ import {
   monthOf, previewEntries, shiftMonth, type CalendarKind, type YearMonth,
 } from "@/lib/calendar";
 import { WEEKDAY_LABELS_ID, formatDateID, todayKey, weekdayOrder } from "@/lib/date";
+import { downloadTextFile } from "@/lib/download";
+import { buildCalendarIcs } from "@/lib/ics";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/providers/toast-provider";
 import { CalendarEntryRow, KIND_DOT, KIND_TONE } from "./calendar-entry-row";
 
 type ViewMode = "month" | "agenda";
@@ -39,6 +42,7 @@ export function CalendarView() {
   const subjectsStore = useStorage("subjects");
   const activitiesStore = useStorage("activities");
   const settingsStore = useStorage("settings");
+  const { toast } = useToast();
 
   const [ym, setYm] = useState<YearMonth>(() => monthOf(todayKey()) as YearMonth);
   const [selected, setSelected] = useState<string>(() => todayKey());
@@ -90,9 +94,34 @@ export function CalendarView() {
     </ul>
   );
 
+  function handleExportIcs() {
+    const { content, count } = buildCalendarIcs({ schedules, tasks, events, subjects, activities });
+    if (count === 0) {
+      toast({ title: "Belum ada agenda untuk diekspor", description: "Tambahkan jadwal, tugas ber-deadline, atau event dulu ya." });
+      return;
+    }
+    try {
+      downloadTextFile({ filename: `campusbest-kalender-${today}.ics`, content, mime: "text/calendar" });
+      toast({ title: "Kalender diekspor (.ics)", description: `${count} agenda siap diimpor ke Google/Apple Calendar.`, variant: "success" });
+    } catch {
+      toast({ title: "Gagal mengekspor", description: "Browser tidak bisa memulai unduhan.", variant: "error" });
+    }
+  }
+
   return (
     <>
-      <PageHeader title="Calendar" description="Jadwal kuliah, deadline tugas, event kampus, dan kegiatan lain dalam satu kalender." />
+      <PageHeader
+        title="Calendar"
+        description="Jadwal kuliah, deadline tugas, event kampus, dan kegiatan lain dalam satu kalender."
+        actions={
+          ready ? (
+            <Button variant="secondary" size="sm" onClick={handleExportIcs}>
+              <Download className="h-4 w-4" aria-hidden />
+              Export .ics
+            </Button>
+          ) : null
+        }
+      />
 
       {!ready ? (
         <Skeleton />
@@ -201,7 +230,7 @@ export function CalendarView() {
                               </span>
                             ))}
                             {moreLg > 0 && (
-                              <span className="block whitespace-nowrap px-0.5 text-[10px] leading-4 text-muted xl:hidden">+{moreLg} lagi</span>
+                              <span className="block whitespace-nowrap px-0.5 text-[10px] leading-4 text-muted xl:hidden">+{moreLg}</span>
                             )}
                             {moreXl > 0 && (
                               <span className="hidden whitespace-nowrap px-1 text-[11px] leading-4 text-muted xl:block">+{moreXl} lagi</span>

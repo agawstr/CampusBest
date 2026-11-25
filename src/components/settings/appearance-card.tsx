@@ -15,9 +15,16 @@ const THEMES = [
   { value: "light", label: "Terang", icon: Sun },
 ] as const;
 
+const ACCENTS = [
+  { value: "silver", label: "Silver", dot: "#E4E4EA" },
+  { value: "ice", label: "Ice Blue", dot: "#93C5FD" },
+  { value: "mint", label: "Mint", dot: "#6EE7B7" },
+  { value: "violet", label: "Violet", dot: "#C4B5FD" },
+] as const;
+
 /** Theme (unchanged behaviour: ThemeProvider saves it) and the week start used by Schedule, Calendar, Statistics. */
 export function AppearanceCard() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, accent, setAccent } = useTheme();
   const { toast } = useToast();
   const settings = useStorage("settings");
 
@@ -52,6 +59,29 @@ export function AppearanceCard() {
                 </span>
               </span>
               <span className="flex items-center justify-center gap-2 pb-0.5"><Icon className="h-4 w-4" aria-hidden /> {label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <h3 className="mt-5 text-sm font-medium">Aksen warna</h3>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Aksen warna">
+        {ACCENTS.map((item) => {
+          const active = accent === item.value;
+          return (
+            <button
+              key={item.value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => setAccent(item.value)}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-control border px-3 py-2.5 text-sm font-medium transition-colors duration-fast",
+                active ? "border-accent/50 bg-accent/15 text-accent" : "border-fg/10 text-muted hover:text-fg",
+              )}
+            >
+              <span className="h-3 w-3 shrink-0 rounded-full border border-fg/20" style={{ backgroundColor: item.dot }} aria-hidden />
+              {item.label}
             </button>
           );
         })}

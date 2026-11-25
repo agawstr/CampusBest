@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
-import { AlertCircle, BookOpen, CheckCircle2, ClipboardCheck, Clock, ListChecks } from "lucide-react";
+import Link from "next/link";
+import { AlertCircle, ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, ClipboardPaste, Clock, ListChecks, Sparkles } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { CompactStats, StatCard } from "@/components/ui/stat-card";
 import { useNow } from "@/hooks/use-now";
 import { useStorage } from "@/hooks/use-storage";
@@ -65,6 +67,37 @@ export function DashboardView() {
         <Skeleton />
       ) : (
         <div className="space-y-4">
+          {tasks.length === 0 && schedules.length === 0 && subjects.length === 0 && (
+            <Card raised className="p-5">
+              <div className="flex items-start gap-3">
+                <span className="icon-chip grid h-10 w-10 shrink-0 place-items-center rounded-control text-accent" aria-hidden>
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-semibold tracking-tight">Baru mulai pakai {APP_NAME}?</h2>
+                  <p className="mt-0.5 text-sm text-muted">Isi jadwal dan tugasmu dalam semenit lewat fitur impor cepat, tanpa ketik satu-satu.</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      href="/import"
+                      className="btn-metal inline-flex h-9 items-center gap-2 rounded-control px-3.5 text-sm font-semibold text-accent-fg shadow-glow transition-[transform,filter] duration-fast ease-smooth hover:brightness-110 active:scale-[0.97]"
+                    >
+                      <ClipboardPaste className="h-4 w-4" aria-hidden />
+                      Impor SIAM / Classroom / BRONE
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
+                    <Link
+                      href="/subjects"
+                      className="glass-item inline-flex h-9 items-center gap-2 rounded-control px-3.5 text-sm font-semibold text-fg transition-[background-color,transform] duration-fast ease-smooth hover:bg-fg/10 active:scale-[0.97]"
+                    >
+                      <BookOpen className="h-4 w-4" aria-hidden />
+                      Tambah mata kuliah manual
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
           {/* 1. Hero: today's classes */}
           <TodayScheduleCard
             classes={model.today}

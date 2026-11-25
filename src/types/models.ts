@@ -165,9 +165,14 @@ export interface FocusTimerState {
 }
 
 export type ThemeMode = "dark" | "light";
+export type AccentPreset = "silver" | "ice" | "mint" | "violet";
 
 export interface AppSettings {
   theme: ThemeMode;
+  /** Optional accent preset. Absent means "silver" (default monochrome). */
+  accent?: AccentPreset;
+  /** Optional chime sound when a Focus/Break phase finishes. Absent means true. */
+  focusSound?: boolean;
   sidebarCollapsed: boolean;
   weekStartsOn: 0 | 1;
   schemaVersion: number; // current: 2 (see lib/normalize.ts)

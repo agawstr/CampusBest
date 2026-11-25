@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState, type ChangeEvent } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, SegmentedControl } from "@/components/ui/field";
+import { useStorage } from "@/hooks/use-storage";
 import {
   FOCUS_LIMITS, FOCUS_PRESETS, LONG_BREAK_EVERY, presetOf, validateFocusSettings,
   type FocusPresetKey, type FocusSettingsErrors, type FocusSettingsInput,
 } from "@/lib/focus";
+import { playFocusChime } from "@/lib/sound";
 import type { FocusSettings } from "@/types";
 
 const OPTIONS: readonly { value: FocusPresetKey; label: string }[] = [
@@ -30,6 +33,8 @@ interface Props {
 }
 
 export function FocusSettingsCard({ settings, onSave, title = "Durasi" }: Props) {
+  const settingsStore = useStorage("settings");
+  const soundEnabled = settingsStore.data.focusSound !== false;
   const [customOpen, setCustomOpen] = useState(false);
   const [values, setValues] = useState<FocusSettingsInput>(() => toInput(settings));
   const [errors, setErrors] = useState<FocusSettingsErrors>({});
@@ -95,6 +100,26 @@ export function FocusSettingsCard({ settings, onSave, title = "Durasi" }: Props)
       <p className="mt-4 text-sm text-muted">
         Sekarang: fokus {settings.focusMinutes} mnt, istirahat {settings.shortBreakMinutes} mnt, istirahat panjang {settings.longBreakMinutes} mnt setiap {LONG_BREAK_EVERY} sesi fokus selesai.
       </p>
+
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-fg/10 pt-4">
+        <div>
+          <p className="text-sm font-medium">Suara notifikasi</p>
+          <p className="text-xs text-muted">Bunyi lonceng lembut saat sesi selesai.</p>
+        </div>
+        <Button
+          variant={soundEnabled ? "secondary" : "ghost"}
+          size="sm"
+          aria-pressed={soundEnabled}
+          onClick={() => {
+            const next = !soundEnabled;
+            void settingsStore.update((s) => ({ ...s, focusSound: next }));
+            if (next) playFocusChime("focus");
+          }}
+        >
+          {soundEnabled ? <Volume2 className="h-4 w-4" aria-hidden /> : <VolumeX className="h-4 w-4" aria-hidden />}
+          {soundEnabled ? "Aktif" : "Mati"}
+        </Button>
+      </div>
     </Card>
   );
 }

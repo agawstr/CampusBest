@@ -6,6 +6,7 @@ import {
   endTimer, pauseTimer, resumeTimer, saveFocusSettings, setTimerLink, startTimer, StorageUnavailableError,
 } from "@/lib/focus-store";
 import { idleState, resolveFocusSettings, type FocusEndReason, type FocusLink } from "@/lib/focus";
+import { playFocusChime } from "@/lib/sound";
 import { useToast } from "@/providers/toast-provider";
 import type { FocusSettings, FocusTimerState } from "@/types";
 
@@ -53,8 +54,11 @@ export function FocusTimerProvider({ children }: { children: ReactNode }) {
     });
   }, [toast]);
 
+  const soundEnabled = settingsStore.data.focusSound !== false;
+
   const announce = useCallback((reason: FocusEndReason, ended: FocusTimerState | undefined, completedMode: "focus" | "break") => {
     if (reason !== "completed" || !ended) return;
+    if (soundEnabled) playFocusChime(completedMode);
     if (completedMode === "focus") {
       toast({
         title: "Sesi fokus selesai",
@@ -64,7 +68,7 @@ export function FocusTimerProvider({ children }: { children: ReactNode }) {
     } else {
       toast({ title: "Istirahat selesai", description: "Siap lanjut fokus?", variant: "success" });
     }
-  }, [toast]);
+  }, [toast, soundEnabled]);
 
   const end = useCallback(async (reason: FocusEndReason, wasMode: "focus" | "break") => {
     try {
