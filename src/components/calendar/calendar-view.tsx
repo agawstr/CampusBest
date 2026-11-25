@@ -230,7 +230,7 @@ export function CalendarView() {
                               </span>
                             ))}
                             {moreLg > 0 && (
-                              <span className="block whitespace-nowrap px-0.5 text-[10px] leading-4 text-muted xl:hidden">+{moreLg}</span>
+                              <span className="block whitespace-nowrap px-0.5 text-[10px] leading-4 text-muted xl:hidden">+{moreLg} lagi</span>
                             )}
                             {moreXl > 0 && (
                               <span className="hidden whitespace-nowrap px-1 text-[11px] leading-4 text-muted xl:block">+{moreXl} lagi</span>

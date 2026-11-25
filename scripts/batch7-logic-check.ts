@@ -431,7 +431,8 @@ async function main() {
   // Phase 3 Batch 5 part C: lib/backup.ts is the one allowed exception. It only drops the timer from a backup file and copies this
   // device's own timer back unchanged on Replace (batch11 tests both); it never creates or changes a timer.
   eq("only lib/focus-store.ts writes the timer into settings (plus backup.ts, which only strips/carries it over)", badFiles(/focusTimer:\s*(?!undefined)[a-z{]/i).filter((f) => !/normalize\.ts$|focus\.ts$/.test(f)), ["src/lib/backup.ts", "src/lib/focus-store.ts"]);
-  eq("no audio and no Notification API", badFiles(/new Audio\(|Notification\.requestPermission|new Notification\(|\bAudioContext\b/), []);
+  // Optional Web Audio chime lives exclusively in src/lib/sound.ts; still no Notification API.
+  eq("no Notification API and audio only in lib/sound.ts", badFiles(/new Audio\(|Notification\.requestPermission|new Notification\(|\bAudioContext\b/), ["src/lib/sound.ts"]);
   eq("no UTC-based date keys in the Focus code", badFiles(/toISOString\(\)\s*\.\s*(slice|split|substring)/), []);
   ok("the mini timer hides on /focus and the header shows it", /pathname === "\/focus"/.test(view("src/components/layout/focus-mini-timer.tsx")) && /<FocusMiniTimer \/>/.test(view("src/components/layout/header.tsx")));
   ok("Settings' delete-all text mentions focus sessions", /sesi fokus/.test(view("src/app/settings/page.tsx")));
