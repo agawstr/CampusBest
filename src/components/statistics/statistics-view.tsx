@@ -73,14 +73,14 @@ function FocusChart({ focus }: { focus: FocusStats }) {
         <p className="mt-3 text-sm text-muted">Belum ada sesi fokus pada periode ini.</p>
       ) : (
         <>
-          <ul className="mt-4 flex h-40 items-end gap-1" aria-label="Menit fokus per bagian waktu">
+          <ul className="mt-4 flex h-40 items-end gap-1 overflow-hidden" aria-label="Menit fokus per bagian waktu">
             {focus.series.map((b, i) => (
               <li key={b.key} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${b.label}: ${formatMinutes(b.minutes)}, ${b.sessions} sesi`}>
                 <div
                   className={b.minutes > 0 ? "w-full rounded-t-md bg-gradient-to-t from-accent/35 to-accent" : "w-full rounded-t-md bg-fg/10"}
                   style={{ height: b.minutes > 0 && max > 0 ? `${Math.max(4, (b.minutes / max) * 100)}%` : "2px" }}
                 />
-                <span className={`h-4 truncate text-[10px] text-muted ${dense && i % 5 !== 0 ? "invisible" : ""}`}>{b.label}</span>
+                <span className={`h-4 w-full truncate text-center text-[10px] text-muted ${dense && i % 5 !== 0 ? "invisible" : ""}`}>{b.label}</span>
                 <span className="sr-only">{`${b.label}: ${formatMinutes(b.minutes)}, ${b.sessions} sesi`}</span>
               </li>
             ))}
@@ -198,11 +198,11 @@ export function StatisticsView() {
             <StatCard label="Sesi fokus" value={model.focus.sessions} hint={`${model.focus.completed} selesai penuh · streak ${streak} hari`} icon={Timer} delay={0.12} />
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <TaskCard model={model} />
               <SubjectCard model={model} />
             </div>
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <FocusChart focus={model.focus} />
               <EventCard model={model} />
             </div>

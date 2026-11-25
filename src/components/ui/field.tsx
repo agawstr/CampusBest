@@ -66,7 +66,7 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             onClick={() => onChange(option.value)}
             className={cn(
-              "relative h-9 rounded-[10px] px-2 text-sm font-medium transition-colors duration-fast",
+              "relative flex h-9 min-w-0 items-center justify-center rounded-[10px] px-2 text-xs font-medium transition-colors duration-fast sm:text-sm",
               active ? "text-accent-fg" : "text-muted hover:text-fg",
             )}
           >
@@ -77,7 +77,7 @@ export function SegmentedControl<T extends string>({
                 className="btn-metal absolute inset-0 rounded-[10px] shadow-soft"
               />
             )}
-            <span className="relative">{option.label}</span>
+            <span className="relative truncate">{option.label}</span>
           </button>
         );
       })}
