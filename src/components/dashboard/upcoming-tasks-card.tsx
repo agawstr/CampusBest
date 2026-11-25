@@ -19,11 +19,12 @@ interface UpcomingTasksCardProps {
 }
 
 export function UpcomingTasksCard({ tasks, subjectsById, allTasks, now }: UpcomingTasksCardProps) {
-  const more = tasks.total - tasks.items.length;
+  const priorityItems = tasks.items.slice(0, 3);
+  const more = tasks.total - priorityItems.length;
   return (
     <Card animate={false}>
-      <SectionHeader title="Tugas terdekat" subtitle="Yang belum selesai, deadline paling dekat dulu" href="/tasks" linkLabel="Semua tugas" />
-      {tasks.items.length === 0 ? (
+      <SectionHeader title="Prioritas tugas" subtitle="3 tugas paling mendesak, terlambat & deadline terdekat dulu" href="/tasks" linkLabel="Semua tugas" />
+      {priorityItems.length === 0 ? (
         <EmptyState
           icon={allTasks === 0 ? Clock : CheckCircle2}
           className="px-2 py-8"
@@ -33,7 +34,7 @@ export function UpcomingTasksCard({ tasks, subjectsById, allTasks, now }: Upcomi
       ) : (
         <>
           <ul className="space-y-2.5">
-            {tasks.items.map((task) => {
+            {priorityItems.map((task) => {
               const subject = task.subjectId ? subjectsById.get(task.subjectId) : undefined;
               const deadline = deadlineInfo(task, now);
               const overdue = deadline?.tone === "overdue";

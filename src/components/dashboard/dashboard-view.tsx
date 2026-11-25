@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, ClipboardPaste, Clock, ListChecks, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { formatDateID } from "@/lib/date";
 import { ActivitiesCard } from "./activities-card";
 import { FocusTodayCard } from "./focus-today-card";
 import { QuickActions } from "./quick-actions";
+import { StatsPopup, type StatsPopupKind } from "./stats-popup";
 import { TaskProgressCard } from "./task-progress-card";
 import { TodayScheduleCard } from "./today-schedule-card";
 import { UpcomingEventsCard } from "./upcoming-events-card";
@@ -38,6 +39,7 @@ export function DashboardView() {
   const focusStore = useStorage("focusSessions");
   const activitiesStore = useStorage("activities");
   const now = useNow();
+  const [popup, setPopup] = useState<StatsPopupKind>(null);
 
   const tasks = tasksStore.data;
   const subjects = subjectsStore.data;
@@ -106,9 +108,17 @@ export function DashboardView() {
             dayLabel={formatDateID(now, { weekday: "long", day: "numeric", month: "long" })}
           />
 
-          {/* 2. The three numbers that need attention, then the three that are just context */}
+          {/* 2. Interactive headline stats + compact context */}
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
-            <StatCard dense label="Belum selesai" value={model.stats.openTasks} hint="Masih perlu dikerjakan" icon={Clock} delay={0.04} />
+            <StatCard
+              dense
+              label="Belum selesai"
+              value={model.stats.openTasks}
+              hint="Masih perlu dikerjakan"
+              icon={Clock}
+              delay={0.04}
+              onClick={() => setPopup("open")}
+            />
             <StatCard
               dense
               label="Terlambat"
@@ -117,8 +127,17 @@ export function DashboardView() {
               icon={AlertCircle}
               tone={model.stats.overdueTasks > 0 ? "danger" : "default"}
               delay={0.08}
+              onClick={() => setPopup("overdue")}
             />
-            <StatCard dense label="Ujian & event" value={model.stats.upcomingEvents} hint="Hari ini dan mendatang" icon={ClipboardCheck} delay={0.12} />
+            <StatCard
+              dense
+              label="Ujian & event"
+              value={model.stats.upcomingEvents}
+              hint="Hari ini dan mendatang"
+              icon={ClipboardCheck}
+              delay={0.12}
+              onClick={() => setPopup("events")}
+            />
           </div>
           <CompactStats
             delay={0.16}
@@ -131,14 +150,11 @@ export function DashboardView() {
         </div>
       )}
 
-      {/* 3. Shortcuts stay available, but quietly */}
-      <QuickActions />
-
       {model && now && (
-        <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           <div className="space-y-4">
-            <ActivitiesCard activities={model.activities} hasActivities={model.hasActivities} />
             <UpcomingTasksCard tasks={model.tasks} subjectsById={subjectsById} allTasks={tasks.length} now={now} />
+            <ActivitiesCard activities={model.activities} hasActivities={model.hasActivities} />
           </div>
           <div className="space-y-4">
             <TaskProgressCard progress={model.progress} />
@@ -146,6 +162,21 @@ export function DashboardView() {
             <UpcomingEventsCard events={model.events} subjectsById={subjectsById} now={now} />
           </div>
         </div>
+      )}
+
+      {/* Shortcuts sit quietly at the bottom */}
+      <QuickActions />
+
+      {now && (
+        <StatsPopup
+          kind={popup}
+          onClose={() => setPopup(null)}
+          tasks={tasks}
+          events={events}
+          subjects={subjects}
+          subjectsById={subjectsById}
+          now={now}
+        />
       )}
     </>
   );
