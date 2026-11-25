@@ -1,9 +1,10 @@
 "use client";
 
-import { BookOpen, Pencil, Trash2, User } from "lucide-react";
+import { BookOpen, Pencil, RotateCcw, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { SubjectTaskCount } from "@/lib/subjects";
+import { cn } from "@/lib/utils";
 import type { Subject } from "@/types";
 
 interface SubjectCardProps {
@@ -12,13 +13,18 @@ interface SubjectCardProps {
   delay?: number;
   onEdit: (subject: Subject) => void;
   onDelete: (subject: Subject) => void;
+  onAttendance?: (subject: Subject, action: "attended" | "absent" | "reset") => void;
 }
 
-export function SubjectCard({ subject, counts, delay, onEdit, onDelete }: SubjectCardProps) {
+export function SubjectCard({ subject, counts, delay, onEdit, onDelete, onAttendance }: SubjectCardProps) {
   const chips = [
     subject.semester !== undefined ? `Semester ${subject.semester}` : null,
     subject.credits !== undefined ? `${subject.credits} SKS` : null,
   ].filter((v): v is string => v !== null);
+  const att = subject.attendance ?? { attended: 0, absent: 0, maxAbsences: 3 };
+  const maxAbs = att.maxAbsences ?? 3;
+  const remaining = Math.max(0, maxAbs - att.absent);
+  const warnAbs = att.absent >= maxAbs;
 
   return (
     <Card surface="item" delay={delay} className="flex w-full flex-col p-4">
@@ -66,6 +72,42 @@ export function SubjectCard({ subject, counts, delay, onEdit, onDelete }: Subjec
           ? `${counts.active} tugas aktif${counts.done > 0 ? `, ${counts.done} selesai` : ""}`
           : "Belum ada tugas"}
       </p>
+
+      {onAttendance && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-fg/10 pt-3 text-xs">
+          <span className={cn("tabular-nums", warnAbs ? "font-semibold text-danger" : "text-muted")}>
+            Hadir {att.attended} · Absen {att.absent}/{maxAbs}
+            {warnAbs ? " (batas!)" : ` · sisa ${remaining}×`}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onAttendance(subject, "attended")}
+              className="rounded-md bg-fg/[0.07] px-2 py-1 font-medium text-fg transition-colors hover:bg-fg/15"
+            >
+              + Hadir
+            </button>
+            <button
+              type="button"
+              onClick={() => onAttendance(subject, "absent")}
+              className="rounded-md bg-danger/10 px-2 py-1 font-medium text-danger transition-colors hover:bg-danger/20"
+            >
+              + Absen
+            </button>
+            {(att.attended > 0 || att.absent > 0) && (
+              <button
+                type="button"
+                onClick={() => onAttendance(subject, "reset")}
+                aria-label={`Reset kehadiran ${subject.name}`}
+                title="Reset kehadiran"
+                className="rounded-md p-1 text-muted transition-colors hover:text-fg"
+              >
+                <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

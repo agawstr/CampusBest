@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { SegmentedControl } from "@/components/ui/field";
+import { ChipGroup, SegmentedControl } from "@/components/ui/field";
 import { useStorage } from "@/hooks/use-storage";
 import { useToast } from "@/providers/toast-provider";
 import {
@@ -31,6 +31,7 @@ export function SubjectsView() {
   const { toast } = useToast();
 
   const [tab, setTab] = useState<SubjectsTab>("list");
+  const [semesterFilter, setSemesterFilter] = useState<string>("all");
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Subject | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Subject | null>(null);
@@ -40,6 +41,36 @@ export function SubjectsView() {
   const ready = subjectsStore.isReady && tasksStore.isReady;
   const sorted = useMemo(() => sortSubjects(subjects), [subjects]);
   const counts = useMemo(() => countTasksBySubject(tasksStore.data), [tasksStore.data]);
+  const semesterOptions = useMemo(() => {
+    const nums = Array.from(new Set(subjects.map((s) => s.semester).filter((n): n is number => n !== undefined))).sort((a, b) => b - a);
+    if (nums.length === 0) return [];
+    return [{ value: "all", label: "Semua" }, ...nums.map((n) => ({ value: String(n), label: `Sem ${n}` }))];
+  }, [subjects]);
+  const visible = useMemo(
+    () => (semesterFilter === "all" ? sorted : sorted.filter((s) => String(s.semester) === semesterFilter)),
+    [sorted, semesterFilter],
+  );
+
+  async function handleAttendance(subject: Subject, action: "attended" | "absent" | "reset") {
+    const nowIso = new Date().toISOString();
+    try {
+      await subjectsStore.update((list) =>
+        list.map((s) => {
+          if (s.id !== subject.id) return s;
+          const prev = s.attendance ?? { attended: 0, absent: 0, maxAbsences: 3 };
+          const next =
+            action === "reset"
+              ? { attended: 0, absent: 0, maxAbsences: prev.maxAbsences ?? 3 }
+              : action === "attended"
+                ? { ...prev, attended: prev.attended + 1 }
+                : { ...prev, absent: prev.absent + 1 };
+          return { ...s, attendance: next, updatedAt: nowIso };
+        }),
+      );
+    } catch {
+      fail();
+    }
+  }
 
   function openCreate() { setEditing(null); setEditorOpen(true); }
   function openEdit(subject: Subject) { setEditing(subject); setEditorOpen(true); }
@@ -111,13 +142,26 @@ export function SubjectsView() {
           />
         </Card>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {sorted.map((subject) => (
-            <li key={subject.id} className="flex">
-              <SubjectCard subject={subject} counts={counts.get(subject.id)} onEdit={openEdit} onDelete={askDelete} />
-            </li>
-          ))}
-        </ul>
+        <>
+          {semesterOptions.length > 0 && (
+            <div className="mb-4">
+              <ChipGroup label="Filter semester" value={semesterFilter} onChange={setSemesterFilter} options={semesterOptions} />
+            </div>
+          )}
+          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {visible.map((subject) => (
+              <li key={subject.id} className="flex">
+                <SubjectCard
+                  subject={subject}
+                  counts={counts.get(subject.id)}
+                  onEdit={openEdit}
+                  onDelete={askDelete}
+                  onAttendance={handleAttendance}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <SubjectFormModal

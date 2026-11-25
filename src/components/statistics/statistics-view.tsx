@@ -10,6 +10,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { useNow } from "@/hooks/use-now";
 import { useStorage } from "@/hooks/use-storage";
 import { formatMinutes } from "@/lib/focus";
+import { computeFocusStreak } from "@/lib/focus-stats";
 import { cn } from "@/lib/utils";
 import { buildStatistics, STATS_PERIOD_OPTIONS, type FocusStats, type StatsPeriod, type StatisticsModel } from "@/lib/statistics";
 
@@ -160,6 +161,7 @@ export function StatisticsView() {
   const [period, setPeriod] = useState<StatsPeriod>("7d");
 
   const ready = [tasks, subjects, events, sessions, settings].every((s) => s.isReady) && now !== null;
+  const streak = useMemo(() => (ready && now ? computeFocusStreak(sessions.data, now) : 0), [ready, now, sessions.data]);
   const model = useMemo(
     () => (ready && now
       ? buildStatistics(
@@ -193,7 +195,7 @@ export function StatisticsView() {
             <StatCard label="Total tugas" value={model.tasks.total} hint={`${model.tasks.done} selesai, ${model.tasks.open} belum`} icon={ListChecks} delay={0} />
             <StatCard label="Tugas selesai" value={`${model.tasks.percent}%`} hint="Dari tugas pada periode ini" icon={CheckCircle2} delay={0.04} />
             <StatCard label="Waktu fokus" value={formatMinutes(model.focus.minutes)} hint="Waktu fokus yang tercatat" icon={Hourglass} delay={0.08} />
-            <StatCard label="Sesi fokus" value={model.focus.sessions} hint={`${model.focus.completed} selesai penuh`} icon={Timer} delay={0.12} />
+            <StatCard label="Sesi fokus" value={model.focus.sessions} hint={`${model.focus.completed} selesai penuh · streak ${streak} hari`} icon={Timer} delay={0.12} />
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-4">

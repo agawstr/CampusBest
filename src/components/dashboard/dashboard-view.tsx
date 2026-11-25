@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, ClipboardPaste, Clock, ListChecks, Sparkles } from "lucide-react";
+import { AlertCircle, ArrowRight, BookOpen, CalendarRange, CheckCircle2, ClipboardCheck, ClipboardPaste, Clock, ListChecks, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { CompactStats, StatCard } from "@/components/ui/stat-card";
 import { useNow } from "@/hooks/use-now";
@@ -19,6 +19,7 @@ import { TaskProgressCard } from "./task-progress-card";
 import { TodayScheduleCard } from "./today-schedule-card";
 import { UpcomingEventsCard } from "./upcoming-events-card";
 import { UpcomingTasksCard } from "./upcoming-tasks-card";
+import { WeeklyDigestSheet } from "./weekly-digest-sheet";
 
 function Skeleton() {
   return (
@@ -41,6 +42,7 @@ export function DashboardView() {
   const activitiesStore = useStorage("activities");
   const now = useNow();
   const [popup, setPopup] = useState<StatsPopupKind>(null);
+  const [digestOpen, setDigestOpen] = useState(false);
 
   const tasks = tasksStore.data;
   const subjects = subjectsStore.data;
@@ -75,12 +77,24 @@ export function DashboardView() {
 
   return (
     <>
-      <header className="mb-6 md:mb-8">
-        <p className="eyebrow text-accent">{APP_NAME} · {APP_TAGLINE}</p>
-        <h1 className="text-silver mt-2 text-[1.9rem] font-bold leading-tight tracking-tight md:text-4xl">
-          {model ? model.greeting : <><span className="sr-only">Dashboard</span><span className="inline-block h-9 w-52 animate-pulse rounded-lg bg-fg/10 align-middle" aria-hidden /></>}
-        </h1>
-        <p className="mt-1.5 min-h-[1.5rem] text-sm text-muted md:text-base">{model ? model.dateLine : ""}</p>
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-3 md:mb-8">
+        <div>
+          <p className="eyebrow text-accent">{APP_NAME} · {APP_TAGLINE}</p>
+          <h1 className="text-silver mt-2 text-[1.9rem] font-bold leading-tight tracking-tight md:text-4xl">
+            {model ? model.greeting : <><span className="sr-only">Dashboard</span><span className="inline-block h-9 w-52 animate-pulse rounded-lg bg-fg/10 align-middle" aria-hidden /></>}
+          </h1>
+          <p className="mt-1.5 min-h-[1.5rem] text-sm text-muted md:text-base">{model ? model.dateLine : ""}</p>
+        </div>
+        {model && now && (
+          <button
+            type="button"
+            onClick={() => setDigestOpen(true)}
+            className="glass-item inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-fg transition-[background-color,transform] duration-fast ease-smooth hover:bg-fg/10 active:scale-[0.97]"
+          >
+            <CalendarRange className="h-4 w-4 text-accent" aria-hidden />
+            Rangkuman 7 hari
+          </button>
+        )}
       </header>
 
       {!model || !now ? (
@@ -203,15 +217,26 @@ export function DashboardView() {
       <QuickActions />
 
       {now && (
-        <StatsPopup
-          kind={popup}
-          onClose={() => setPopup(null)}
-          tasks={tasks}
-          events={events}
-          subjects={subjects}
-          subjectsById={subjectsById}
-          now={now}
-        />
+        <>
+          <StatsPopup
+            kind={popup}
+            onClose={() => setPopup(null)}
+            tasks={tasks}
+            events={events}
+            subjects={subjects}
+            subjectsById={subjectsById}
+            now={now}
+          />
+          <WeeklyDigestSheet
+            open={digestOpen}
+            onOpenChange={setDigestOpen}
+            tasks={tasks}
+            events={events}
+            activities={activities}
+            subjects={subjects}
+            now={now}
+          />
+        </>
       )}
     </>
   );

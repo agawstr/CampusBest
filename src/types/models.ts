@@ -6,6 +6,13 @@ export interface BaseEntity {
   updatedAt: string;
 }
 
+export interface SubjectAttendance {
+  attended: number;
+  absent: number;
+  /** Default 3 if omitted. */
+  maxAbsences?: number;
+}
+
 export interface Subject extends BaseEntity {
   name: string;
   code?: string;
@@ -16,6 +23,8 @@ export interface Subject extends BaseEntity {
   /** Semester number, e.g. 3. */
   semester?: number;
   color: string;
+  /** Optional attendance counter per subject. */
+  attendance?: SubjectAttendance;
 }
 
 export type TaskPriority = "low" | "medium" | "high";
@@ -190,6 +199,8 @@ export interface AppSettings {
   accent?: AccentPreset;
   /** Optional chime sound when a Focus/Break phase finishes. Absent means true. */
   focusSound?: boolean;
+  /** Optional weekly focus target in minutes. Absent means 300 (5 hours). */
+  focusWeeklyTargetMinutes?: number;
   /** Optional per-semester IPS records (regular & short/semester pendek) for IPK calculation. */
   gpaTerms?: GpaTerm[];
   sidebarCollapsed: boolean;

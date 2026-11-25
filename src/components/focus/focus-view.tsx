@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
+import { Flame, Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import {
   FOCUS_MODES, FOCUS_MODE_LABELS, LONG_BREAK_EVERY, MIN_RECORD_MINUTES, elapsedMs, focusToday, formatClock, formatMinutes,
   progressOf, remainingMs, sanitizeLink, selectableTasks, type FocusLink,
 } from "@/lib/focus";
+import { computeFocusStreak, focusThisWeekMinutes, WEEKLY_TARGET_PRESETS } from "@/lib/focus-stats";
 import { sortTasks } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 import { useFocusTimer } from "@/providers/focus-timer-provider";
@@ -73,6 +74,7 @@ export function FocusView() {
   const subjectsStore = useStorage("subjects");
   const tasksStore = useStorage("tasks");
   const sessionsStore = useStorage("focusSessions");
+  const appSettingsStore = useStorage("settings");
   const [pending, setPending] = useState<Pending>(null);
   const [pendingMinutes, setPendingMinutes] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -95,7 +97,13 @@ export function FocusView() {
   const taskOptions = link.subjectId ? choices.filter((t) => t.subjectId === link.subjectId) : choices;
 
   const isFocus = timer.mode === "focus";
-  const today = focusToday(sessions, new Date());
+  const nowDate = new Date();
+  const today = focusToday(sessions, nowDate);
+  const streak = useMemo(() => computeFocusStreak(sessions, nowDate), [sessions]); // eslint-disable-line react-hooks/exhaustive-deps
+  const weekStartsOn = appSettingsStore.data.weekStartsOn === 0 ? 0 : 1;
+  const weekMinutes = useMemo(() => focusThisWeekMinutes(sessions, nowDate, weekStartsOn), [sessions, weekStartsOn]); // eslint-disable-line react-hooks/exhaustive-deps
+  const targetMinutes = appSettingsStore.data.focusWeeklyTargetMinutes ?? 300;
+  const targetPct = Math.min(100, Math.round((weekMinutes / Math.max(1, targetMinutes)) * 100));
 
   function changeSubject(value: string) {
     const subjectId = value || undefined;
@@ -251,6 +259,40 @@ export function FocusView() {
               {today.sessions > today.completed && (
                 <p className="mt-2 text-xs text-muted">{today.sessions - today.completed} sesi dihentikan lebih awal ikut dihitung waktunya.</p>
               )}
+
+              <div className="mt-4 space-y-3 border-t border-fg/10 pt-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Flame className="h-4 w-4 text-accent" aria-hidden />
+                    Streak belajar
+                  </span>
+                  <span className="font-semibold tabular-nums">{streak} hari beruntun</span>
+                </div>
+                <div>
+                  <div className="flex items-baseline justify-between gap-2 text-xs">
+                    <span className="text-muted">Target minggu ini</span>
+                    <span className="font-medium tabular-nums">{formatMinutes(weekMinutes)} / {formatMinutes(targetMinutes)}</span>
+                  </div>
+                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-fg/10">
+                    <div className="h-full rounded-full bg-gradient-to-r from-accent/60 to-accent transition-[width] duration-slow ease-smooth" style={{ width: `${targetPct}%` }} />
+                  </div>
+                  <div className="mt-2 flex gap-1.5">
+                    {WEEKLY_TARGET_PRESETS.map((p) => (
+                      <button
+                        key={p.minutes}
+                        type="button"
+                        onClick={() => void appSettingsStore.update((s) => ({ ...s, focusWeeklyTargetMinutes: p.minutes }))}
+                        className={cn(
+                          "rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-colors duration-fast",
+                          targetMinutes === p.minutes ? "border-accent/50 bg-accent/15 text-accent" : "border-fg/10 text-muted hover:text-fg",
+                        )}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </Card>
             <FocusSettingsCard settings={settings} onSave={saveSettings} />
           </div>
