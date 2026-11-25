@@ -25,6 +25,12 @@ export type TaskPriority = "low" | "medium" | "high";
  */
 export type TaskStatus = "todo" | "in_progress" | "done" | "completed";
 
+export interface TaskSubtask {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
 export interface Task extends BaseEntity {
   title: string;
   description?: string;
@@ -38,6 +44,8 @@ export interface Task extends BaseEntity {
   priority: TaskPriority;
   status: TaskStatus;
   completedAt?: string;
+  /** Optional checklist items inside a task. */
+  subtasks?: TaskSubtask[];
   /** Bulk Import 1. Original link of the task (e.g. its Google Classroom page). Only http(s) is ever stored. */
   url?: string;
   /** Bulk Import 1. Where the task was imported from ("google_classroom" | "brone"). Absent for manual tasks. */
@@ -167,12 +175,23 @@ export interface FocusTimerState {
 export type ThemeMode = "dark" | "light";
 export type AccentPreset = "silver" | "ice" | "mint" | "violet";
 
+export type GpaTermKind = "regular" | "short";
+export interface GpaTerm {
+  id: string;
+  label: string;
+  kind: GpaTermKind;
+  ips: number;
+  sks: number;
+}
+
 export interface AppSettings {
   theme: ThemeMode;
   /** Optional accent preset. Absent means "silver" (default monochrome). */
   accent?: AccentPreset;
   /** Optional chime sound when a Focus/Break phase finishes. Absent means true. */
   focusSound?: boolean;
+  /** Optional per-semester IPS records (regular & short/semester pendek) for IPK calculation. */
+  gpaTerms?: GpaTerm[];
   sidebarCollapsed: boolean;
   weekStartsOn: 0 | 1;
   schemaVersion: number; // current: 2 (see lib/normalize.ts)

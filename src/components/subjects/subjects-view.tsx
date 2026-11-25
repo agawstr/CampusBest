@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SegmentedControl } from "@/components/ui/field";
 import { useStorage } from "@/hooks/use-storage";
 import { useToast } from "@/providers/toast-provider";
 import {
@@ -14,14 +15,22 @@ import {
   type SubjectFormValues,
 } from "@/lib/subjects";
 import type { Subject } from "@/types";
+import { GpaPanel } from "./gpa-panel";
 import { SubjectCard } from "./subject-card";
 import { SubjectFormModal } from "./subject-form-modal";
+
+type SubjectsTab = "list" | "gpa";
+const TAB_OPTIONS: readonly { value: SubjectsTab; label: string }[] = [
+  { value: "list", label: "Mata kuliah" },
+  { value: "gpa", label: "IPK & IPS" },
+];
 
 export function SubjectsView() {
   const subjectsStore = useStorage("subjects");
   const tasksStore = useStorage("tasks");
   const { toast } = useToast();
 
+  const [tab, setTab] = useState<SubjectsTab>("list");
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Subject | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Subject | null>(null);
@@ -78,11 +87,17 @@ export function SubjectsView() {
     <>
       <PageHeader
         title="Subjects"
-        description="Daftar mata kuliah, dosen, dan SKS."
-        actions={subjects.length > 0 ? addButton : undefined}
+        description="Daftar mata kuliah, dosen, SKS, dan kalkulator IPK / IPS."
+        actions={tab === "list" && subjects.length > 0 ? addButton : undefined}
       />
 
-      {!ready ? (
+      <div className="mb-5 max-w-xs">
+        <SegmentedControl<SubjectsTab> label="Tampilan mata kuliah" value={tab} onChange={setTab} options={TAB_OPTIONS} />
+      </div>
+
+      {tab === "gpa" ? (
+        <GpaPanel />
+      ) : !ready ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-hidden>
           {[0, 1, 2].map((i) => <div key={i} className="glass-item h-40 animate-pulse rounded-card" />)}
         </div>

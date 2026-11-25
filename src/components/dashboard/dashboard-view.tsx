@@ -9,7 +9,8 @@ import { useNow } from "@/hooks/use-now";
 import { useStorage } from "@/hooks/use-storage";
 import { buildDashboard } from "@/lib/dashboard";
 import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
-import { formatDateID } from "@/lib/date";
+import { formatDateID, parseDateKey, toDateKey } from "@/lib/date";
+import { EVENT_CATEGORY_LABELS } from "@/lib/domain";
 import { ActivitiesCard } from "./activities-card";
 import { FocusTodayCard } from "./focus-today-card";
 import { QuickActions } from "./quick-actions";
@@ -55,6 +56,23 @@ export function DashboardView() {
     [ready, now, tasks, subjects, schedules, events, focusSessions, activities],
   );
 
+  const soonExam = useMemo(() => {
+    if (!model || !now) return null;
+    const todayDate = parseDateKey(toDateKey(now));
+    if (!todayDate) return null;
+    const dayDiff = (key: string) => {
+      const target = parseDateKey(key);
+      return target ? Math.round((target.getTime() - todayDate.getTime()) / 86_400_000) : null;
+    };
+    const exam = model.events.items.find((e) => {
+      if (e.category !== "uts" && e.category !== "uas" && e.category !== "quiz") return false;
+      const diff = dayDiff(e.date);
+      return diff !== null && diff >= 0 && diff <= 7;
+    });
+    if (!exam) return null;
+    return { exam, diff: dayDiff(exam.date) ?? 0 };
+  }, [model, now]);
+
   return (
     <>
       <header className="mb-6 md:mb-8">
@@ -69,6 +87,23 @@ export function DashboardView() {
         <Skeleton />
       ) : (
         <div className="space-y-4">
+          {soonExam && (
+            <Link
+              href="/exams"
+              className="glass glass-raised flex items-center justify-between gap-3 rounded-card border border-danger/35 px-4 py-3 text-sm transition-colors duration-fast hover:border-danger/60"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="shrink-0 rounded-full bg-danger/15 px-2.5 py-1 text-xs font-bold tabular-nums text-danger">
+                  {soonExam.diff === 0 ? "Hari ini" : `H-${soonExam.diff}`}
+                </span>
+                <p className="min-w-0 truncate font-medium">
+                  {EVENT_CATEGORY_LABELS[soonExam.exam.category]} · {soonExam.exam.title}
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+            </Link>
+          )}
+
           {tasks.length === 0 && schedules.length === 0 && subjects.length === 0 && (
             <Card raised className="p-5">
               <div className="flex items-start gap-3">

@@ -18,7 +18,7 @@ import {
   applyTaskEdit, createTask, fieldsToPreserve, filterTasks, sortTasks, toggleTaskDone,
   type PriorityFilter, type StatusFilter, type TaskFormTouched, type TaskFormValues, type TaskSort,
 } from "@/lib/tasks";
-import type { Task } from "@/types";
+import type { Task, TaskSubtask } from "@/types";
 import { TaskFormModal } from "./task-form-modal";
 import { TaskItem } from "./task-item";
 
@@ -79,21 +79,67 @@ export function TasksView() {
   /** Original stored status/priority of a task whose value normalization didn't recognize. Call inside update(). */
   const rawOf = (id: string) => (field: "status" | "priority") => storage.getCoercedRaw("tasks", id, field);
 
-  async function handleSave(values: TaskFormValues, touched: TaskFormTouched) {
+  async function handleSave(values: TaskFormValues, touched: TaskFormTouched, subtasks: TaskSubtask[]) {
+    const cleanSubtasks = subtasks.length > 0 ? subtasks : undefined;
     try {
       if (editing) {
         const id = editing.id;
         // Runs inside update(), right after the collection is re-read, so the raw values are current.
         await tasksStore.update((list) =>
-          list.map((t) => (t.id === id ? applyTaskEdit(t, values, new Date(), fieldsToPreserve(touched, rawOf(id))) : t)),
+          list.map((t) => {
+            if (t.id !== id) return t;
+            const next = applyTaskEdit(t, values, new Date(), fieldsToPreserve(touched, rawOf(id)));
+            if (cleanSubtasks) return { ...next, subtasks: cleanSubtasks };
+            const { subtasks: _drop, ...rest } = next;
+            void _drop;
+            return rest;
+          }),
         );
         toast({ title: "Tugas diperbarui", variant: "success" });
       } else {
-        const task = createTask(values);
+        const base = createTask(values);
+        const task = cleanSubtasks ? { ...base, subtasks: cleanSubtasks } : base;
         await tasksStore.update((list) => [...list, task]);
         toast({ title: "Tugas ditambahkan", variant: "success" });
       }
       setEditorOpen(false);
+    } catch {
+      fail();
+    }
+  }
+
+  async function handleCycleStatus(task: Task) {
+    const nowIso = new Date().toISOString();
+    const nextStatus = isTaskDone(task) ? "todo" : task.status === "in_progress" ? "completed" : "in_progress";
+    try {
+      await tasksStore.update((list) =>
+        list.map((t) => {
+          if (t.id !== task.id) return t;
+          const updated: Task = { ...t, status: nextStatus, updatedAt: nowIso };
+          if (nextStatus === "completed") updated.completedAt = nowIso;
+          else delete updated.completedAt;
+          return updated;
+        }),
+      );
+    } catch {
+      fail();
+    }
+  }
+
+  async function handleToggleSubtask(task: Task, subtaskId: string) {
+    const nowIso = new Date().toISOString();
+    try {
+      await tasksStore.update((list) =>
+        list.map((t) =>
+          t.id === task.id
+            ? {
+                ...t,
+                subtasks: (t.subtasks ?? []).map((s) => (s.id === subtaskId ? { ...s, done: !s.done } : s)),
+                updatedAt: nowIso,
+              }
+            : t,
+        ),
+      );
     } catch {
       fail();
     }
@@ -225,6 +271,8 @@ export function TasksView() {
                     subject={task.subjectId ? subjectsById.get(task.subjectId) : undefined}
                     now={now}
                     onToggle={handleToggle}
+                    onCycleStatus={handleCycleStatus}
+                    onToggleSubtask={handleToggleSubtask}
                     onEdit={openEdit}
                     onDelete={askDelete}
                   />

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SegmentedControl } from "@/components/ui/field";
 import { useOpenFromQuery } from "@/hooks/use-open-from-query";
 import { useStorage } from "@/hooks/use-storage";
 import { addDays, formatDateID, startOfWeek, todayKey } from "@/lib/date";
@@ -21,6 +22,13 @@ import { useToast } from "@/providers/toast-provider";
 import type { ScheduleItem } from "@/types";
 import { ScheduleFormModal } from "./schedule-form-modal";
 import { ScheduleItemCard } from "./schedule-item-card";
+import { WeeklyTimeGrid } from "./weekly-time-grid";
+
+type ScheduleDisplay = "list" | "grid";
+const DISPLAY_OPTIONS: readonly { value: ScheduleDisplay; label: string }[] = [
+  { value: "list", label: "Daftar" },
+  { value: "grid", label: "Grid jam" },
+];
 
 function Skeleton() {
   return (
@@ -38,6 +46,7 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
 
   /** Weeks away from the current week. Kept as an offset so a change of week-start setting still lands on "this week". */
   const [weekOffset, setWeekOffset] = useState(0);
+  const [display, setDisplay] = useState<ScheduleDisplay>("list");
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<ScheduleItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ScheduleItem | null>(null);
@@ -165,35 +174,42 @@ export function CourseSchedulePanel({ tabs }: { tabs: ReactNode }) {
             <Button variant="secondary" size="sm" disabled={weekOffset === 0} onClick={() => setWeekOffset(0)}>
               Minggu ini
             </Button>
+            <div className="w-full sm:w-44">
+              <SegmentedControl<ScheduleDisplay> label="Mode tampilan jadwal" value={display} onChange={setDisplay} options={DISPLAY_OPTIONS} />
+            </div>
           </div>
 
-          <div className="grid gap-5 2xl:grid-cols-7 2xl:gap-3">
-            {week.map((day) => {
-              const isToday = day.key === today;
-              return (
-                <section key={day.key} aria-label={formatDateID(day.date, { weekday: "long", day: "numeric", month: "long" })} className="min-w-0">
-                  <div className="mb-2 flex items-center gap-2">
-                    <h2 className={cn("font-semibold tracking-tight", isToday && "text-accent")}>
-                      {formatDateID(day.date, { weekday: "long" })}
-                    </h2>
-                    <span className="text-sm text-muted">{formatDateID(day.date, { day: "numeric", month: "short" })}</span>
-                    {isToday && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent shadow-[0_0_14px_-4px_rgb(var(--accent)/0.5)]">Hari ini</span>}
-                  </div>
-                  {day.items.length === 0 ? (
-                    <p className="rounded-control border border-dashed border-fg/10 px-3 py-4 text-center text-xs text-muted">Tidak ada kelas</p>
-                  ) : (
-                    <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-1">
-                      {day.items.map((item) => (
-                        <li key={item.id}>
-                          <ScheduleItemCard item={item} subject={subjectsById.get(item.subjectId)} onEdit={openEdit} onDelete={askDelete} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </section>
-              );
-            })}
-          </div>
+          {display === "grid" ? (
+            <WeeklyTimeGrid week={week} today={today} subjectsById={subjectsById} onSelect={openEdit} />
+          ) : (
+            <div className="grid gap-5 2xl:grid-cols-7 2xl:gap-3">
+              {week.map((day) => {
+                const isToday = day.key === today;
+                return (
+                  <section key={day.key} aria-label={formatDateID(day.date, { weekday: "long", day: "numeric", month: "long" })} className="min-w-0">
+                    <div className="mb-2 flex items-center gap-2">
+                      <h2 className={cn("font-semibold tracking-tight", isToday && "text-accent")}>
+                        {formatDateID(day.date, { weekday: "long" })}
+                      </h2>
+                      <span className="text-sm text-muted">{formatDateID(day.date, { day: "numeric", month: "short" })}</span>
+                      {isToday && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent shadow-[0_0_14px_-4px_rgb(var(--accent)/0.5)]">Hari ini</span>}
+                    </div>
+                    {day.items.length === 0 ? (
+                      <p className="rounded-control border border-dashed border-fg/10 px-3 py-4 text-center text-xs text-muted">Tidak ada kelas</p>
+                    ) : (
+                      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-1">
+                        {day.items.map((item) => (
+                          <li key={item.id}>
+                            <ScheduleItemCard item={item} subject={subjectsById.get(item.subjectId)} onEdit={openEdit} onDelete={askDelete} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                );
+              })}
+            </div>
+          )}
 
           {undated.length > 0 && (
             <section className="mt-8">

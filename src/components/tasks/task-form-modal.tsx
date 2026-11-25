@@ -2,15 +2,17 @@
 
 import { useEffect, useId, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, SegmentedControl, Select, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { TASK_PRIORITY_LABELS, TASK_PRIORITIES } from "@/lib/domain";
+import { generateId } from "@/lib/id";
 import {
   EMPTY_TASK_FORM, UNTOUCHED, taskToFormValues, validateTaskForm,
   type TaskFormErrors, type TaskFormStatus, type TaskFormTouched, type TaskFormValues,
 } from "@/lib/tasks";
-import type { Subject, Task, TaskPriority } from "@/types";
+import type { Subject, Task, TaskPriority, TaskSubtask } from "@/types";
 
 const PRIORITY_OPTIONS = TASK_PRIORITIES.map((value) => ({ value, label: TASK_PRIORITY_LABELS[value] }));
 const STATUS_OPTIONS: { value: TaskFormStatus; label: string }[] = [
@@ -26,7 +28,7 @@ interface TaskFormModalProps {
   task: Task | null;
   subjects: readonly Subject[];
   /** `touched` tells which of status/priority the user clicked, so untouched unknown stored values can be kept. */
-  onSubmit: (values: TaskFormValues, touched: TaskFormTouched) => Promise<void> | void;
+  onSubmit: (values: TaskFormValues, touched: TaskFormTouched, subtasks: TaskSubtask[]) => Promise<void> | void;
 }
 
 export function TaskFormModal({ open, onOpenChange, task, subjects, onSubmit }: TaskFormModalProps) {
@@ -34,6 +36,8 @@ export function TaskFormModal({ open, onOpenChange, task, subjects, onSubmit }: 
   const formId = `${uid}-task-form`;
   const [values, setValues] = useState<TaskFormValues>(EMPTY_TASK_FORM);
   const [touched, setTouched] = useState<TaskFormTouched>(UNTOUCHED);
+  const [subtasks, setSubtasks] = useState<TaskSubtask[]>([]);
+  const [newSubtask, setNewSubtask] = useState("");
   const [errors, setErrors] = useState<TaskFormErrors>({});
   const [saving, setSaving] = useState(false);
 
@@ -41,11 +45,20 @@ export function TaskFormModal({ open, onOpenChange, task, subjects, onSubmit }: 
   useEffect(() => {
     if (!open) return;
     setValues(task ? taskToFormValues(task, new Set(subjects.map((s) => s.id))) : EMPTY_TASK_FORM);
+    setSubtasks(task?.subtasks ? task.subtasks.map((s) => ({ ...s })) : []);
+    setNewSubtask("");
     setTouched(UNTOUCHED);
     setErrors({});
     setSaving(false);
     // `subjects` is deliberately not a dependency: it is read once per open so edits in other tabs don't reset the form.
   }, [open, task]);
+
+  function addSubtask() {
+    const title = newSubtask.trim();
+    if (!title) return;
+    setSubtasks((list) => [...list, { id: generateId(), title, done: false }]);
+    setNewSubtask("");
+  }
 
   const set = <K extends keyof TaskFormValues>(key: K, value: TaskFormValues[K]) =>
     setValues((v) => ({ ...v, [key]: value }));
@@ -57,7 +70,7 @@ export function TaskFormModal({ open, onOpenChange, task, subjects, onSubmit }: 
     if (Object.keys(found).length > 0) return;
     setSaving(true);
     try {
-      await onSubmit(values, touched);
+      await onSubmit(values, touched, subtasks);
     } finally {
       setSaving(false);
     }
@@ -151,6 +164,39 @@ export function TaskFormModal({ open, onOpenChange, task, subjects, onSubmit }: 
             onChange={(v) => { set("status", v); setTouched((t) => ({ ...t, status: true })); }}
             options={STATUS_OPTIONS}
           />
+        </div>
+
+        <div>
+          <p className="mb-1.5 text-sm font-medium">Checklist langkah (opsional)</p>
+          <div className="flex gap-2">
+            <Input
+              value={newSubtask}
+              onChange={(e) => setNewSubtask(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSubtask(); } }}
+              placeholder="Tambah langkah kecil…"
+              aria-label="Tambah langkah kecil"
+            />
+            <Button variant="secondary" size="icon" onClick={addSubtask} aria-label="Tambah checklist" className="h-11 w-11 shrink-0">
+              <Plus className="h-4 w-4" aria-hidden />
+            </Button>
+          </div>
+          {subtasks.length > 0 && (
+            <ul className="mt-2 space-y-1.5">
+              {subtasks.map((st) => (
+                <li key={st.id} className="glass-item flex items-center gap-2 rounded-control px-3 py-1.5 text-sm">
+                  <span className="min-w-0 flex-1 truncate">{st.title}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSubtasks((list) => list.filter((x) => x.id !== st.id))}
+                    aria-label={`Hapus ${st.title}`}
+                    className="rounded p-1 text-muted hover:text-danger"
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </form>
     </Modal>
