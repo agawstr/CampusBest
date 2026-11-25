@@ -12,15 +12,16 @@ export function AppBackdrop() {
   const dim = settings.wallpaperDim ?? 0.52;
 
   if (wallpaper) {
+    const safeDim = Math.min(0.85, Math.max(0.2, dim));
     return (
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
         <div
           className="absolute inset-0 bg-cover bg-center transition-opacity duration-slow ease-smooth"
-          style={{ backgroundImage: `url(${wallpaper})` }}
+          style={{ backgroundImage: `url("${wallpaper}")` }}
         />
         <div
-          className="absolute inset-0 bg-bg transition-opacity duration-base"
-          style={{ opacity: Math.min(0.85, Math.max(0.2, dim)) }}
+          className="absolute inset-0 bg-bg"
+          style={{ opacity: `var(--wallpaper-dim, ${safeDim})` }}
         />
       </div>
     );

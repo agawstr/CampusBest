@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { ImagePlus, Moon, Sun, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,7 +34,24 @@ export function AppearanceCard() {
   const [uploading, setUploading] = useState(false);
 
   const wallpaper = settings.data.wallpaper;
-  const wallpaperDim = settings.data.wallpaperDim ?? 0.52;
+  const savedDim = settings.data.wallpaperDim ?? 0.52;
+  const [dimDraft, setDimDraft] = useState(savedDim);
+
+  useEffect(() => {
+    setDimDraft(savedDim);
+  }, [savedDim]);
+
+  function handleDimInput(pct: number) {
+    const next = pct / 100;
+    setDimDraft(next);
+    document.documentElement.style.setProperty("--wallpaper-dim", String(next));
+  }
+
+  function commitDim(pct: number) {
+    const next = pct / 100;
+    document.documentElement.style.removeProperty("--wallpaper-dim");
+    void settings.update((s) => ({ ...s, wallpaperDim: next }));
+  }
 
   async function handlePickWallpaper(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -148,25 +165,28 @@ export function AppearanceCard() {
       {wallpaper && (
         <div className="mt-3 space-y-2.5">
           <div className="relative h-24 w-full max-w-xs overflow-hidden rounded-control border border-fg/15">
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${wallpaper})` }} />
-            <div className="absolute inset-0 bg-bg" style={{ opacity: wallpaperDim }} />
+            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${wallpaper}")` }} />
+            <div className="absolute inset-0 bg-bg" style={{ opacity: dimDraft }} />
             <div className="relative flex h-full items-end p-2.5">
-              <span className="glass rounded-lg px-2.5 py-1 text-xs font-medium">Pratinjau kaca</span>
+              <span className="glass rounded-lg px-2.5 py-1 text-xs font-medium">Contoh tampilan kaca</span>
             </div>
           </div>
           <label className="block max-w-xs">
             <span className="flex justify-between text-xs text-muted">
               <span>Kegelapan lapisan latar</span>
-              <span className="tabular-nums">{Math.round(wallpaperDim * 100)}%</span>
+              <span className="tabular-nums">{Math.round(dimDraft * 100)}%</span>
             </span>
             <input
               type="range"
               min={25}
               max={85}
               step={5}
-              value={Math.round(wallpaperDim * 100)}
-              onChange={(e) => void settings.update((s) => ({ ...s, wallpaperDim: Number(e.target.value) / 100 }))}
-              className="mt-1 w-full accent-[rgb(var(--accent))]"
+              value={Math.round(dimDraft * 100)}
+              onChange={(e) => handleDimInput(Number(e.target.value))}
+              onMouseUp={(e) => commitDim(Number(e.currentTarget.value))}
+              onTouchEnd={(e) => commitDim(Number(e.currentTarget.value))}
+              onKeyUp={(e) => commitDim(Number(e.currentTarget.value))}
+              className="mt-1.5 h-2 w-full cursor-pointer accent-[rgb(var(--accent))]"
             />
           </label>
         </div>
