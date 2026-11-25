@@ -1,6 +1,6 @@
 /**
  * Compresses a user-selected gallery image into a lightweight JPEG data URL
- * (max 1440px longest side) so it fits comfortably inside localStorage.
+ * (max 1440px longest side) so it fits comfortably inside browser storage.
  */
 export function compressWallpaperFile(file: File, maxDimension = 1440, quality = 0.78): Promise<string> {
   return new Promise((resolve, reject) => {
