@@ -118,7 +118,7 @@ export function CommandPalette() {
             }}
             placeholder="Ketik judul tugas, MK, catatan, atau halaman…"
             aria-label="Kata kunci pencarian"
-            className="h-11 w-full rounded-control border border-fg/15 bg-surface/60 pl-10 pr-10 text-sm text-fg placeholder:text-muted/70 transition-colors duration-fast focus-visible:border-accent/60 [&::-webkit-search-cancel-button]:hidden"
+            className="h-11 w-full rounded-control border border-fg/15 bg-surface/60 pl-10 pr-10 text-base text-fg placeholder:text-muted/70 transition-colors duration-fast focus-visible:border-accent/60 sm:text-sm [&::-webkit-search-cancel-button]:hidden"
           />
           {query && (
             <button

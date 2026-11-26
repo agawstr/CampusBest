@@ -6,7 +6,7 @@ import { spring } from "@/lib/tokens";
 import { cn } from "@/lib/utils";
 
 const controlClass =
-  "w-full rounded-control border border-fg/15 bg-surface/60 px-3.5 text-sm text-fg placeholder:text-muted/70 transition-colors duration-fast focus-visible:border-accent/60 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger/70";
+  "w-full rounded-control border border-fg/15 bg-surface/60 px-3.5 text-base text-fg placeholder:text-muted/70 transition-colors duration-fast focus-visible:border-accent/60 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger/70 sm:text-sm";
 
 interface FieldProps {
   label: string;

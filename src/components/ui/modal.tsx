@@ -16,15 +16,21 @@ interface ModalProps {
 }
 
 export function Modal({ open, onOpenChange, title, description, children, footer }: ModalProps) {
+  function clearStuckBodyLock() {
+    if (!document.querySelector('[role="dialog"]')) {
+      document.body.style.pointerEvents = "";
+    }
+  }
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={clearStuckBodyLock}>
         {open && (
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild>
               <motion.div
                 className="fixed inset-0 z-50 scrim"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: "none" }}
                 transition={{ duration: duration.base }}
               />
             </Dialog.Overlay>
@@ -34,7 +40,7 @@ export function Modal({ open, onOpenChange, title, description, children, footer
                   className="glass-strong pointer-events-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-sheet p-6 shadow-float will-change-transform"
                   initial={{ opacity: 0, scale: 0.98, y: 6 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98, y: 4 }}
+                  exit={{ opacity: 0, scale: 0.98, y: 4, pointerEvents: "none" }}
                   transition={{ duration: duration.base, ease: easing.smooth }}
                 >
                   <div className="flex items-start justify-between gap-4">
