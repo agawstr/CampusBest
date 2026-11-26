@@ -93,7 +93,7 @@ export function ScheduleImportView() {
       <Card className="space-y-4">
         <p className="text-sm text-muted">{source.summary}</p>
         <Field label="Teks dari SIAM" htmlFor="siam-text" hint={source.howTo}>
-          <Textarea id="siam-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Tempel tabel jadwalnya di sini" className="min-h-48 font-mono text-xs" spellCheck={false} />
+          <Textarea id="siam-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Tempel tabel jadwalnya di sini" className="min-h-48 font-mono text-base sm:text-xs" spellCheck={false} />
         </Field>
         {wrongSource && (
           <p className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400">

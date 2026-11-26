@@ -67,7 +67,7 @@ export function OptionPicker({ id, value, onChange, options, placeholder = "Pili
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cari…"
               aria-label="Cari"
-              className="h-11 w-full rounded-control border border-fg/15 bg-surface/60 pl-10 pr-3.5 text-sm text-fg placeholder:text-muted/70 focus-visible:border-accent/60"
+              className="h-11 w-full rounded-control border border-fg/15 bg-surface/60 pl-10 pr-3.5 text-base text-fg placeholder:text-muted/70 focus-visible:border-accent/60 sm:text-sm"
             />
           </div>
         )}
