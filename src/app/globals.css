@@ -164,6 +164,9 @@
     user-select: none;
     transition: background-color 250ms ease, color 250ms ease;
   }
+  a, img {
+    -webkit-user-drag: none;
+  }
   input, textarea, [contenteditable="true"], .select-text {
     -webkit-user-select: text;
     user-select: text;
